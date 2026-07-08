@@ -1,0 +1,6 @@
+{
+  "name": "Companion",
+  "description": "An Islamic daily-practice app combining Quran reading, Azkar, prayer times, and light gamification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
