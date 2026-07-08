@@ -66,6 +66,20 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
     val bookmarks by viewModel.bookmarks.collectAsState()
     val isBookmarked = bookmarks.any { it.surahNumber == activeSurah.number }
 
+    val formattedEnglishName = remember(activeSurah.name) {
+        val base = activeSurah.name.trim()
+        if (base.startsWith("Surah")) base else "Surah $base"
+    }
+
+    val formattedArabicName = remember(activeSurah.arabicName) {
+        val base = activeSurah.arabicName.trim()
+        if (base.isEmpty()) "" else {
+            if (base.startsWith("سورة")) base else "سورة $base"
+        }
+    }
+
+    val headerTitle = if (settings.language == "Arabic") formattedArabicName else formattedEnglishName
+
     val loadState by viewModel.readerLoadState.collectAsState()
     val currentAyahNumber by viewModel.currentPlayingAyah.collectAsState()
     val reciters = viewModel.recitersList
@@ -88,7 +102,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
     Box(modifier = Modifier.fillMaxSize().testTag("surah_reader_screen")) {
         Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
-                title = if (settings.language == "Arabic") activeSurah.arabicName else activeSurah.name,
+                title = headerTitle,
                 subtitle = "${activeSurah.meaning} · ${activeSurah.ayahsCount} ${Translator.translate("ayahs", settings.language)}",
                 onBack = { navController.popBackStack() },
                 rightContent = {
@@ -210,12 +224,12 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                             ) {
                                 Box(modifier = Modifier.fillMaxWidth().background(Brush.linearGradient(colors = listOf(PrimaryTeal, Secondary))).padding(vertical = 24.dp, horizontal = 20.dp), contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                                        Text(text = activeSurah.name, style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold, fontSize = 24.sp), color = Color.White, textAlign = TextAlign.Center)
+                                        Text(text = formattedEnglishName, style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold, fontSize = 24.sp), color = Color.White, textAlign = TextAlign.Center)
                                         Text(text = "${activeSurah.meaning} · ${activeSurah.ayahsCount} ${Translator.translate("ayahs", settings.language)}", style = MaterialTheme.typography.bodyMedium, color = MintTeal, textAlign = TextAlign.Center)
                                         Spacer(modifier = Modifier.height(16.dp))
                                         HorizontalDivider(modifier = Modifier.width(100.dp), color = Color.White.copy(alpha = 0.3f), thickness = 1.dp)
                                         Spacer(modifier = Modifier.height(16.dp))
-                                        Text(text = activeSurah.arabicName, style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 36.sp), color = Color.White, textAlign = TextAlign.Center)
+                                        Text(text = formattedArabicName, style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 36.sp), color = Color.White, textAlign = TextAlign.Center)
                                     }
                                 }
                             }
@@ -249,10 +263,21 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                 ayah.arabicText
                             }
 
+                            val cleanedTranslation = remember(ayah.translation) {
+                                if (ayah.translation.isBlank()) "" else {
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                        android.text.Html.fromHtml(ayah.translation, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim()
+                                    } else {
+                                        @Suppress("DEPRECATION")
+                                        android.text.Html.fromHtml(ayah.translation).toString().trim()
+                                    }
+                                }
+                            }
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
+                                    .padding(vertical = 12.dp)
                                     .alpha(opacity)
                                     .pointerInput(Unit) {
                                         detectTapGestures(
@@ -266,9 +291,27 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                             }
                                         )
                                     },
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                horizontalAlignment = Alignment.Start
                             ) {
-                                val easternNum = ayah.number.toString().map { "٠١٢٣٤٥٦٧٨٩"[it - '0'] }.joinToString("")
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    RubElHizbIcon(
+                                        number = ayah.number,
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                        textColor = MaterialTheme.colorScheme.primary
+                                    )
+                                    
+                                    if (isPlayingThis) {
+                                        Text(
+                                            text = Translator.translate("playing", settings.language),
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
                                 
                                 Text(
                                     text = cleanedText,
@@ -277,43 +320,31 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                         fontSize = quranSettings.quranTextSize.sp,
                                         lineHeight = 1.8.em,
                                         textDirection = TextDirection.Rtl,
-                                        textAlign = TextAlign.Center,
+                                        textAlign = TextAlign.Right,
                                         color = if (isPlayingThis) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                                     ),
                                     modifier = Modifier.fillMaxWidth()
                                 )
                                 
-                                if (ayah.translation.isNotBlank()) {
+                                if (quranSettings.quranShowTranslation && cleanedTranslation.isNotBlank()) {
                                     Spacer(modifier = Modifier.height(12.dp))
                                     Text(
-                                        text = ayah.translation,
+                                        text = cleanedTranslation,
                                         style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontSize = (quranSettings.quranTextSize * 0.65f).sp,
-                                            lineHeight = 1.6.em,
-                                            textAlign = TextAlign.Center,
+                                            fontSize = (quranSettings.quranTextSize * 0.62f).sp,
+                                            lineHeight = 1.5.em,
+                                            textAlign = TextAlign.Left,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         ),
-                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                                        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
                                     )
                                 }
                                 
-                                Spacer(modifier = Modifier.height(12.dp))
-                                
-                                Box(
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                        .background(Color.Transparent, CircleShape)
-                                        .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f), CircleShape),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = easternNum, 
-                                        style = MaterialTheme.typography.labelSmall.copy(
-                                            fontSize = (quranSettings.quranTextSize * 0.45f).sp, 
-                                            fontWeight = FontWeight.Bold
-                                        ), 
-                                        color = MaterialTheme.colorScheme.primary, 
-                                        textAlign = TextAlign.Center
+                                if (index < ayahs.size - 1) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    HorizontalDivider(
+                                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+                                        thickness = 1.dp
                                     )
                                 }
                             }
@@ -433,6 +464,19 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                     }
 
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable { viewModel.updateQuranShowTranslation(!quranSettings.quranShowTranslation) }.padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = Translator.translate("show_translation", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                                Text(text = Translator.translate("show_translation_desc", settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Switch(checked = quranSettings.quranShowTranslation, onCheckedChange = { viewModel.updateQuranShowTranslation(it) }, modifier = Modifier.testTag("show_translation_switch"), colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = DarkTealText, uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant))
+                        }
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), thickness = 1.dp)
+
                         Row(
                             modifier = Modifier.fillMaxWidth().clickable { viewModel.updateQuranKeepScreenOn(!quranSettings.quranKeepScreenOn) }.padding(vertical = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically

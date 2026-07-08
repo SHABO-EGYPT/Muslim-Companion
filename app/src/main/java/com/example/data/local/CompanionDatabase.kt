@@ -15,7 +15,7 @@ import androidx.room.RoomDatabase
         CachedPrayerTimeEntity::class,
         NotificationEntity::class
     ],
-    version = 21,
+    version = 22,
     exportSchema = false
 )
 abstract class CompanionDatabase : RoomDatabase() {
@@ -46,6 +46,12 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_21_22 = object : androidx.room.migration.Migration(21, 22) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE app_settings ADD COLUMN quranShowTranslation INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+
         fun getDatabase(context: Context): CompanionDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -53,8 +59,8 @@ abstract class CompanionDatabase : RoomDatabase() {
                     CompanionDatabase::class.java,
                     "companion-db"
                 )
-                .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21)
-                .fallbackToDestructiveMigrationOnDowngrade()
+                .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22)
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

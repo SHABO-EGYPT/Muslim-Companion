@@ -74,7 +74,7 @@ interface QuranApi {
     ): AudioResponse
 
     companion object {
-        private const val BASE_URL = "https://apis.quran.foundation/content/api/v4/"
+        private const val BASE_URL = "https://api.quran.com/api/v4/"
 
         private val moshi = Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())

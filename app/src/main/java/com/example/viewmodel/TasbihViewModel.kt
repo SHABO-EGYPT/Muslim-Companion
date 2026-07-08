@@ -43,27 +43,48 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
     private val _count = MutableStateFlow(0)
     val count = _count.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
-            _count.value = progress.tasbihCount
-        }
-    }
-
     private val _target = MutableStateFlow(33)
     val target = _target.asStateFlow()
 
-    private val _currentDhikr = MutableStateFlow("SubhanAllah")
+    private val _currentDhikr = MutableStateFlow("سُبْحَانَ اللَّهِ")
     val currentDhikr = _currentDhikr.asStateFlow()
+
+    private val _phrases = MutableStateFlow<List<DhikrItem>>(emptyList())
+    val phrases = _phrases.asStateFlow()
+
+    private val _activeIndex = MutableStateFlow(0)
+    val activeIndex = _activeIndex.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.azkarRepository.getTasbihPhrasesFlow().collect { list ->
+                _phrases.value = list
+                val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
+                _activeIndex.value = progress.tasbihActivePhraseIndex
+                _count.value = progress.tasbihCount
+                updateDhikrAndTargetForActiveIndex()
+            }
+        }
+    }
+
+    private fun updateDhikrAndTargetForActiveIndex() {
+        val list = _phrases.value
+        val index = _activeIndex.value
+        if (list.isNotEmpty() && index in list.indices) {
+            val item = list[index]
+            _currentDhikr.value = item.arabicText
+            _target.value = item.repeatTarget
+        } else {
+            _currentDhikr.value = "سُبْحَانَ اللَّهِ"
+            _target.value = 33
+        }
+    }
 
     fun increment() {
         _count.value++
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(progress.copy(tasbihCount = _count.value))
-        }
-        if (_count.value >= _target.value) {
-            // Logic for target reached (e.g. vibration)
         }
     }
 
@@ -72,6 +93,21 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(progress.copy(tasbihCount = _count.value))
+        }
+    }
+
+    fun selectPhrase(index: Int) {
+        if (index in _phrases.value.indices) {
+            _activeIndex.value = index
+            _count.value = 0
+            updateDhikrAndTargetForActiveIndex()
+            viewModelScope.launch {
+                val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
+                repository.saveUserProgress(progress.copy(
+                    tasbihActivePhraseIndex = index,
+                    tasbihCount = 0
+                ))
+            }
         }
     }
 

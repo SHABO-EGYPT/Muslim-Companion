@@ -70,9 +70,20 @@ class RealQuranRepository(private val dao: CompanionDao) : QuranRepository {
                 val vNum = verse.verse_number ?: (index + 1)
                 val vKey = verse.verse_key ?: "${surahNumber}:${vNum}"
                 
-                val audioUrl = audioFilesByKey[vKey]?.url 
+                var rawAudioUrl = audioFilesByKey[vKey]?.url 
                     ?: audioFilesByNumber[vNum]?.url 
                     ?: ""
+                val audioUrl = if (rawAudioUrl.isNotBlank()) {
+                    if (rawAudioUrl.startsWith("//")) {
+                        "https:$rawAudioUrl"
+                    } else if (!rawAudioUrl.startsWith("http")) {
+                        "https://verses.quran.foundation/${rawAudioUrl.trimStart('/')}"
+                    } else {
+                        rawAudioUrl
+                    }
+                } else {
+                    ""
+                }
                 
                 val cleanArabicText = if (vNum == 1 && surahNumber != 1 && surahNumber != 9) {
                     if (verse.text_uthmani.contains("بِسْمِ")) {

@@ -28,13 +28,13 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
         mutex.withLock {
             if (azkarData.isNotEmpty()) return@withContext
             try {
-                // 1. Load and parse new adhkar.json (which is a JSON Array of categories)
+                // 1. Load and parse new azkar.json (which is a JSON Object of categories)
                 val jsonString = context.assets.open("azkar.json").bufferedReader().use { it.readText() }
-                val categoriesArray = JSONArray(jsonString)
-                for (i in 0 until categoriesArray.length()) {
-                    val categoryObj = categoriesArray.getJSONObject(i)
-                    val categoryName = categoryObj.getString("category")
-                    val itemsArray = categoryObj.getJSONArray("array")
+                val categoriesObj = JSONObject(jsonString)
+                val keys = categoriesObj.keys()
+                while (keys.hasNext()) {
+                    val categoryName = keys.next()
+                    val itemsArray = categoriesObj.getJSONArray(categoryName)
                     val dhikrItems = mutableListOf<DhikrItem>()
                     var itemId = 1
                     for (j in 0 until itemsArray.length()) {
@@ -42,21 +42,20 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     }
                     azkarData[categoryName] = dhikrItems
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
-                // 2. Load and parse legacy tasbih.json and merge it under "تسابيح"
-                try {
-                    val tasbihString = context.assets.open("tasbih.json").bufferedReader().use { it.readText() }
-                    val tasbihArray = JSONArray(tasbihString)
-                    val tasbihItems = mutableListOf<DhikrItem>()
-                    var tasbihId = 1
-                    for (i in 0 until tasbihArray.length()) {
-                        tasbihItems.add(tasbihArray.getJSONObject(i).toDhikrItem(tasbihId++))
-                    }
-                    azkarData["تسابيح"] = tasbihItems
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            // 2. Load and parse legacy tasbih.json and merge it under "تسابيح"
+            try {
+                val tasbihString = context.assets.open("tasbih.json").bufferedReader().use { it.readText() }
+                val tasbihArray = JSONArray(tasbihString)
+                val tasbihItems = mutableListOf<DhikrItem>()
+                var tasbihId = 1
+                for (i in 0 until tasbihArray.length()) {
+                    tasbihItems.add(tasbihArray.getJSONObject(i).toDhikrItem(tasbihId++))
                 }
-
+                azkarData["تسابيح"] = tasbihItems
             } catch (e: Exception) {
                 e.printStackTrace()
             }

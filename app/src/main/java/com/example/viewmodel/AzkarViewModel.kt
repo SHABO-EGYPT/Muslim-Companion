@@ -78,6 +78,10 @@ class AzkarViewModel @Inject constructor(private val repository: CompanionReposi
         if (_flowIndex.value > 0) _flowIndex.value--
     }
 
+    fun setFlowIndex(index: Int) {
+        _flowIndex.value = index
+    }
+
     fun updateAzkarProgress(categoryId: String, itemId: Int, count: Int) {
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()

@@ -32,12 +32,17 @@ class SurahReaderViewModel @Inject constructor(
     private val player: ExoPlayer = ExoPlayer.Builder(context).build().apply {
         addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
+                android.util.Log.d("QuranAudio", "Playback state changed: $state")
                 if (state == Player.STATE_ENDED) {
                     playNextAyah()
                 }
             }
             override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                android.util.Log.d("QuranAudio", "Is playing changed: $isPlayingNow")
                 _isPlaying.value = isPlayingNow
+            }
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                android.util.Log.e("QuranAudio", "ExoPlayer Error!", error)
             }
         })
     }
@@ -82,7 +87,15 @@ class SurahReaderViewModel @Inject constructor(
     fun playAyah(ayah: Ayah) {
         _currentPlayingAyah.value = ayah.number
         try {
-            player.setMediaItem(MediaItem.fromUri(ayah.audioUrl))
+            var finalUrl = ayah.audioUrl.trim()
+            if (finalUrl.isNotBlank()) {
+                if (finalUrl.startsWith("//")) {
+                    finalUrl = "https:$finalUrl"
+                } else if (!finalUrl.startsWith("http") && !finalUrl.startsWith("/")) {
+                    finalUrl = "https://verses.quran.foundation/$finalUrl"
+                }
+            }
+            player.setMediaItem(MediaItem.fromUri(finalUrl))
             player.prepare()
             player.play()
         } catch (e: Exception) {
@@ -91,8 +104,16 @@ class SurahReaderViewModel @Inject constructor(
     }
 
     fun togglePlayPause() {
-        if (player.isPlaying) player.pause()
-        else player.play()
+        if (player.isPlaying) {
+            player.pause()
+        } else {
+            val ayahsList = _ayahs.value
+            if (_currentPlayingAyah.value == null && ayahsList.isNotEmpty()) {
+                playAyah(ayahsList.first())
+            } else {
+                player.play()
+            }
+        }
     }
 
     private fun playNextAyah() {
@@ -161,6 +182,13 @@ class SurahReaderViewModel @Inject constructor(
         viewModelScope.launch {
             val settings = repository.getSettingsDirect() ?: AppSettingEntity()
             repository.saveSettings(settings.copy(quranKeepScreenOn = keep))
+        }
+    }
+
+    fun updateQuranShowTranslation(show: Boolean) {
+        viewModelScope.launch {
+            val settings = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(settings.copy(quranShowTranslation = show))
         }
     }
 

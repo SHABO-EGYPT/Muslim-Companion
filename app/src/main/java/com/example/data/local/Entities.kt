@@ -78,5 +78,6 @@ data class AppSettingEntity(
     val quranReciter: String = "7",
     val quranFont: String = "Classic Serif",
     val quranKeepScreenOn: Boolean = true,
-    val notificationSoundType: String = "Subtle"
+    val notificationSoundType: String = "Subtle",
+    val quranShowTranslation: Boolean = true
 )

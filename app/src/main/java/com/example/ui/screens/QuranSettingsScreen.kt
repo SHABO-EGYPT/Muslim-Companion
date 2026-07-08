@@ -62,8 +62,31 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                         color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth()
                     )
+                    if (quranSettings.quranShowTranslation) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "In the name of God, the Lord of Mercy, the Giver of Mercy!",
+                            style = TextStyle(fontSize = (quranSettings.quranTextSize * 0.62f).sp, lineHeight = 1.5.em, textAlign = TextAlign.Center),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
+
+            Row(
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { viewModel.updateQuranShowTranslation(!quranSettings.quranShowTranslation) }.padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = Translator.translate("show_translation", settings.language), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = Translator.translate("show_translation_desc", settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Switch(checked = quranSettings.quranShowTranslation, onCheckedChange = { viewModel.updateQuranShowTranslation(it) }, modifier = Modifier.testTag("show_translation_switch"))
+            }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
 
             Row(
                 modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable { viewModel.updateQuranKeepScreenOn(!quranSettings.quranKeepScreenOn) }.padding(vertical = 8.dp),
