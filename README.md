@@ -1,21 +1,62 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Muslim Companion (Android Application)
 
-# Run and deploy your AI Studio app
+Muslim Companion is a feature-rich, high-performance, and beautifully designed Android companion app built using modern Android development best practices. It helps users manage their daily prayers, read the Holy Quran, count dhikr, and keep track of daily remembrance routines (Azkar).
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/36821334-88e2-4b61-87e5-9017c6cee384
+## Key Features
 
-## Run Locally
+### 📖 Quran Surah Reader
+- **Dual Script Rendering:** Parallel rendering of Arabic text (Uthmani script) and English translations.
+- **Customizable Layout:** Built with a clean, centered divider format, aligning Arabic text to the right and English translation to the left for natural reading flow.
+- **Verse Indicators:** Every verse features an authentic **Rub El Hizb** icon header showing the verse number.
+- **Translation Toggle:** A setting toggle in the reader preferences allows users to turn translations on/off to focus purely on the Arabic scripture.
+- **Audio Streaming:** Seamless verse-by-verse audio streaming using Google's **Media3 (ExoPlayer)**, supporting multiple reciters (e.g., Mishary Al-Afasy, Abdul Basit, Al-Husary, Al-Minshawi).
+- **Settings Customization:** Custom controls to scale Arabic text size, change fonts (Classic Serif, Modern Sans, Monospace Style), and keep screen awake during reading.
 
-**Prerequisites:**  [Android Studio](https://developer.android.com/studio)
+### 📿 Digital Tasbih Counter
+- **Phrase Selector:** A horizontal chip selector to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*, *La ilaha illallah*) loaded dynamically from `tasbih.json`.
+- **Target Tracking:** Set custom targets per phrase and track your counts with interactive tap-to-increment circle controls.
+- **Tactile Feedback:** Built-in vibration haptic feedback on increments.
 
+### 🌟 Daily Azkar Flow
+- **Swipeable Cards:** Uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
+- **Interactive Tapping:** Tapping directly on the Azkar cards increments progress. The card automatically scrolls to the next remembrance once the target count (e.g., 3x or 33x) is completed.
 
-1. Open Android Studio
-2. Select **Open** and choose the directory containing this project
-3. Allow Android Studio to fix any incompatibilities as it imports the project.
-4. Create a file named `.env` in the project directory and set `GEMINI_API_KEY` in that file to your Gemini API key (see `.env.example` for an example)
-5. Remove this line from the app's `build.gradle.kts` file: `signingConfig = signingConfigs.getByName("debugConfig")`
-6. Run the app on an emulator or physical device
+### 🕋 Prayer Times & Qibla Compass
+- **Accurate Schedules:** Displays local prayer times (Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha).
+- **Calculation Settings:** Support for major Islamic calculation methods (Egyptian General Authority, MWL, ISNA, Karachi).
+- **Qibla Alignment:** Real-time Qibla compass pointing directly to the Kaaba using device sensors.
+- **Mosque Finder:** Integrates location services to find nearby places of worship.
+
+---
+
+## Technical Stack & Architecture
+
+- **UI Framework:** 100% **Jetpack Compose** with Material Design 3 guidelines for a clean, premium, and responsive user experience.
+- **Language:** **Kotlin** utilizing Coroutines and Kotlin Flow for reactive, thread-safe asynchronous operations.
+- **Architecture:** Clean Architecture pattern splitting the codebase into:
+  - **Data Layer:** Room database caches, Retrofit API endpoints, local asset parsers, and repository implementations.
+  - **Domain Layer:** Unified data models, repository abstractions, and core business entities.
+  - **Presentation Layer:** State-driven Compose screens, Dialogs, and state-holding view models.
+- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping and testing.
+- **Local Caching (Room):** Integrates SQLite database caching (version 22) supporting schema migrations and destructive fallback protection to preserve offline usability.
+- **Network Client:** **Retrofit + Moshi** integrating directly with the official Quran.com API endpoints.
+- **Audio Player:** **AndroidX Media3 (ExoPlayer)** for low-latency network audio streaming.
+
+---
+
+## Installation & Setup
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/SHABO-EGYPT/Muslim-Companion.git
+   ```
+2. **Open in Android Studio:**
+   - Open Android Studio, select **Open**, and navigate to the cloned project folder.
+   - Allow Gradle to sync and download required dependencies.
+3. **API Keys:**
+   - Create a file named `.env` in the root folder and set your `GEMINI_API_KEY` (if utilizing AI assistant components).
+4. **Deploy:**
+   - Build and run the app directly on an emulator or connected physical Android device.
+   - Ready-to-install debug APKs are also located inside the project's [APK](file:///D:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/APK/) folder.
