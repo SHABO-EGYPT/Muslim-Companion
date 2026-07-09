@@ -31,6 +31,24 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 
 ---
 
+## Screenshots
+
+Here is a visual showcase of the main menus and features of the **Muslim Companion** app:
+
+| 🏠 Home Screen | 📖 Quran Surah List | 📖 Quran Reader |
+|:---:|:---:|:---:|
+| ![Home](screenshots/home.png) | ![Quran](screenshots/quran.png) | ![Quran Reader](screenshots/surah_reader.png) |
+
+| 📿 Daily Azkar | 📿 Azkar Flow | 🕋 Prayer Times |
+|:---:|:---:|:---:|
+| ![Azkar](screenshots/azkar.png) | ![Azkar Flow](screenshots/azkar_flow.png) | ![Prayer Times](screenshots/prayer.png) |
+
+| 🕋 Qibla Compass | 📿 Digital Tasbih | ⚙️ Profile / Settings |
+|:---:|:---:|:---:|
+| ![Qibla](screenshots/qibla.png) | ![Tasbih](screenshots/tasbih.png) | ![Settings](screenshots/profile.png) |
+
+---
+
 ## Technical Stack & Architecture
 
 - **UI Framework:** 100% **Jetpack Compose** with Material Design 3 guidelines for a clean, premium, and responsive user experience.
