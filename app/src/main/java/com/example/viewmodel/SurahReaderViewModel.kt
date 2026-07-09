@@ -91,13 +91,17 @@ class SurahReaderViewModel @Inject constructor(
         _currentPlayingAyah.value = ayah.number
         viewModelScope.launch {
             try {
-                val reciterId = quranSettings.value.quranReciter
-                val surahNumber = _currentSurah.value?.number ?: return@launch
-                // Get local file or fallback streaming URL from QuranAudioManager
-                val uri = audioManager.getPlaybackUri(reciterId, surahNumber)
-                player.setMediaItem(MediaItem.fromUri(uri))
-                player.prepare()
-                player.play()
+                val uri = if (ayah.audioUrl.isNotBlank()) ayah.audioUrl else {
+                    val reciterId = quranSettings.value.quranReciter
+                    val surahNumber = _currentSurah.value?.number ?: return@launch
+                    // Fallback to local files or single sura download
+                    audioManager.getPlaybackUri(reciterId, surahNumber)
+                }
+                if (uri.isNotBlank()) {
+                    player.setMediaItem(MediaItem.fromUri(uri))
+                    player.prepare()
+                    player.play()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

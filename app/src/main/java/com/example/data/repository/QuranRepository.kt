@@ -78,14 +78,14 @@ class OfflineQuranRepository(
                     number = entity.ayah,
                     arabicText = entity.arabicText,
                     translation = cached?.translation ?: "",
-                    audioUrl = ""
+                    audioUrl = cached?.audioUrl ?: ""
                 )
             })
         }
 
     /**
      * 1. Seeds Arabic text from asset if needed.
-     * 2. Fetches translation online from quran.com and caches it.
+     * 2. Fetches translation and verse-by-verse audio URLs online and caches them.
      * 3. Triggers background download of sura MP3 for offline audio.
      */
     override suspend fun refreshAyahs(surahNumber: Int, reciter: String) {
@@ -95,18 +95,31 @@ class OfflineQuranRepository(
             assetLoader.seedDatabase()
         }
 
-        // Step 2: fetch translation if not already cached.
-        // Guard: old entries stored with numeric reciter IDs (e.g. "7") from the
-        // legacy quran.com API must NOT block the offline path — only honour
-        // entries whose reciter key matches the new "ar.*" format.
+        // Step 2: fetch translation & audio if not already cached.
         val isLegacyReciterId = reciter.all { it.isDigit() }
         val existing = if (isLegacyReciterId) emptyList()
                        else dao.getCachedAyahs(surahNumber, reciter)
 
-        if (existing.isEmpty()) {
+        if (existing.isEmpty() || existing.any { it.audioUrl.isBlank() }) {
             try {
                 val versesResponse = QuranApi.instance.getChapterVerses(surahNumber)
                 val arabicMap = dao.getAyahsForSura(surahNumber).associateBy { it.ayah }
+
+                // Fetch verse audio URLs
+                val numericReciterId = when (reciter) {
+                    "ar.alafasy" -> 7
+                    "ar.abdulbasitmurattal" -> 1
+                    "ar.husary" -> 5
+                    "ar.minshawimujawwad" -> 12
+                    else -> if (reciter.all { it.isDigit() }) reciter.toInt() else 7
+                }
+                val audioResponse = try {
+                    QuranApi.instance.getChapterAudio(numericReciterId, surahNumber)
+                } catch (e: Exception) {
+                    null
+                }
+                val audioByKey = audioResponse?.audio_files?.mapNotNull { it.verse_key?.let { k -> k to it } }?.toMap() ?: emptyMap()
+                val audioByNum = audioResponse?.audio_files?.mapNotNull { it.verse_number?.let { n -> n to it } }?.toMap() ?: emptyMap()
 
                 val entities = versesResponse.verses.mapIndexed { index, verse ->
                     val vNum = verse.verse_number ?: (index + 1)
@@ -122,6 +135,15 @@ class OfflineQuranRepository(
                         }
                     } else ""
 
+                    val vKey = "${surahNumber}:${vNum}"
+                    val rawUrl = audioByKey[vKey]?.url ?: audioByNum[vNum]?.url ?: ""
+                    val audioUrl = when {
+                        rawUrl.isBlank() -> ""
+                        rawUrl.startsWith("//") -> "https:$rawUrl"
+                        !rawUrl.startsWith("http") -> "https://verses.quran.foundation/${rawUrl.trimStart('/')}"
+                        else -> rawUrl
+                    }
+
                     // Always store with the new-format reciter ID
                     val cacheKey = if (isLegacyReciterId) "ar.alafasy" else reciter
                     CachedAyahEntity(
@@ -131,12 +153,12 @@ class OfflineQuranRepository(
                         reciter = cacheKey,
                         arabicText = arabicText,
                         translation = cleanTranslation,
-                        audioUrl = ""
+                        audioUrl = audioUrl
                     )
                 }
                 dao.insertCachedAyahs(entities)
             } catch (e: Exception) {
-                Log.w("QuranRepo", "Translation fetch failed (offline?): ${e.message}")
+                Log.w("QuranRepo", "Translation/Audio fetch failed (offline?): ${e.message}")
             }
         }
 

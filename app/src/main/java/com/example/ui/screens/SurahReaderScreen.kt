@@ -192,17 +192,15 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                 is ReaderLoadState.Success -> {
                     val ayahs by viewModel.ayahs.collectAsState()
                     val listState = rememberLazyListState()
-                    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
                     val density = androidx.compose.ui.platform.LocalDensity.current
-                    val centerOffset = with(density) { (configuration.screenHeightDp.dp / 2).toPx().toInt() }
+                    val topPadding = with(density) { 16.dp.toPx().toInt() }
 
                     LaunchedEffect(currentAyahNumber, isPlaying) {
                         if (isPlaying && currentAyahNumber != null) {
                             val index = ayahs.indexOfFirst { it.number == currentAyahNumber }
                             if (index != -1) {
-                                // Equivalent of scrollIntoView({ block: 'center' })
-                                // Scroll to item and use negative offset to move it to the center of the viewport
-                                listState.animateScrollToItem(index + 1, -centerOffset)
+                                // Scroll to item and use negative offset to move it to the top of the viewport
+                                listState.animateScrollToItem(index + 1, -topPadding)
                             }
                         }
                     }
