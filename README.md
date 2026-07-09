@@ -1,3 +1,5 @@
+![Muslim Companion Banner](assets/muslim_companion_Baner.png)
+
 # Muslim Companion (Android Application)
 
 Muslim Companion is a feature-rich, high-performance, and beautifully designed Android companion app built using modern Android development best practices. It helps users manage their daily prayers, read the Holy Quran, count dhikr, and keep track of daily remembrance routines (Azkar).
