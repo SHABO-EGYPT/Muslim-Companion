@@ -130,7 +130,7 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                 Text(text = Translator.translate("choose_preferred_font_desc", settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(12.dp))
 
-                val fonts = listOf("Classic Serif", "Modern Sans", "Monospace Style", "Standard System")
+                val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
                 var expanded by remember { mutableStateOf(false) }
 
                 Box(modifier = Modifier.fillMaxWidth()) {

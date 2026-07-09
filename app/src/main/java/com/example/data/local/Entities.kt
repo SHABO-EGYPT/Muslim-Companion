@@ -84,7 +84,7 @@ data class AppSettingEntity(
     val textSize: String = "Medium",
     val quranTextSize: Float = 26f,
     val quranReciter: String = "ar.alafasy",
-    val quranFont: String = "Classic Serif",
+    val quranFont: String = "Uthmanic Hafs",
     val quranKeepScreenOn: Boolean = true,
     val notificationSoundType: String = "Subtle",
     val quranShowTranslation: Boolean = true

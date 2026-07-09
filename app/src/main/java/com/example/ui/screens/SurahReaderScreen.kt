@@ -417,7 +417,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
 
                     Column {
                         Text(Translator.translate("quran_font_style", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
-                        val fonts = listOf("Classic Serif", "Modern Sans", "Monospace Style", "Standard System")
+                        val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             fonts.forEach { fontName ->
                                 val isSelected = quranSettings.quranFont == fontName

@@ -146,7 +146,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
                     Column {
                         Text(text = Translator.translate("quran_font_style", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                         Spacer(modifier = Modifier.height(6.dp))
-                        val fonts = listOf("Classic Serif", "Modern Sans", "Monospace Style", "Standard System")
+                        val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
                         var fontExpanded by remember { mutableStateOf(false) }
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Row(

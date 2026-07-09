@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -136,9 +137,10 @@ fun RubElHizbIcon(
 
 fun getQuranFontFamily(fontName: String): FontFamily {
     return when (fontName) {
-        "Classic Serif" -> FontFamily.Serif
-        "Modern Sans" -> FontFamily.SansSerif
-        "Monospace Style" -> FontFamily.Monospace
+        "Uthmanic Hafs" -> FontFamily(Font(com.example.R.font.me_quran))
+        "Amiri Quran" -> FontFamily(Font(com.example.R.font.amiri_quran))
+        "Scheherazade New" -> FontFamily(Font(com.example.R.font.scheherazade_new))
+        "Noto Naskh Arabic" -> FontFamily(Font(com.example.R.font.noto_naskh_arabic))
         else -> FontFamily.Default
     }
 }
