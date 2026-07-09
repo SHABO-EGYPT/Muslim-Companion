@@ -1,5 +1,7 @@
 package com.example.ui.screens
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import android.app.Activity
 import android.view.WindowManager
 import androidx.compose.foundation.BorderStroke
@@ -163,6 +165,151 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                     }
                 }
             }
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+            Column {
+                Text(
+                    text = Translator.translate("offline_recitation", settings.language),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = Translator.translate("download_recitation_desc", settings.language),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                val currentReciterId = quranSettings.quranReciter
+                val reciterKey = when(currentReciterId) {
+                    "ar.alafasy" -> "mishary_alafasy"
+                    "ar.abdulbasitmurattal" -> "abdul_basit"
+                    "ar.husary" -> "al_husary"
+                    "ar.minshawimujawwad" -> "minshawi"
+                    else -> currentReciterId
+                }
+
+                val workManager = remember { androidx.work.WorkManager.getInstance(context) }
+                val workInfos by workManager.getWorkInfosForUniqueWorkLiveData("recitation_download_$currentReciterId")
+                    .observeAsState(initial = emptyList())
+                val workInfo = workInfos.firstOrNull()
+
+                val audioManager = remember { com.example.data.quran.QuranAudioManager(context) }
+                var downloadedCount by remember(currentReciterId, workInfo) {
+                    mutableStateOf(
+                        (1..114).count { audioManager.isDownloaded(currentReciterId, it) }
+                    )
+                }
+
+                val isDownloading = workInfo != null && workInfo.state == androidx.work.WorkInfo.State.RUNNING
+                val progress = if (isDownloading) {
+                    workInfo.progress.getInt("progress", 0)
+                } else 0
+
+                val statusText = when {
+                    isDownloading -> "${Translator.translate("downloading", settings.language)} ($progress%)"
+                    downloadedCount == 114 -> Translator.translate("downloaded", settings.language) + " (114/114) ✓"
+                    downloadedCount > 0 -> "${Translator.translate("partial_download", settings.language)} ($downloadedCount/114)"
+                    else -> Translator.translate("not_downloaded", settings.language)
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth().testTag("offline_download_card"),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = Translator.translate(reciterKey, settings.language),
+                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = statusText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (downloadedCount == 114) MintTeal else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            if (isDownloading) {
+                                TextButton(
+                                    onClick = { viewModel.cancelRecitationDownload(currentReciterId, context) },
+                                    modifier = Modifier.testTag("cancel_download_btn")
+                                ) {
+                                    Text(
+                                        text = Translator.translate("cancel", settings.language),
+                                        color = MaterialTheme.colorScheme.error,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            } else if (downloadedCount < 114) {
+                                Button(
+                                    onClick = { viewModel.startRecitationDownload(currentReciterId, context) },
+                                    colors = ButtonDefaults.buttonColors(containerColor = DarkTealText),
+                                    modifier = Modifier.testTag("start_download_btn")
+                                ) {
+                                    Text(text = Translator.translate("download", settings.language))
+                                }
+                            } else {
+                                IconButton(
+                                    onClick = {
+                                        // Delete files
+                                        (1..114).forEach { sura ->
+                                            val file = audioManager.localFile(currentReciterId, sura)
+                                            if (file.exists()) file.delete()
+                                        }
+                                        downloadedCount = 0
+                                    },
+                                    modifier = Modifier.testTag("delete_download_btn")
+                                ) {
+                                    Icon(
+                                        imageVector = Lucide.Trash2,
+                                        contentDescription = "Delete",
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
+
+                        if (isDownloading) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            LinearProgressIndicator(
+                                progress = { progress / 100f },
+                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp)),
+                                color = MintTeal,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
+}
+
+@Composable
+fun <T> LiveData<T>.observeAsState(initial: T): State<T> {
+    val state = remember { mutableStateOf(initial) }
+    DisposableEffect(this) {
+        val observer = androidx.lifecycle.Observer<T> { value ->
+            if (value != null) {
+                state.value = value
+            }
+        }
+        observeForever(observer)
+        onDispose {
+            removeObserver(observer)
+        }
+    }
+    return state
 }

@@ -130,8 +130,14 @@ object Translator {
             "send" to "Send",
             "ask_assistant_placeholder" to "Ask the assistant for supplications (e.g. \"What to say when waking up?\")",
             "daily_remembrance" to "Daily remembrance",
-            "play_from_here" to "Play from here",
-            "prayer_score" to "Prayer Score"
+            "prayer_score" to "Prayer Score",
+            "offline_recitation" to "Offline Audio Recitation",
+            "download_recitation_desc" to "Download the full audio recitation for offline playback",
+            "partial_download" to "Partially Downloaded",
+            "not_downloaded" to "Not Downloaded locally",
+            "download" to "Download",
+            "downloading" to "Downloading",
+            "downloaded" to "Downloaded"
         ),
         "Arabic" to mapOf(
             "home" to "الرئيسية",
@@ -261,8 +267,14 @@ object Translator {
             "send" to "إرسال",
             "ask_assistant_placeholder" to "اسأل المساعد عن الأذكار (مثال: \"ماذا أقول عند الاستيقاظ؟\")",
             "daily_remembrance" to "الأذكار اليومية",
-            "play_from_here" to "تشغيل من هنا",
-            "prayer_score" to "نقاط الصلاة"
+            "prayer_score" to "نقاط الصلاة",
+            "offline_recitation" to "تنزيل التلاوة كاملة",
+            "download_recitation_desc" to "تنزيل تلاوة القرآن كاملة للاستماع دون إنترنت",
+            "partial_download" to "تم التنزيل جزئياً",
+            "not_downloaded" to "غير منزّل محلياً",
+            "download" to "تنزيل",
+            "downloading" to "جاري التنزيل",
+            "downloaded" to "تم التنزيل"
         )
     )
 

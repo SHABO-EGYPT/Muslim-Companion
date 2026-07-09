@@ -210,6 +210,26 @@ class SurahReaderViewModel @Inject constructor(
         }
     }
 
+    fun startRecitationDownload(reciterId: String, context: Context) {
+        val workManager = androidx.work.WorkManager.getInstance(context)
+        val data = androidx.work.workDataOf("reciter_id" to reciterId)
+        val request = androidx.work.OneTimeWorkRequest.Builder(com.example.data.worker.RecitationDownloadWorker::class.java)
+            .setInputData(data)
+            .addTag("recitation_download_worker_$reciterId")
+            .addTag("recitation_download_worker")
+            .build()
+        workManager.enqueueUniqueWork(
+            "recitation_download_$reciterId",
+            androidx.work.ExistingWorkPolicy.REPLACE,
+            request
+        )
+    }
+
+    fun cancelRecitationDownload(reciterId: String, context: Context) {
+        val workManager = androidx.work.WorkManager.getInstance(context)
+        workManager.cancelUniqueWork("recitation_download_$reciterId")
+    }
+
     fun updateProgress(
         surahNumber: Int,
         surahName: String,
