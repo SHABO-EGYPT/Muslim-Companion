@@ -113,8 +113,10 @@ class SurahReaderViewModel @Inject constructor(
             player.pause()
         } else {
             val ayahsList = _ayahs.value
-            if (_currentPlayingAyah.value == null && ayahsList.isNotEmpty()) {
-                playAyah(ayahsList.first())
+            if (player.mediaItemCount == 0 && ayahsList.isNotEmpty()) {
+                val activeAyahNum = _currentPlayingAyah.value ?: 1
+                val activeAyah = ayahsList.find { it.number == activeAyahNum } ?: ayahsList.first()
+                playAyah(activeAyah)
             } else {
                 player.play()
             }
