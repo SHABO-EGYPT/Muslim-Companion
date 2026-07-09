@@ -7,27 +7,32 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 ## Key Features
 
 ### 📖 Quran Surah Reader
+- **Offline-First Storage:** Integrated Room database with asset-based seeding to load the full Uthmani Arabic scripture text offline, caching English translations from Quran.com for seamless offline access.
 - **Dual Script Rendering:** Parallel rendering of Arabic text (Uthmani script) and English translations.
-- **Customizable Layout:** Built with a clean, centered divider format, aligning Arabic text to the right and English translation to the left for natural reading flow.
+- **Customizable Layout:** Centered divider format, aligning Arabic text to the right and English translation to the left for natural reading flow.
 - **Verse Indicators:** Every verse features an authentic **Rub El Hizb** icon header showing the verse number.
-- **Translation Toggle:** A setting toggle in the reader preferences allows users to turn translations on/off to focus purely on the Arabic scripture.
-- **Audio Streaming:** Seamless verse-by-verse audio streaming using Google's **Media3 (ExoPlayer)**, supporting multiple reciters (e.g., Mishary Al-Afasy, Abdul Basit, Al-Husary, Al-Minshawi).
-- **Settings Customization:** Custom controls to scale Arabic text size, change fonts (Classic Serif, Modern Sans, Monospace Style), and keep screen awake during reading.
+- **Translation Toggle:** Quickly show/hide translations to focus purely on the Arabic scripture.
+- **Offline & Streaming Audio:** Gapless verse-by-verse audio playback using AndroidX **Media3 (ExoPlayer)**, supporting multiple reciters and offline downloaded audio paths.
+- **Customization Settings:** Custom preferences to scale Arabic text size, change fonts, and keep screen awake.
 
 ### 📿 Digital Tasbih Counter
-- **Phrase Selector:** A horizontal chip selector to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*, *La ilaha illallah*) loaded dynamically from `tasbih.json`.
-- **Target Tracking:** Set custom targets per phrase and track your counts with interactive tap-to-increment circle controls.
+- **Phrase Selector:** Chip selectors to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*) loaded dynamically.
+- **Target Tracking:** Set custom targets per phrase and track counts with interactive tap-to-increment circle controls.
 - **Tactile Feedback:** Built-in vibration haptic feedback on increments.
 
-### 🌟 Daily Azkar Flow
-- **Swipeable Cards:** Uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
-- **Interactive Tapping:** Tapping directly on the Azkar cards increments progress. The card automatically scrolls to the next remembrance once the target count (e.g., 3x or 33x) is completed.
+### 🌟 Daily Azkar
+- **Material 3 Outlined Rows:** Swapped the horizontal scrolling list for 3 vertical Outlined Cards on the Home screen representing Morning, Evening, and after-prayer categories.
+- **Progress Trackers:** Features inline category-themed `LinearProgressIndicator`s to dynamically track dhikr progress.
+- **Completion Badges:** Displays solid checkmark icons once categories reach 100% completion.
+- **Horizontal Pager Flow:** In the Azkar reading screen, uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
+- **Auto-Advance:** Card automatically scrolls to the next remembrance once the target count is completed.
 
-### 🕋 Prayer Times & Qibla Compass
+### 🕋 Prayer Times, Qibla Compass & Notifications
 - **Accurate Schedules:** Displays local prayer times (Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha).
-- **Calculation Settings:** Support for major Islamic calculation methods (Egyptian General Authority, MWL, ISNA, Karachi).
+- **Azan Notification Scheduler:** Background alarms via `AlarmManager` triggering authentic Adhan playback (`first_adhan.mp3` or `full_adhan.mp3`) at exact prayer times, respecting notification states.
+- **Calculation Settings:** Support for major calculation methods (Egyptian General Authority, MWL, ISNA, Karachi).
 - **Qibla Alignment:** Real-time Qibla compass pointing directly to the Kaaba using device sensors.
-- **Mosque Finder:** Integrates location services to find nearby places of worship.
+- **Mosque Finder:** Map-linked widget querying nearby mosques using location coordinates and Google Maps (with browser fallback).
 
 ---
 
