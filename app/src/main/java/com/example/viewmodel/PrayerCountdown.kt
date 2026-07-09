@@ -24,7 +24,7 @@ class PrayerCountdownManager @Inject constructor(
         calculateNextPrayerInfo(repository.getPrayerTimesFlow(), _currentTime)
             .stateIn(
                 scope = scope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = Triple(PrayerTime("Asr", "العصر", "16:04", "sun"), "00:00:00", "Asr")
             )
 
@@ -32,7 +32,7 @@ class PrayerCountdownManager @Inject constructor(
         calculateCheckablePrayers(repository.getPrayerTimesFlow(), _currentTime)
             .stateIn(
                 scope = scope,
-                started = SharingStarted.Eagerly,
+                started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptySet()
             )
 
@@ -55,18 +55,8 @@ fun calculateNextPrayerInfo(
             val placeholder = PrayerTime("Asr", "العصر", "16:04", "sun")
             Triple(placeholder, "00:00:00", "Asr")
         } else {
-            val formattedTimes = times.mapNotNull { 
-                try {
-                    val cleanTime = it.timeString.split(" ")[0]
-                    val parts = cleanTime.split(":")
-                    if (parts.size >= 2) {
-                        val h = parts[0].trim().toInt()
-                        val m = parts[1].trim().toInt()
-                        it to LocalTime.of(h, m)
-                    } else null
-                } catch (e: Exception) {
-                    null
-                }
+            val formattedTimes = times.mapNotNull { prayer ->
+                com.example.utils.TimeUtils.parsePrayerTime(prayer.timeString)?.let { prayer to it }
             }
             
             val next = formattedTimes.find { it.second.isAfter(now) }
@@ -88,18 +78,8 @@ fun calculateCheckablePrayers(
     return combine(prayerTimesFlow, currentTimeFlow) { times, now ->
         if (times.isEmpty()) emptySet<String>()
         else {
-            val formattedTimes = times.mapNotNull { 
-                try {
-                    val cleanTime = it.timeString.split(" ")[0]
-                    val parts = cleanTime.split(":")
-                    if (parts.size >= 2) {
-                        val h = parts[0].trim().toInt()
-                        val m = parts[1].trim().toInt()
-                        it to LocalTime.of(h, m)
-                    } else null
-                } catch (e: Exception) {
-                    null
-                }
+            val formattedTimes = times.mapNotNull { prayer ->
+                com.example.utils.TimeUtils.parsePrayerTime(prayer.timeString)?.let { prayer to it }
             }
             val nextIndex = formattedTimes.indexOfFirst { it.second.isAfter(now) }
             if (nextIndex == -1) {

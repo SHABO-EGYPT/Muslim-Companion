@@ -23,7 +23,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCompanionDatabase(@ApplicationContext context: Context): CompanionDatabase {
-        return CompanionDatabase.getDatabase(context)
+        return CompanionDatabase.buildDatabase(context)
     }
 
     @Provides

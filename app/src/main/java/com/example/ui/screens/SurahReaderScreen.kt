@@ -194,6 +194,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                     val listState = rememberLazyListState()
                     val density = androidx.compose.ui.platform.LocalDensity.current
                     val topPadding = with(density) { 16.dp.toPx().toInt() }
+                    val quranFontFamily = remember(quranSettings.quranFont) { getQuranFontFamily(quranSettings.quranFont) }
 
                     LaunchedEffect(currentAyahNumber, isPlaying) {
                         if (isPlaying && currentAyahNumber != null) {
@@ -314,7 +315,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                 Text(
                                     text = cleanedText,
                                     style = MaterialTheme.typography.displayLarge.copy(
-                                        fontFamily = getQuranFontFamily(quranSettings.quranFont),
+                                        fontFamily = quranFontFamily,
                                         fontSize = quranSettings.quranTextSize.sp,
                                         lineHeight = 1.8.em,
                                         textDirection = TextDirection.Rtl,
@@ -418,6 +419,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                     Column {
                         Text(Translator.translate("quran_font_style", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
                         val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
+                        val fontFamilies = remember { fonts.associateWith { getQuranFontFamily(it) } }
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             fonts.forEach { fontName ->
                                 val isSelected = quranSettings.quranFont == fontName
@@ -429,7 +431,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                     horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                    Text(text = "القرآن", style = TextStyle(fontFamily = getQuranFontFamily(fontName), fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName], fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }

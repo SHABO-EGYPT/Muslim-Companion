@@ -2,21 +2,25 @@ package com.example.data.worker
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.example.data.quran.QuranAudioManager
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class RecitationDownloadWorker(
-    appContext: Context,
-    workerParams: WorkerParameters
+@HiltWorker
+class RecitationDownloadWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val audioManager: QuranAudioManager
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val reciterId = inputData.getString("reciter_id") ?: return@withContext Result.failure()
-        val audioManager = QuranAudioManager(applicationContext)
 
         Log.i("RecitationDownload", "Starting full recitation download for: $reciterId")
 

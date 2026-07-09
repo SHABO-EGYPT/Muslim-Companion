@@ -1,27 +1,29 @@
 package com.example.data.worker
 
 import android.content.Context
-import androidx.room.Room
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.data.local.CompanionDatabase
-import com.example.data.repository.RealQuranRepository
+import com.example.data.repository.QuranRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URL
 
-class QuranSyncWorker(
-    appContext: Context,
-    workerParams: WorkerParameters
+@HiltWorker
+class QuranSyncWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
+    private val database: CompanionDatabase,
+    private val quranRepository: QuranRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         return try {
-            val db = CompanionDatabase.getDatabase(applicationContext)
-
-            val dao = db.companionDao()
-            val quranRepository = RealQuranRepository(dao)
+            val dao = database.companionDao()
 
             val progress = dao.getUserProgressDirect() ?: return Result.success()
             val settings = dao.getSettingsDirect() ?: return Result.success()
@@ -54,9 +56,13 @@ class QuranSyncWorker(
             val cacheDir = File(context.cacheDir, "quran_audio").also { it.mkdirs() }
             val file = File(cacheDir, fileName)
             if (!file.exists()) {
-                URL(urlString).openStream().use { input ->
+                val connection = URL(urlString).openConnection() as java.net.HttpURLConnection
+                connection.connectTimeout = 15_000
+                connection.readTimeout = 15_000
+                connection.inputStream.use { input ->
                     file.outputStream().use { output -> input.copyTo(output) }
                 }
+                connection.disconnect()
             }
             file.toURI().toString()
         } catch (e: Exception) {

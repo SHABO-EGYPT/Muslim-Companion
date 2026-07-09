@@ -78,11 +78,15 @@ class QuranAudioManager(private val context: Context) {
             val url = remoteUrl(reciterId, suraNumber)
             Log.d(TAG, "Downloading: $url → ${file.absolutePath}")
             try {
-                URL(url).openStream().use { input ->
+                val connection = URL(url).openConnection() as java.net.HttpURLConnection
+                connection.connectTimeout = 15_000
+                connection.readTimeout = 15_000
+                connection.inputStream.use { input ->
                     file.outputStream().use { output ->
                         input.copyTo(output)
                     }
                 }
+                connection.disconnect()
                 Log.d(TAG, "Downloaded sura $suraNumber (${file.length() / 1024} KB)")
                 file
             } catch (e: Exception) {

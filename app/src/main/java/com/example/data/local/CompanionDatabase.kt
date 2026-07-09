@@ -17,14 +17,13 @@ import androidx.room.RoomDatabase
         QuranAyahEntity::class
     ],
     version = 24,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class CompanionDatabase : RoomDatabase() {
     abstract fun companionDao(): CompanionDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: CompanionDatabase? = null
+
 
         private val MIGRATION_18_19 = object : androidx.room.migration.Migration(18, 19) {
             override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
@@ -73,19 +72,15 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
-        fun getDatabase(context: Context): CompanionDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    CompanionDatabase::class.java,
-                    "companion-db"
-                )
-                .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24)
-                .fallbackToDestructiveMigration()
-                .build()
-                INSTANCE = instance
-                instance
-            }
+        fun buildDatabase(context: Context): CompanionDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                CompanionDatabase::class.java,
+                "companion-db"
+            )
+            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24)
+            .fallbackToDestructiveMigration()
+            .build()
         }
     }
 }

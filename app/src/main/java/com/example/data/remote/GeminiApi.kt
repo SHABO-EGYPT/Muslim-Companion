@@ -20,6 +20,7 @@ data class GenerateContentRequest(
 
 @JsonClass(generateAdapter = true)
 data class Content(
+    val role: String? = null,
     val parts: List<Part>
 )
 

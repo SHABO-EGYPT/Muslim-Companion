@@ -23,6 +23,7 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = true
+      isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
@@ -78,6 +79,7 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.hilt.android)
   implementation(libs.androidx.hilt.navigation.compose)
+  implementation(libs.androidx.hilt.work)
   implementation("com.composables:icons-lucide:1.1.0")
 
   testImplementation(libs.androidx.compose.ui.test.junit4)
@@ -99,4 +101,5 @@ dependencies {
   "ksp"(libs.androidx.room.compiler)
   "ksp"(libs.moshi.kotlin.codegen)
   "ksp"(libs.hilt.compiler)
+  "ksp"(libs.androidx.hilt.compiler)
 }

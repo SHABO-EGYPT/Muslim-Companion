@@ -20,28 +20,33 @@ class PrayerNotificationScheduler(private val context: Context) {
                 putExtra("prayer_arabic", prayer.arabicName)
             }
 
+            val requestCode = when(prayer.name.lowercase()) {
+                "fajr" -> 1
+                "dhuhr", "zuhr" -> 2
+                "asr" -> 3
+                "maghrib" -> 4
+                "isha" -> 5
+                else -> prayer.name.hashCode()
+            }
+
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                prayer.name.hashCode(),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             // Parse time "HH:mm" safely
-            val cleanTime = prayer.timeString.split(" ")[0]
-            val parts = cleanTime.split(":")
-            if (parts.size >= 2) {
-                val hour = parts[0].trim().toIntOrNull() ?: continue
-                val minute = parts[1].trim().toIntOrNull() ?: continue
+            val localTime = com.example.utils.TimeUtils.parsePrayerTime(prayer.timeString) ?: continue
 
-                val calendar = Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, hour)
-                    set(Calendar.MINUTE, minute)
-                    set(Calendar.SECOND, 0)
-                    set(Calendar.MILLISECOND, 0)
-                    // Subtract 10 minutes
-                    add(Calendar.MINUTE, -10)
-                }
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, localTime.hour)
+                set(Calendar.MINUTE, localTime.minute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+                // Subtract 10 minutes
+                add(Calendar.MINUTE, -10)
+            }
 
                 // If the time has already passed today, schedule for tomorrow
                 if (calendar.timeInMillis < System.currentTimeMillis()) {
@@ -106,7 +111,6 @@ class PrayerNotificationScheduler(private val context: Context) {
                     } catch (fallbackException: Exception) {
                         Log.e("PrayerNotification", "Failed to schedule fallback non-exact alarm", fallbackException)
                     }
-                }
             }
         }
     }

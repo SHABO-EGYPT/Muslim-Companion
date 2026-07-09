@@ -225,122 +225,91 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                     .testTag("azkar_rows_column"),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                azkarCats.take(3).forEach { cat ->
-                    val accentColor = when (cat.id) {
-                        "morning" -> WarmPeach
-                        "evening" -> MintTeal
-                        else -> SageGreen
-                    }
-                    val iconTint = when (cat.id) {
-                        "morning" -> DarkWarmPeachText
-                        "evening" -> DarkTealText
-                        else -> DarkGreenText
-                    }
-                    val icon = when (cat.iconName) {
-                        "sunrise" -> Lucide.Sunrise
-                        "sunset" -> Lucide.Sunset
-                        else -> Lucide.Moon
-                    }
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                azkarViewModel.selectCategory(cat)
-                                navController.navigate(Routes.AZKAR_FLOW)
-                            }
-                            .testTag("azkar_row_${cat.id}"),
-                        shape = MaterialTheme.shapes.medium,
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                azkarCats.take(6).chunked(3).forEach { rowCats ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
-                                val boxBg = if (isDark) accentColor.copy(alpha = 0.2f) else accentColor.copy(alpha = 0.15f)
-                                Box(
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .background(boxBg, RoundedCornerShape(12.dp)),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = cat.title,
-                                        tint = iconTint,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(14.dp))
-                                Column {
-                                    Text(
-                                        text = if (settings.language == "Arabic") cat.arabicTitle else cat.title,
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 15.sp
-                                        ),
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        val progressFraction = if (cat.totalCount > 0) cat.doneCount.toFloat() / cat.totalCount.toFloat() else 0f
-                                        LinearProgressIndicator(
-                                            progress = { progressFraction },
-                                            modifier = Modifier
-                                                .width(80.dp)
-                                                .height(6.dp)
-                                                .clip(RoundedCornerShape(3.dp)),
-                                            color = iconTint,
-                                            trackColor = iconTint.copy(alpha = 0.2f)
-                                        )
-                                        Text(
-                                            text = "${cat.doneCount}/${cat.totalCount}",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
-                                }
+                        rowCats.forEach { cat ->
+                            val accentColor = when (cat.id) {
+                                "morning" -> WarmPeach
+                                "evening" -> MintTeal
+                                else -> SageGreen
                             }
-                            
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
+                            val iconTint = when (cat.id) {
+                                "morning" -> if (isDark) WarmPeach else DarkWarmPeachText
+                                "evening" -> if (isDark) MintTeal else DarkTealText
+                                else -> if (isDark) SageGreen else DarkGreenText
+                            }
+                            val icon = when (cat.iconName) {
+                                "sunrise" -> Lucide.Sunrise
+                                "sunset" -> Lucide.Sunset
+                                else -> Lucide.Moon
+                            }
+                            Card(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .clickable {
+                                        azkarViewModel.selectCategory(cat)
+                                        navController.navigate(Routes.AZKAR_FLOW)
+                                    }
+                                    .testTag("azkar_row_${cat.id}"),
+                                shape = MaterialTheme.shapes.medium,
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
                             ) {
-                                if (cat.doneCount == cat.totalCount && cat.totalCount > 0) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    val boxBg = if (isDark) accentColor.copy(alpha = 0.2f) else accentColor.copy(alpha = 0.15f)
                                     Box(
                                         modifier = Modifier
-                                            .size(20.dp)
-                                            .background(iconTint, CircleShape),
+                                            .size(40.dp)
+                                            .background(boxBg, CircleShape),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            imageVector = Lucide.Check,
-                                            contentDescription = "Completed",
-                                            tint = MaterialTheme.colorScheme.surface,
-                                            modifier = Modifier.size(12.dp)
+                                            imageVector = icon,
+                                            contentDescription = cat.title,
+                                            tint = iconTint,
+                                            modifier = Modifier.size(20.dp)
                                         )
                                     }
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Text(
+                                        text = if (settings.language == "Arabic") cat.arabicTitle else cat.title,
+                                        style = MaterialTheme.typography.titleSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 12.sp
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    val progressFraction = if (cat.totalCount > 0) cat.doneCount.toFloat() / cat.totalCount.toFloat() else 0f
+                                    LinearProgressIndicator(
+                                        progress = { progressFraction },
+                                        modifier = Modifier
+                                            .width(40.dp)
+                                            .height(4.dp)
+                                            .clip(RoundedCornerShape(2.dp)),
+                                        color = iconTint,
+                                        trackColor = iconTint.copy(alpha = 0.2f)
+                                    )
                                 }
-                                Icon(
-                                    imageVector = Lucide.ChevronRight,
-                                    contentDescription = "Open",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                    modifier = Modifier.size(18.dp)
-                                )
                             }
+                        }
+                        repeat(3 - rowCats.size) {
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }

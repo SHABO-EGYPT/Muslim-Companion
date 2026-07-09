@@ -26,8 +26,7 @@ import androidx.room.Room
 import androidx.work.*
 import com.composables.icons.lucide.*
 import com.example.data.local.CompanionDatabase
-import com.example.data.repository.RealAzkarRepository
-import com.example.data.repository.RealQuranRepository
+
 import com.example.data.repository.CompanionRepository
 import com.example.data.worker.PrayerSyncWorker
 import com.example.data.worker.QuranSyncWorker
