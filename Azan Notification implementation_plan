@@ -1,0 +1,44 @@
+# Azan Notification Style & Custom Audio
+
+We will update the application to support fully customized Azan notification styles, including bundled Adhan MP3s.
+
+## Open Questions
+
+None at this moment. We will use standard open-source Mecca Adhan audio.
+
+## Proposed Changes
+
+### Assets / Audio Files
+- We will download two standard MP3s and place them in `app/src/main/res/raw/`:
+  - `full_adhan.mp3`: The full Adhan sound.
+  - `first_adhan.mp3`: Just the opening Takbeer ("Allahu Akbar").
+
+### Settings & Translation
+- **Update Settings Label**: Rename "Sound type" to "Azan Notification style" in the UI.
+- **Update Options**: Change the underlying options to:
+  1. `Full Azan Sound`
+  2. `The First of Azan (الله اكبر)`
+  3. `Default notification sound`
+  4. `Vibration only`
+- Add proper translation keys in `Translation.kt` for both English and Arabic.
+
+### [MODIFY] `SettingsScreen.kt`
+- Update the dialog that controls the notification sound setting to use the new string keys.
+- Change the display logic to format the options properly.
+
+### [MODIFY] `PrayerNotificationReceiver.kt`
+- **Notification Channels**: Android requires a new unique Channel ID if the sound changes. We will map the 4 options to 4 distinct channel IDs (`prayer_channel_full`, `prayer_channel_first`, `prayer_channel_default`, `prayer_channel_vibrate`).
+- **Audio Configuration**: Load the custom `Uri` from `R.raw.full_adhan` and `R.raw.first_adhan` and apply it to the respective channels using `setSound()`.
+- Add explicit vibration patterns for "Vibration only".
+
+### [MODIFY] `SettingsViewModel.kt` & `Entities.kt` (if required)
+- Ensure the initial/default value handles the new string identifiers smoothly.
+
+## Verification Plan
+
+### Automated Tests
+- Run `.\gradlew.bat compileDebugKotlin` to ensure no syntax errors.
+
+### Manual Verification
+- Review the Settings Screen UI to confirm the label is "Azan Notification style" and all 4 options are visible and selectable.
+- Confirm the MP3 files are successfully downloaded and packaged into the APK.

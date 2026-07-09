@@ -1,0 +1,402 @@
+# Quran Offline Replacement — Implementation Plan
+
+Replace the live `quran.com` API calls with a self-contained, offline Quran data
+system modeled after the **Quran Android** architecture described in
+`QURAN_ANDROID_REFERENCE.md`. The app's existing UI, navigation, ViewModel, and
+Room database layer remain untouched; only the data-supply path changes.
+
+---
+
+## Background
+
+### Current architecture (online only)
+
+```
+QuranListScreen / SurahReaderScreen
+    └─ QuranViewModel / SurahReaderViewModel
+           └─ CompanionRepository → QuranRepository (interface)
+                  └─ RealQuranRepository
+                         ├─ QuranApi (Retrofit → quran.com API v4)
+                         └─ CompanionDao (Room cache)
+```
+
+**Pain points with the current approach:**
+
+| Problem | Impact |
+|---|---|
+| Surah list requires internet on first launch | App unusable offline |
+| Ayah text/audio fetched per surah, per reciter from API | Slow; fails without network |
+| `cached_surahs` table populated from API JSON | Fragile; breaks on API changes |
+| Audio URLs come from `quran.com` CDN | Streaming only; no offline playback |
+
+### Target architecture (offline-first)
+
+```
+QuranListScreen / SurahReaderScreen
+    └─ QuranViewModel / SurahReaderViewModel  (unchanged)
+           └─ CompanionRepository → QuranRepository (interface, unchanged)
+                  └─ OfflineQuranRepository          ← NEW
+                         ├─ MadaniDataSource          ← NEW (hardcoded arrays)
+                         ├─ QuranInfo                 ← NEW (business logic)
+                         └─ CompanionDao              (unchanged, cache for ayah text)
+                                └─ assets/quran_text.json  ← NEW (bundled Arabic text)
+                                   assets/translations/en_sahih_international.json ← NEW
+```
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Audio strategy**: The Quran Android reference defines two audio models —
+> *gapless* (per-sura MP3 + timing DB) and *gapped* (per-ayah MP3). The current
+> app streams per-ayah URLs from `quran.com`. Which do you prefer post-migration?
+>
+> **Option A — Keep streaming** from quranicaudio.com per-ayah URLs (no download,
+> but still requires internet for audio).  
+> **Option B — Gapless streaming** via `https://download.quranicaudio.com/quran/{reciter}/{sura:03d}.mp3`
+> (one file per sura, matches Quran Android's built-in reciters: Minshawi, Husary,
+> Basfar).  
+> **Option C — Full offline audio** (download sura MP3s to device storage, like
+> the Quran Android app does).
+
+> [!IMPORTANT]
+> **Translation source**: Will you bundle a translation JSON asset in the APK, or
+> keep fetching translations from an online API? Bundling is recommended for
+> offline-first, but increases APK size (~2–3 MB for one English translation).
+
+> [!NOTE]
+> **Arabic text source**: The full Uthmani text (~1.5 MB JSON) would be bundled
+> as an asset. The first launch will parse and seed Room; subsequent launches use
+> the DB cache. Accepted?
+
+---
+
+## Proposed Changes
+
+### Layer 1 — Core Data (New, mirrors Quran Android)
+
+#### [NEW] `data/quran/MadaniDataSource.kt`
+Implements `QuranDataSource` interface. Contains all hardcoded arrays from the
+reference document:
+- `numberOfPages = 604`
+- `pageForSuraArray` (114 entries)
+- `suraForPageArray` (604 entries)
+- `ayahForPageArray` (604 entries)
+- `pageForJuzArray` (30 entries)
+- `juzDisplayPageArrayOverride` (map of 2 overrides)
+- `numberOfAyahsForSuraArray` (114 entries)
+- `isMakkiBySuraArray` (114 entries)
+- `quarterStartByPage` (604 entries)
+- `quartersArray` (240 `SuraAyah` entries)
+- `manzilPageArray = emptyArray()`
+
+#### [NEW] `data/quran/QuranDataSource.kt`
+Interface definition matching the reference (section 2.1). Acts as the single
+source of truth for structural Quran data.
+
+#### [NEW] `data/quran/SuraAyah.kt`
+Simple data class `SuraAyah(val sura: Int, val ayah: Int)` as referenced in
+section 1.1. Used by `quartersArray`.
+
+#### [NEW] `data/quran/QuranInfo.kt`
+Business logic class (section 4). Injected with `MadaniDataSource`. Exposes:
+- `getPageNumberForSura(sura)` → O(1)
+- `getSuraOnPage(page)` → O(1)
+- `getFirstAyahOnPage(page)` → O(1)
+- `getJuzFromPage(page)` → O(30)
+- `getNumberOfAyahs(sura)` → O(1)
+- `isMakki(sura)` → O(1)
+- `getListOfSurahWithStartingOnPage(page)` → for juz/page navigation
+- `getAyahId(sura, ayah)` → global ID
+
+#### [NEW] `data/quran/SurahMetadata.kt`
+Hardcoded list of all 114 surahs — names (transliteration), Arabic names,
+English meanings, ayah counts, and Makki/Madani flags — derived from
+`numberOfAyahsForSuraArray`, `isMakkiBySuraArray`, and section 7.2/7.3/7.4 of
+the reference. This replaces the `Chapter` API model.
+
+```kotlin
+data class SurahMetadata(
+    val number: Int,
+    val nameTranslit: String,   // e.g. "Al-Fātihah"
+    val nameArabic: String,     // e.g. "الفَاتِحَةِ"
+    val meaning: String,        // e.g. "The Opening"
+    val ayahCount: Int,
+    val isMakki: Boolean,
+    val juz: Int,               // computed via QuranInfo
+    val page: Int               // first page, from pageForSuraArray
+)
+```
+
+---
+
+### Layer 2 — Asset Files (New, bundled in APK)
+
+#### [NEW] `app/src/main/assets/quran/quran_uthmani.json`
+Full Quran Arabic text in Uthmani script, structured as:
+```json
+[
+  { "s": 1, "a": 1, "t": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ" },
+  ...
+]
+```
+~1.5 MB. Sourced from the open-source `quran-data` project (same source
+as `quran.com`'s `text_uthmani` field).
+
+#### [NEW] `app/src/main/assets/quran/en_sahih_international.json`
+English translation (Sahih International), structured identically:
+```json
+[
+  { "s": 1, "a": 1, "t": "In the name of Allah, the Entirely Merciful, the Especially Merciful." },
+  ...
+]
+```
+~1.8 MB.
+
+---
+
+### Layer 3 — Local Data (Modified)
+
+#### [MODIFY] [Entities.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/data/local/Entities.kt)
+
+Add a new entity to cache ayah text after first parse from assets:
+
+```kotlin
+@Entity(tableName = "quran_ayahs")
+data class QuranAyahEntity(
+    @PrimaryKey val id: String,   // "sura:ayah"
+    val sura: Int,
+    val ayah: Int,
+    val arabicText: String,
+    val translation: String       // English (expandable)
+)
+```
+
+Keep `cached_ayahs` table for audio URL caching (or deprecate if audio
+strategy moves to streaming via predictable URL pattern).
+
+#### [MODIFY] [CompanionDao.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/data/local/CompanionDao.kt)
+
+Add queries for the new `quran_ayahs` table:
+
+```kotlin
+@Query("SELECT * FROM quran_ayahs WHERE sura = :sura ORDER BY ayah ASC")
+suspend fun getAyahsForSura(sura: Int): List<QuranAyahEntity>
+
+@Insert(onConflict = OnConflictStrategy.IGNORE)  // Don't overwrite existing
+suspend fun insertQuranAyahs(ayahs: List<QuranAyahEntity>)
+
+@Query("SELECT COUNT(*) FROM quran_ayahs")
+suspend fun getQuranAyahCount(): Int
+```
+
+#### [MODIFY] [CompanionDatabase.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/data/local/CompanionDatabase.kt)
+
+- Add `QuranAyahEntity` to `@Database(entities = [...])` list.
+- Increment the database version.
+- Add a migration or `fallbackToDestructiveMigration()`.
+
+---
+
+### Layer 4 — Asset Loader (New)
+
+#### [NEW] `data/quran/QuranAssetLoader.kt`
+
+Responsible for parsing the bundled JSON assets and seeding the Room database
+on first launch:
+
+```kotlin
+class QuranAssetLoader(
+    private val context: Context,
+    private val dao: CompanionDao
+) {
+    /** Returns true if quran_ayahs table is already populated */
+    suspend fun isSeeded(): Boolean = dao.getQuranAyahCount() >= 6236
+
+    /** Parses assets and populates quran_ayahs table. Run once. */
+    suspend fun seedDatabase() {
+        val arabicList = parseJson("quran/quran_uthmani.json")
+        val translationList = parseJson("quran/en_sahih_international.json")
+        // Zip, create QuranAyahEntity list, insert in batches of 500
+    }
+
+    private fun parseJson(path: String): List<Pair<String, String>> { ... }
+}
+```
+
+---
+
+### Layer 5 — Repository (Modified)
+
+#### [MODIFY] [QuranRepository.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/data/repository/QuranRepository.kt)
+
+Add an **`OfflineQuranRepository`** class that implements the existing
+`QuranRepository` interface. The interface itself stays **unchanged** so all
+ViewModels continue to work without modification.
+
+```kotlin
+class OfflineQuranRepository(
+    private val dao: CompanionDao,
+    private val assetLoader: QuranAssetLoader,
+    private val quranInfo: QuranInfo
+) : QuranRepository {
+
+    // Returns hardcoded SurahMetadata as Flow<List<Surah>>
+    override fun getSurahsFlow(): Flow<List<Surah>> = flow {
+        emit(SurahMetadata.ALL.map { it.toDomain() })
+    }
+
+    override suspend fun getSurahsDirect(): List<Surah> =
+        SurahMetadata.ALL.map { it.toDomain() }
+
+    // No-op: surahs are hardcoded, nothing to refresh
+    override suspend fun refreshSurahs() {
+        if (!assetLoader.isSeeded()) assetLoader.seedDatabase()
+    }
+
+    override fun getAyahsForSurahFlow(surahNumber: Int, reciter: String): Flow<List<Ayah>> =
+        flow {
+            val entities = dao.getAyahsForSura(surahNumber)
+            emit(entities.map { it.toDomain(surahNumber, reciter) })
+        }
+
+    // Seeds DB from assets if needed, no network call
+    override suspend fun refreshAyahs(surahNumber: Int, reciter: String) {
+        if (!assetLoader.isSeeded()) assetLoader.seedDatabase()
+    }
+
+    override suspend fun getSurahWithAudio(...): List<CachedAyahEntity> {
+        // Build audio URL from predictable pattern (see Audio section below)
+        // No network call for text; optional network call for audio URL only
+    }
+
+    // Bookmark methods delegate to DAO unchanged
+    override fun getBookmarksFlow() = dao.getBookmarksFlow()
+    override suspend fun toggleBookmark(surahNumber: Int, surahName: String) { ... }
+    override fun isBookmarkedFlow(surahNumber: Int) = dao.isBookmarkedFlow(surahNumber)
+}
+```
+
+---
+
+### Layer 6 — Audio URL Strategy (New)
+
+#### [NEW] `data/quran/QuranAudioUrlBuilder.kt`
+
+Replaces the fragile `quran.com` CDN URLs with predictable quranicaudio.com
+URLs that follow the Quran Android pattern. This keeps audio *streaming* (no
+download needed), but uses stable, well-known CDN endpoints.
+
+**Reciters to map** (keep current `SurahReaderViewModel.recitersList` IDs):
+
+| Current ID | Quran Android equivalent | Gapless URL pattern |
+|---|---|---|
+| `ar.alafasy` | Mishari Alafasy (gapless) | `https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/{sura:03d}.mp3` |
+| `ar.abdulbasitmurattal` | Abdul Basit Murattal | `https://download.quranicaudio.com/quran/abdul_baset/murattal/{sura:03d}.mp3` |
+| `ar.husary` | Husary (gapless) | `https://download.quranicaudio.com/quran/mahmood_khaleel_al-husaree/{sura:03d}.mp3` |
+| `ar.minshawimujawwad` | Minshawi (gapless) | `https://download.quranicaudio.com/quran/muhammad_siddeeq_al-minshaawee/{sura:03d}.mp3` |
+
+> [!NOTE]
+> For **gapless** streaming, one sura MP3 is played from start, and we no
+> longer need per-ayah audio URLs. The existing `ExoPlayer` in
+> `SurahReaderViewModel` will play the full sura file; the `playNextAyah()`
+> auto-advance logic is replaced by simply letting the file play through.
+> Per-ayah seek will need a timing database (a separate upgrade, not in scope
+> of this plan).
+
+---
+
+### Layer 7 — Dependency Injection (Modified)
+
+#### [MODIFY] `di/` module
+
+The app currently uses Hilt. The DI binding for `QuranRepository` needs to
+switch from `RealQuranRepository` to `OfflineQuranRepository`.
+
+- Provide `MadaniDataSource` as `@Singleton`
+- Provide `QuranInfo` injecting `MadaniDataSource` as `@Singleton`
+- Provide `QuranAssetLoader` injecting `Context` + `CompanionDao`
+- Rebind `QuranRepository` → `OfflineQuranRepository`
+
+The existing `QuranApi` (Retrofit) can be **kept but unused**, or removed.
+
+---
+
+### Layer 8 — Seed on App Start (Modified)
+
+#### [MODIFY] [MuslimCompanionApp.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/MuslimCompanionApp.kt)
+or
+#### [MODIFY] [MainActivity.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/MainActivity.kt)
+
+Trigger `QuranAssetLoader.seedDatabase()` in a coroutine on app start if not
+already seeded. This runs **once** on first install (or DB wipe). Subsequent
+launches find the table populated and skip it.
+
+```kotlin
+// In Application.onCreate() or MainActivity.onCreate()
+lifecycleScope.launch(Dispatchers.IO) {
+    if (!quranAssetLoader.isSeeded()) {
+        quranAssetLoader.seedDatabase()
+    }
+}
+```
+
+---
+
+### Layer 9 — UI (No changes required)
+
+The following files require **zero changes** because they depend only on the
+`QuranRepository` interface and the `Surah`/`Ayah` domain models, which remain
+identical:
+
+- [QuranListScreen.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/ui/screens/QuranListScreen.kt)
+- [SurahReaderScreen.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/ui/screens/SurahReaderScreen.kt)
+- [QuranViewModel.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/viewmodel/QuranViewModel.kt)
+- [SurahReaderViewModel.kt](file:///D:/AI/Projects With AI/Islamic App/Muslim Companion V1/muslim-companion/app/src/main/java/com/example/viewmodel/SurahReaderViewModel.kt)
+
+The only **optional UI enhancement** after migration:
+- Add a **Juz' browser** tab in `QuranListScreen`, driven by `QuranInfo.getJuzFromPage()`.
+- Add **page number** display in `SurahReaderScreen` header, from `QuranInfo.getPageNumberForSura()`.
+
+---
+
+## File Change Summary
+
+| File | Action | Reason |
+|---|---|---|
+| `data/quran/QuranDataSource.kt` | **NEW** | Interface for data arrays |
+| `data/quran/SuraAyah.kt` | **NEW** | Minimal data class |
+| `data/quran/MadaniDataSource.kt` | **NEW** | All 604-page hardcoded arrays |
+| `data/quran/QuranInfo.kt` | **NEW** | Business logic over arrays |
+| `data/quran/SurahMetadata.kt` | **NEW** | 114 surahs hardcoded (names, meanings) |
+| `data/quran/QuranAssetLoader.kt` | **NEW** | Parses JSON assets → seeds Room |
+| `data/quran/QuranAudioUrlBuilder.kt` | **NEW** | Predictable audio URL construction |
+| `data/repository/QuranRepository.kt` | **MODIFY** | Add `OfflineQuranRepository` class |
+| `data/local/Entities.kt` | **MODIFY** | Add `QuranAyahEntity` |
+| `data/local/CompanionDao.kt` | **MODIFY** | Add queries for `quran_ayahs` table |
+| `data/local/CompanionDatabase.kt` | **MODIFY** | Register entity, bump version |
+| `di/` (AppModule or QuranModule) | **MODIFY** | Rebind `QuranRepository` → offline impl |
+| `MuslimCompanionApp.kt` or `MainActivity.kt` | **MODIFY** | Trigger seed on startup |
+| `assets/quran/quran_uthmani.json` | **NEW** | Bundled Arabic text (~1.5 MB) |
+| `assets/quran/en_sahih_international.json` | **NEW** | Bundled English translation (~1.8 MB) |
+| `data/remote/QuranApi.kt` | **OPTIONAL DELETE** | No longer needed |
+
+---
+
+## Verification Plan
+
+### Automated
+- No existing tests reference `QuranApi` directly; none will break.
+- Add unit tests for `QuranInfo` methods (pure functions, easy to test).
+- Add a DB integration test verifying `QuranAssetLoader.seedDatabase()` inserts exactly 6236 rows.
+
+### Manual
+1. **Fresh install** — Surah list loads instantly without network.
+2. **Offline mode** — Enable airplane mode; confirm surah list and ayah text display.
+3. **Data integrity** — Al-Fatiha = 7 ayahs, Al-Baqara = 286 ayahs, An-Nas = 6 ayahs.
+4. **Makki/Madani badge** — Confirm filter in `QuranListScreen` still works.
+5. **Audio playback** — Tap ayah → audio plays (streaming from quranicaudio.com).
+6. **Bookmarks** — Add/remove bookmark; confirm persists after app restart.
+7. **Last read progress** — Resume reading; confirm correct surah and ayah restored.
+8. **Search** — Search "Baqara", "البقرة", "2" → returns Al-Baqara.

@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.example.data.quran.QuranAudioManager
+import kotlinx.coroutines.launch
 
 sealed class ReaderLoadState {
     object Idle : ReaderLoadState()
@@ -27,6 +29,7 @@ sealed class ReaderLoadState {
 @HiltViewModel
 class SurahReaderViewModel @Inject constructor(
     private val repository: CompanionRepository,
+    private val audioManager: QuranAudioManager,
     @ApplicationContext context: Context
 ) : ViewModel() {
     private val player: ExoPlayer = ExoPlayer.Builder(context).build().apply {
@@ -86,20 +89,18 @@ class SurahReaderViewModel @Inject constructor(
 
     fun playAyah(ayah: Ayah) {
         _currentPlayingAyah.value = ayah.number
-        try {
-            var finalUrl = ayah.audioUrl.trim()
-            if (finalUrl.isNotBlank()) {
-                if (finalUrl.startsWith("//")) {
-                    finalUrl = "https:$finalUrl"
-                } else if (!finalUrl.startsWith("http") && !finalUrl.startsWith("/")) {
-                    finalUrl = "https://verses.quran.foundation/$finalUrl"
-                }
+        viewModelScope.launch {
+            try {
+                val reciterId = quranSettings.value.quranReciter
+                val surahNumber = _currentSurah.value?.number ?: return@launch
+                // Get local file or fallback streaming URL from QuranAudioManager
+                val uri = audioManager.getPlaybackUri(reciterId, surahNumber)
+                player.setMediaItem(MediaItem.fromUri(uri))
+                player.prepare()
+                player.play()
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            player.setMediaItem(MediaItem.fromUri(finalUrl))
-            player.prepare()
-            player.play()
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

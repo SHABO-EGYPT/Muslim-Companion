@@ -32,10 +32,23 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navController: NavHostController) {
+    val context = LocalContext.current
     val progress by viewModel.userProgress.collectAsState()
+    
+    val navigateToTab = { route: String ->
+        navController.navigate(route) {
+            popUpTo(Routes.HOME) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
     val settings by viewModel.settings.collectAsState()
     val azkarCats by viewModel.azkarCategories.collectAsState()
     val prayerTimes by viewModel.prayerTimes.collectAsState()
@@ -101,7 +114,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
 
         item {
             Card(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navController.navigate(Routes.PRAYER) }.testTag("next_prayer_card"),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navigateToTab(Routes.PRAYER) }.testTag("next_prayer_card"),
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Box(modifier = Modifier.background(Brush.linearGradient(colors = listOf(PrimaryTeal, Secondary))).padding(24.dp)) {
@@ -166,7 +179,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                         Text(text = Translator.translate("azkar", settings.language), style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                Card(modifier = Modifier.weight(1f).clickable { navController.navigate(Routes.PRAYER) }.testTag("prayer_stat_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), shape = MaterialTheme.shapes.medium, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))) {
+                Card(modifier = Modifier.weight(1f).clickable { navigateToTab(Routes.PRAYER) }.testTag("prayer_stat_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), shape = MaterialTheme.shapes.medium, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))) {
                     Column(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.Center) {
                         CircularProgressIndicatorM3(percentage = completedPrayersCount.toFloat() / 5f, size = 32, strokeWidth = 3, color = MintTeal)
                         Spacer(modifier = Modifier.height(8.dp))
@@ -179,7 +192,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
 
         item {
             Spacer(modifier = Modifier.height(10.dp))
-            SectionHeader(title = Translator.translate("read_quran", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navController.navigate(Routes.QURAN) })
+            SectionHeader(title = Translator.translate("read_quran", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navigateToTab(Routes.QURAN) })
             Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navController.navigate(Routes.SURAH_READER) }.testTag("continue_reading_card"), shape = MaterialTheme.shapes.medium, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -204,18 +217,130 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
         }
 
         item {
-            SectionHeader(title = Translator.translate("daily_azkar", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navController.navigate(Routes.AZKAR) })
-            LazyRow(modifier = Modifier.fillMaxWidth().testTag("horizontal_azkar_row"), contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(azkarCats.take(3)) { cat ->
-                    val colorHex = when (cat.id) { "morning" -> WarmPeach; "evening" -> MintTeal; else -> SageGreen }
-                    val textColor = when (cat.id) { "morning" -> DarkWarmPeachText; "evening" -> DarkTealText; else -> DarkGreenText }
-                    val icon = when (cat.iconName) { "sunrise" -> Lucide.Sunrise; "sunset" -> Lucide.Sunset; else -> Lucide.Moon }
-                    Card(modifier = Modifier.width(132.dp).clickable { azkarViewModel.selectCategory(cat); navController.navigate(Routes.AZKAR_FLOW) }.testTag("azkar_horizontal_${cat.id}"), colors = CardDefaults.cardColors(containerColor = colorHex), shape = MaterialTheme.shapes.medium) {
-                        Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
-                            Icon(imageVector = icon, contentDescription = cat.title, tint = textColor, modifier = Modifier.size(22.dp))
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Text(text = if (settings.language == "Arabic") cat.arabicTitle else cat.title, style = MaterialTheme.typography.titleMedium.copy(fontSize = 13.sp, fontWeight = FontWeight.Bold), color = textColor)
-                            Text(text = "${cat.doneCount}/${cat.totalCount} ${Translator.translate("completed", settings.language)}", style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp), color = textColor.copy(alpha = 0.8f))
+            SectionHeader(title = Translator.translate("daily_azkar", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navigateToTab(Routes.AZKAR) })
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .testTag("azkar_rows_column"),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                azkarCats.take(3).forEach { cat ->
+                    val accentColor = when (cat.id) {
+                        "morning" -> WarmPeach
+                        "evening" -> MintTeal
+                        else -> SageGreen
+                    }
+                    val iconTint = when (cat.id) {
+                        "morning" -> DarkWarmPeachText
+                        "evening" -> DarkTealText
+                        else -> DarkGreenText
+                    }
+                    val icon = when (cat.iconName) {
+                        "sunrise" -> Lucide.Sunrise
+                        "sunset" -> Lucide.Sunset
+                        else -> Lucide.Moon
+                    }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                azkarViewModel.selectCategory(cat)
+                                navController.navigate(Routes.AZKAR_FLOW)
+                            }
+                            .testTag("azkar_row_${cat.id}"),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
+                                val boxBg = if (isDark) accentColor.copy(alpha = 0.2f) else accentColor.copy(alpha = 0.15f)
+                                Box(
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .background(boxBg, RoundedCornerShape(12.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = cat.title,
+                                        tint = iconTint,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(14.dp))
+                                Column {
+                                    Text(
+                                        text = if (settings.language == "Arabic") cat.arabicTitle else cat.title,
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 15.sp
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        val progressFraction = if (cat.totalCount > 0) cat.doneCount.toFloat() / cat.totalCount.toFloat() else 0f
+                                        LinearProgressIndicator(
+                                            progress = { progressFraction },
+                                            modifier = Modifier
+                                                .width(80.dp)
+                                                .height(6.dp)
+                                                .clip(RoundedCornerShape(3.dp)),
+                                            color = iconTint,
+                                            trackColor = iconTint.copy(alpha = 0.2f)
+                                        )
+                                        Text(
+                                            text = "${cat.doneCount}/${cat.totalCount}",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                            
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                if (cat.doneCount == cat.totalCount && cat.totalCount > 0) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .background(iconTint, CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Lucide.Check,
+                                            contentDescription = "Completed",
+                                            tint = MaterialTheme.colorScheme.surface,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                    }
+                                }
+                                Icon(
+                                    imageVector = Lucide.ChevronRight,
+                                    contentDescription = "Open",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -228,8 +353,28 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                 val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
                 HomeWidget(title = Translator.translate("digital_tasbih", settings.language), subtitle = Translator.translate("digital_tasbih_subtitle", settings.language), icon = Lucide.Fingerprint, iconBackground = MintTeal, iconTint = if (isDark) MintTeal else DarkTealText, onClick = { navController.navigate(Routes.TASBIH) })
                 HomeWidget(title = Translator.translate("qibla_direction", settings.language), subtitle = Translator.translate("qibla_subtitle", settings.language), icon = Lucide.Compass, iconBackground = WarmPeach, iconTint = if (isDark) WarmPeach else DarkWarmPeachText, onClick = { navController.navigate(Routes.QIBLA) })
-                HomeWidget(title = Translator.translate("prayer_times", settings.language), subtitle = Translator.translate("full_day_schedule", settings.language), icon = Lucide.Calendar, iconBackground = SageGreen, iconTint = if (isDark) SageGreen else DarkGreenText, onClick = { navController.navigate(Routes.PRAYER) })
-                HomeWidget(title = Translator.translate("mosque_finder", settings.language), subtitle = Translator.translate("mosque_subtitle", settings.language), icon = Lucide.MapPin, iconBackground = MintTeal, iconTint = if (isDark) MintTeal else DarkTealText, onClick = { })
+                HomeWidget(title = Translator.translate("prayer_times", settings.language), subtitle = Translator.translate("full_day_schedule", settings.language), icon = Lucide.Calendar, iconBackground = SageGreen, iconTint = if (isDark) SageGreen else DarkGreenText, onClick = { navigateToTab(Routes.PRAYER) })
+                HomeWidget(
+                    title = Translator.translate("mosque_finder", settings.language),
+                    subtitle = Translator.translate("mosque_subtitle", settings.language),
+                    icon = Lucide.MapPin,
+                    iconBackground = MintTeal,
+                    iconTint = if (isDark) MintTeal else DarkTealText,
+                    onClick = {
+                        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=mosque"))
+                        mapIntent.setPackage("com.google.android.apps.maps")
+                        try {
+                            context.startActivity(mapIntent)
+                        } catch (e: Exception) {
+                            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=mosque"))
+                            try {
+                                context.startActivity(webIntent)
+                            } catch (ex: Exception) {
+                                Toast.makeText(context, "Could not open map", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                )
             }
         }
     }

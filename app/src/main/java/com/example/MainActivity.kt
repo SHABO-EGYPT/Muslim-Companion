@@ -151,7 +151,7 @@ fun CompanionApp(repository: CompanionRepository) {
                                 onClick = {
                                     if (currentRoute != item.route) {
                                         navController.navigate(item.route) {
-                                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                            popUpTo(Routes.HOME) { saveState = true }
                                             launchSingleTop = true
                                             restoreState = true
                                         }

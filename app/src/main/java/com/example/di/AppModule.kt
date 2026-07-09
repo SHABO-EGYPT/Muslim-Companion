@@ -2,11 +2,13 @@ package com.example.di
 
 import android.content.Context
 import com.example.data.local.CompanionDatabase
+import com.example.data.quran.QuranAssetLoader
+import com.example.data.quran.QuranAudioManager
 import com.example.data.repository.AzkarRepository
 import com.example.data.repository.CompanionRepository
+import com.example.data.repository.OfflineQuranRepository
 import com.example.data.repository.QuranRepository
 import com.example.data.repository.RealAzkarRepository
-import com.example.data.repository.RealQuranRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,8 +28,24 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideQuranRepository(database: CompanionDatabase): QuranRepository {
-        return RealQuranRepository(database.companionDao())
+    fun provideQuranAssetLoader(
+        @ApplicationContext context: Context,
+        database: CompanionDatabase
+    ): QuranAssetLoader = QuranAssetLoader(context, database.companionDao())
+
+    @Provides
+    @Singleton
+    fun provideQuranAudioManager(@ApplicationContext context: Context): QuranAudioManager =
+        QuranAudioManager(context)
+
+    @Provides
+    @Singleton
+    fun provideQuranRepository(
+        database: CompanionDatabase,
+        assetLoader: QuranAssetLoader,
+        audioManager: QuranAudioManager
+    ): QuranRepository {
+        return OfflineQuranRepository(database.companionDao(), assetLoader, audioManager)
     }
 
     @Provides

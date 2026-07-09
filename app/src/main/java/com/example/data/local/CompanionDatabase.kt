@@ -13,9 +13,10 @@ import androidx.room.RoomDatabase
         CachedAyahEntity::class,
         CachedSurahEntity::class,
         CachedPrayerTimeEntity::class,
-        NotificationEntity::class
+        NotificationEntity::class,
+        QuranAyahEntity::class
     ],
-    version = 22,
+    version = 24,
     exportSchema = false
 )
 abstract class CompanionDatabase : RoomDatabase() {
@@ -52,6 +53,26 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_22_23 = object : androidx.room.migration.Migration(22, 23) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL(
+                    """CREATE TABLE IF NOT EXISTS `quran_ayahs` (
+                        `id` TEXT NOT NULL PRIMARY KEY,
+                        `sura` INTEGER NOT NULL,
+                        `ayah` INTEGER NOT NULL,
+                        `arabicText` TEXT NOT NULL
+                    )"""
+                )
+            }
+        }
+
+        private val MIGRATION_23_24 = object : androidx.room.migration.Migration(23, 24) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Migrate old quran.com numeric reciter IDs to new ar.* format
+                database.execSQL("UPDATE app_settings SET quranReciter = 'ar.alafasy'         WHERE quranReciter IN ('7', '1', '2', '3', '4', '5', '6', '8', '9', '10')")
+            }
+        }
+
         fun getDatabase(context: Context): CompanionDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -59,7 +80,7 @@ abstract class CompanionDatabase : RoomDatabase() {
                     CompanionDatabase::class.java,
                     "companion-db"
                 )
-                .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22)
+                .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24)
                 .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance

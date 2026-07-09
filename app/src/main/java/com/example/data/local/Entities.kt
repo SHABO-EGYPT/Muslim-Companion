@@ -57,6 +57,14 @@ data class CachedSurahEntity(
     val isMakki: Boolean
 )
 
+@Entity(tableName = "quran_ayahs")
+data class QuranAyahEntity(
+    @PrimaryKey val id: String,       // "sura:ayah" e.g. "2:255"
+    val sura: Int,
+    val ayah: Int,
+    val arabicText: String
+)
+
 @Entity(tableName = "cached_prayer_times")
 data class CachedPrayerTimeEntity(
     @PrimaryKey val name: String,
@@ -75,7 +83,7 @@ data class AppSettingEntity(
     val calculationMethod: String = "Egyptian General Authority",
     val textSize: String = "Medium",
     val quranTextSize: Float = 26f,
-    val quranReciter: String = "7",
+    val quranReciter: String = "ar.alafasy",
     val quranFont: String = "Classic Serif",
     val quranKeepScreenOn: Boolean = true,
     val notificationSoundType: String = "Subtle",

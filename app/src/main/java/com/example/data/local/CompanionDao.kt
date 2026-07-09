@@ -59,6 +59,17 @@ interface CompanionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCachedSurahs(surahs: List<CachedSurahEntity>)
 
+    // ── quran_ayahs (offline bundled text) ──────────────────────────────────
+
+    @Query("SELECT * FROM quran_ayahs WHERE sura = :sura ORDER BY ayah ASC")
+    suspend fun getAyahsForSura(sura: Int): List<QuranAyahEntity>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertQuranAyahs(ayahs: List<QuranAyahEntity>)
+
+    @Query("SELECT COUNT(*) FROM quran_ayahs")
+    suspend fun getQuranAyahCount(): Int
+
     @Query("SELECT * FROM cached_prayer_times")
     fun getCachedPrayerTimesFlow(): Flow<List<CachedPrayerTimeEntity>>
 

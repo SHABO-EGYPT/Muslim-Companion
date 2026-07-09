@@ -33,8 +33,14 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
             title = { Text(text = Translator.translate("sound_type", settings.language), style = MaterialTheme.typography.titleLarge) },
             text = {
                 Column {
-                    listOf("Silent", "Subtle", "Full Adhan").forEach { type ->
-                        val translationKey = when(type) { "Silent" -> "silent"; "Subtle" -> "subtle"; "Full Adhan" -> "full_adhan"; else -> type.lowercase() }
+                    listOf("Silent", "Subtle", "Full Adhan", "First Adhan").forEach { type ->
+                        val translationKey = when(type) { 
+                            "Silent" -> "silent"
+                            "Subtle" -> "default_sound"
+                            "Full Adhan" -> "full_adhan"
+                            "First Adhan" -> "first_adhan"
+                            else -> "silent" 
+                        }
                         Row(
                             modifier = Modifier.fillMaxWidth().clickable { viewModel.updateNotificationSoundType(type); showSoundTypeDialog = false }.padding(vertical = 12.dp, horizontal = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -174,7 +180,13 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                 }
 
                 if (settings.prayerNotifications) {
-                    val soundTypeKey = when(settings.notificationSoundType) { "Silent" -> "silent"; "Subtle" -> "subtle"; "Full Adhan" -> "full_adhan"; else -> settings.notificationSoundType.lowercase() }
+                    val soundTypeKey = when(settings.notificationSoundType) { 
+                        "Silent" -> "silent"
+                        "Subtle" -> "default_sound"
+                        "Full Adhan" -> "full_adhan"
+                        "First Adhan" -> "first_adhan"
+                        else -> "silent"
+                    }
                     Row(
                         modifier = Modifier.fillMaxWidth().clickable { showSoundTypeDialog = true }.padding(vertical = 12.dp, horizontal = 12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically

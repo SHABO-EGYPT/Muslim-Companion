@@ -15,6 +15,7 @@ import kotlinx.coroutines.runBlocking
 import android.media.AudioAttributes
 import android.net.Uri
 import android.provider.Settings
+import com.example.R
 
 class PrayerNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -51,14 +52,18 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                     "Silent" -> {
                         setSound(null, null)
                         enableVibration(true)
+                        vibrationPattern = longArrayOf(0, 500, 200, 500)
                     }
                     "Subtle" -> {
-                        // Use default sound
+                        // Default system sound
                     }
                     "Full Adhan" -> {
-                        // In a real app, you'd use R.raw.adhan
-                        // val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.adhan}")
-                        // setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).build())
+                        val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.full_adhan}")
+                        setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+                    }
+                    "First Adhan" -> {
+                        val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.first_adhan}")
+                        setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
                     }
                 }
             }
@@ -72,9 +77,19 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
 
-        if (soundType == "Silent") {
-            builder.setSound(null)
-            builder.setVibrate(longArrayOf(0, 500, 200, 500))
+        when (soundType) {
+            "Silent" -> {
+                builder.setSound(null)
+                builder.setVibrate(longArrayOf(0, 500, 200, 500))
+            }
+            "Full Adhan" -> {
+                val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.full_adhan}")
+                builder.setSound(soundUri)
+            }
+            "First Adhan" -> {
+                val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.first_adhan}")
+                builder.setSound(soundUri)
+            }
         }
 
         notificationManager.notify(prayerName.hashCode(), builder.build())
