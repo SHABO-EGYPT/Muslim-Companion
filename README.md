@@ -23,11 +23,16 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 - **Tactile Feedback:** Built-in vibration haptic feedback on increments.
 
 ### 🌟 Daily Azkar
-- **Material 3 Outlined Rows:** Swapped the horizontal scrolling list for 3 vertical Outlined Cards on the Home screen representing Morning, Evening, and after-prayer categories.
+- **3x2 Grid Widget:** The Home screen features a responsive 3x2 grid natively displaying all 5 daily remembrance categories.
+- **Dark Mode Optimization:** Custom tinted icons adapting gracefully with elevated brightness on Dark Mode.
 - **Progress Trackers:** Features inline category-themed `LinearProgressIndicator`s to dynamically track dhikr progress.
 - **Completion Badges:** Displays solid checkmark icons once categories reach 100% completion.
 - **Horizontal Pager Flow:** In the Azkar reading screen, uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
 - **Auto-Advance:** Card automatically scrolls to the next remembrance once the target count is completed.
+
+### 🤖 Ask Azkar Assistant
+- **Conversational AI:** Integrated a robust chat interface powered by the **Gemini API** to help users find specific supplications or ask context-aware questions.
+- **Continuous Context:** Maintains chat history within the session so users can ask follow-up questions naturally.
 
 ### 🕋 Prayer Times, Qibla Compass & Notifications
 - **Accurate Schedules:** Displays local prayer times (Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha).
@@ -64,8 +69,9 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
   - **Data Layer:** Room database caches, Retrofit API endpoints, local asset parsers, and repository implementations.
   - **Domain Layer:** Unified data models, repository abstractions, and core business entities.
   - **Presentation Layer:** State-driven Compose screens, Dialogs, and state-holding view models.
-- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping and testing.
-- **Local Caching (Room):** Integrates SQLite database caching (version 22) supporting schema migrations and destructive fallback protection to preserve offline usability.
+- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping, seamlessly integrated with **WorkManager** via `@HiltWorker` for background synchronization tasks.
+- **Local Caching (Room):** Integrates SQLite database caching supporting schema migrations and destructive fallback protection to preserve offline usability.
+- **Security & Reliability:** Features comprehensive ProGuard rules, explicit connection timeouts, strict network security configurations, and optimized broadcast receivers to prevent ANRs.
 - **Network Client:** **Retrofit + Moshi** integrating directly with the official Quran.com API endpoints.
 - **Audio Player:** **AndroidX Media3 (ExoPlayer)** for low-latency network audio streaming.
 
