@@ -30,6 +30,7 @@ class PrayerCountdownManager @Inject constructor(
 
     val checkablePrayers: StateFlow<Set<String>> =
         calculateCheckablePrayers(repository.getPrayerTimesFlow(), _currentTime)
+            .distinctUntilChanged()
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5_000),

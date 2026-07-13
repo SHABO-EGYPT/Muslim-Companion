@@ -13,6 +13,9 @@ import com.example.domain.model.Surah
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Interface (unchanged — ViewModels depend only on this)
@@ -99,11 +102,13 @@ class OfflineQuranRepository(
         val isLegacyReciterId = reciter.all { it.isDigit() }
         val existing = if (isLegacyReciterId) emptyList()
                        else dao.getCachedAyahs(surahNumber, reciter)
+                       
+        val arabicAyahs = dao.getAyahsForSura(surahNumber)
 
-        if (existing.isEmpty() || existing.any { it.audioUrl.isBlank() }) {
+        if (existing.size < arabicAyahs.size || existing.any { it.audioUrl.isBlank() }) {
             try {
                 val versesResponse = QuranApi.instance.getChapterVerses(surahNumber)
-                val arabicMap = dao.getAyahsForSura(surahNumber).associateBy { it.ayah }
+                val arabicMap = arabicAyahs.associateBy { it.ayah }
 
                 // Fetch verse audio URLs
                 val numericReciterId = when (reciter) {
@@ -162,9 +167,11 @@ class OfflineQuranRepository(
             }
         }
 
-        // Step 3: trigger background audio download
+        // Step 3: trigger background audio download asynchronously (fire-and-forget)
         val audioReciter = if (isLegacyReciterId) "ar.alafasy" else reciter
-        audioManager.downloadSura(audioReciter, surahNumber)
+        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+            audioManager.downloadSura(audioReciter, surahNumber)
+        }
     }
 
     override suspend fun getSurahWithAudio(surahNumber: Int, reciter: String): List<CachedAyahEntity> {

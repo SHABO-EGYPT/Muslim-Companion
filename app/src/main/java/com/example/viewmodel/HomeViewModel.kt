@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import com.example.data.local.AppSettingEntity
 import com.example.data.local.UserProgressEntity
+import com.example.data.repository.AzkarRepository
 import com.example.data.repository.CompanionRepository
 import com.example.domain.model.*
 import kotlinx.coroutines.flow.*
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.*
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: CompanionRepository,
+    private val azkarRepository: AzkarRepository,
     countdownManager: PrayerCountdownManager
 ) : ViewModel() {
     val userProgress: StateFlow<UserProgressEntity> = repository.getUserProgressFlow()
@@ -43,7 +45,7 @@ class HomeViewModel @Inject constructor(
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val azkarCategories: StateFlow<List<AzkarCategory>> = userProgress
-        .flatMapLatest { repository.azkarRepository.getAzkarCategoriesFlow(it) }
+        .flatMapLatest { azkarRepository.getAzkarCategoriesFlow(it) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

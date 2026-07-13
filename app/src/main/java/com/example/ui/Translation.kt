@@ -137,7 +137,8 @@ object Translator {
             "not_downloaded" to "Not Downloaded locally",
             "download" to "Download",
             "downloading" to "Downloading",
-            "downloaded" to "Downloaded"
+            "downloaded" to "Downloaded",
+            "active" to "Active"
         ),
         "Arabic" to mapOf(
             "home" to "الرئيسية",
@@ -274,7 +275,8 @@ object Translator {
             "not_downloaded" to "غير منزّل محلياً",
             "download" to "تنزيل",
             "downloading" to "جاري التنزيل",
-            "downloaded" to "تم التنزيل"
+            "downloaded" to "تم التنزيل",
+            "active" to "نشط"
         )
     )
 

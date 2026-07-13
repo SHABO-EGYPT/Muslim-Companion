@@ -17,7 +17,7 @@ class QuranAssetLoader(
     private val dao: CompanionDao
 ) {
     companion object {
-        private const val ASSET_PATH = "quran/quran_uthmani.json"
+        private const val ASSET_PATH = "quran/quran_en.json"
         private const val TOTAL_AYAHS = 6236
         private const val BATCH_SIZE = 500
     }
@@ -30,16 +30,24 @@ class QuranAssetLoader(
      * Should be called once, on a background coroutine.
      */
     suspend fun seedDatabase() {
-        val json = context.assets.open(ASSET_PATH).bufferedReader().use { it.readText() }
+        val json = try {
+            context.assets.open(ASSET_PATH).bufferedReader().use { it.readText() }
+        } catch (e: Exception) {
+            context.assets.open("quran/quran_uthmani.json").bufferedReader().use { it.readText() }
+        }
+        
         val array = JSONArray(json)
-        val batch = mutableListOf<QuranAyahEntity>()
+        val quranBatch = mutableListOf<QuranAyahEntity>()
+        val cachedBatch = mutableListOf<com.example.data.local.CachedAyahEntity>()
+        val defaultReciter = "ar.alafasy"
 
         for (i in 0 until array.length()) {
             val obj = array.getJSONObject(i)
-            val sura = obj.getInt("s")
-            val ayah = obj.getInt("a")
-            val text = obj.getString("t")
-            batch.add(
+            val sura = obj.optInt("sura", obj.optInt("s"))
+            val ayah = obj.optInt("ayah", obj.optInt("a"))
+            val text = obj.optString("arabicText", obj.optString("t"))
+            
+            quranBatch.add(
                 QuranAyahEntity(
                     id = "$sura:$ayah",
                     sura = sura,
@@ -47,13 +55,35 @@ class QuranAssetLoader(
                     arabicText = text
                 )
             )
-            if (batch.size >= BATCH_SIZE) {
-                dao.insertQuranAyahs(batch)
-                batch.clear()
+            
+            if (obj.has("translation") && obj.has("audioUrl")) {
+                cachedBatch.add(
+                    com.example.data.local.CachedAyahEntity(
+                        id = "${sura}_${ayah}_${defaultReciter}",
+                        surahNumber = sura,
+                        numberInSurah = ayah,
+                        reciter = defaultReciter,
+                        arabicText = text,
+                        translation = obj.getString("translation"),
+                        audioUrl = obj.getString("audioUrl")
+                    )
+                )
+            }
+
+            if (quranBatch.size >= BATCH_SIZE) {
+                dao.insertQuranAyahs(quranBatch)
+                quranBatch.clear()
+            }
+            if (cachedBatch.size >= BATCH_SIZE) {
+                dao.insertCachedAyahs(cachedBatch)
+                cachedBatch.clear()
             }
         }
-        if (batch.isNotEmpty()) {
-            dao.insertQuranAyahs(batch)
+        if (quranBatch.isNotEmpty()) {
+            dao.insertQuranAyahs(quranBatch)
+        }
+        if (cachedBatch.isNotEmpty()) {
+            dao.insertCachedAyahs(cachedBatch)
         }
     }
 }

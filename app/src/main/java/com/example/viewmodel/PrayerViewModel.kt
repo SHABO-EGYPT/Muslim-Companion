@@ -12,12 +12,17 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
 // 6. Prayer ViewModel
 @HiltViewModel
 class PrayerViewModel @Inject constructor(
     private val repository: CompanionRepository,
     countdownManager: PrayerCountdownManager
 ) : ViewModel() {
+
+    private val mutex = Mutex()
 
     val prayerTimes: StateFlow<List<PrayerTime>> = repository.getPrayerTimesFlow()
         .stateIn(
@@ -64,61 +69,63 @@ class PrayerViewModel @Inject constructor(
 
     fun togglePrayerCompletion(prayerName: String) {
         viewModelScope.launch {
-            val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
-            val today = LocalDate.now().toString()
-            
-            // 1. Daily Reset Logic: If lastStreakDate is not today, clear today's progress
-            val isNewDay = progress.lastStreakDate != today
-            val currentCompletedStr = if (isNewDay) "" else progress.completedPrayersToday
-            val completed = currentCompletedStr.split(",").filter { it.isNotBlank() }.toMutableList()
-            
-            val wasCompleted = completed.contains(prayerName)
-            if (wasCompleted) {
-                completed.remove(prayerName)
-            } else {
-                completed.add(prayerName)
-            }
-            
-            val newCompletedStr = completed.joinToString(",")
-            val allPrayers = listOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
-            val isAllDone = allPrayers.all { completed.contains(it) }
-            
-            // 2. Streak Logic: Only increment once per day when all 5 are completed
-            var newStreak = progress.streak
-            if (isAllDone && !wasCompleted) {
-                val yesterday = LocalDate.now().minusDays(1).toString()
-                if (progress.lastStreakDate == yesterday) {
-                    newStreak++
-                } else if (isNewDay || progress.streak == 0) {
-                    newStreak = 1
+            mutex.withLock {
+                val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
+                val today = repository.getActiveTrackingDate()
+                
+                val completed = progress.completedPrayersToday.split(",").filter { it.isNotBlank() }.toMutableList()
+                val wasCompleted = completed.contains(prayerName)
+                if (wasCompleted) {
+                    completed.remove(prayerName)
+                } else {
+                    completed.add(prayerName)
                 }
-            }
+                
+                val newCompletedStr = completed.joinToString(",")
+                val allPrayers = listOf("Fajr", "Dhuhr", "Asr", "Maghrib", "Isha")
+                val isAllDone = allPrayers.all { completed.contains(it) }
+                
+                // 2. Streak Logic: Only increment once per day when all 5 are completed
+                var newStreak = progress.streak
+                var newLastStreakDate = progress.lastStreakDate
+                if (isAllDone && !wasCompleted) {
+                    if (progress.lastStreakDate != today) {
+                        val yesterday = LocalDate.parse(today).minusDays(1).toString()
+                        if (progress.lastStreakDate == yesterday) {
+                            newStreak++
+                        } else {
+                            newStreak = 1
+                        }
+                        newLastStreakDate = today
+                    }
+                }
 
-            // 3. Score Reflection: +10 per prayer
-            val scoreDelta = if (wasCompleted) -10 else 10
-            val newScore = (progress.prayerScore + scoreDelta).coerceAtLeast(0)
+                // 3. Score Reflection: +10 per prayer
+                val scoreDelta = if (wasCompleted) -10 else 10
+                val newScore = (progress.prayerScore + scoreDelta).coerceAtLeast(0)
 
-            var newFajrCount = progress.fajrOnTimeCount
-            var newIshaCount = progress.ishaOnTimeCount
-            
-            if (!wasCompleted) {
-                if (prayerName == "Fajr") newFajrCount++
-                if (prayerName == "Isha") newIshaCount++
-            } else {
-                if (prayerName == "Fajr") newFajrCount = (newFajrCount - 1).coerceAtLeast(0)
-                if (prayerName == "Isha") newIshaCount = (newIshaCount - 1).coerceAtLeast(0)
-            }
+                var newFajrCount = progress.fajrOnTimeCount
+                var newIshaCount = progress.ishaOnTimeCount
+                
+                if (!wasCompleted) {
+                    if (prayerName == "Fajr") newFajrCount++
+                    if (prayerName == "Isha") newIshaCount++
+                } else {
+                    if (prayerName == "Fajr") newFajrCount = (newFajrCount - 1).coerceAtLeast(0)
+                    if (prayerName == "Isha") newIshaCount = (newIshaCount - 1).coerceAtLeast(0)
+                }
 
-            repository.saveUserProgress(
-                progress.copy(
-                    completedPrayersToday = newCompletedStr,
-                    lastStreakDate = today,
-                    streak = newStreak,
-                    prayerScore = newScore,
-                    fajrOnTimeCount = newFajrCount,
-                    ishaOnTimeCount = newIshaCount
+                repository.saveUserProgress(
+                    progress.copy(
+                        completedPrayersToday = newCompletedStr,
+                        lastStreakDate = newLastStreakDate,
+                        streak = newStreak,
+                        prayerScore = newScore,
+                        fajrOnTimeCount = newFajrCount,
+                        ishaOnTimeCount = newIshaCount
+                    )
                 )
-            )
+            }
         }
     }
 }

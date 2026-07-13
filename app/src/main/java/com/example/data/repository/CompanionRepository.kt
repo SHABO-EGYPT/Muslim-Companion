@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.map
 
 open class CompanionRepository(
     private val dao: CompanionDao,
-    val quranRepository: QuranRepository,
-    val azkarRepository: AzkarRepository
+    private val quranRepository: QuranRepository,
+    private val azkarRepository: AzkarRepository
 ) {
     open fun getPrayerTimesFlow(): Flow<List<PrayerTime>> = dao.getCachedPrayerTimesFlow().map { entities ->
         if (entities.isEmpty()) defaultPrayerTimes()
@@ -53,9 +53,52 @@ open class CompanionRepository(
     open suspend fun getSettingsDirect(): AppSettingEntity? = dao.getSettingsDirect()
     open suspend fun saveSettings(settings: AppSettingEntity) = dao.saveSettings(settings)
 
-    open fun getUserProgressFlow(): Flow<UserProgressEntity> = dao.getUserProgressFlow().map { it ?: UserProgressEntity() }
-    open suspend fun getUserProgressDirect(): UserProgressEntity? = dao.getUserProgressDirect()
-    open suspend fun saveUserProgress(progress: UserProgressEntity) = dao.saveUserProgress(progress)
+    open suspend fun getActiveTrackingDate(): String {
+        val now = java.time.LocalDateTime.now()
+        val cachedTimes = dao.getCachedPrayerTimesDirect()
+        val fajrTimeStr = cachedTimes.find { it.name == "Fajr" }?.timeString ?: "04:12"
+        val fajrTime = com.example.utils.TimeUtils.parsePrayerTime(fajrTimeStr) ?: java.time.LocalTime.of(4, 12)
+        
+        // Reset time is 5 minutes before Fajr
+        val resetTimeToday = java.time.LocalDateTime.of(now.toLocalDate(), fajrTime).minusMinutes(5)
+        
+        val trackingDate = if (now.isBefore(resetTimeToday)) {
+            now.toLocalDate().minusDays(1)
+        } else {
+            now.toLocalDate()
+        }
+        return trackingDate.toString()
+    }
+
+    private suspend fun sanitizeProgress(progress: UserProgressEntity): UserProgressEntity {
+        val activeDate = getActiveTrackingDate()
+        val parts = progress.completedPrayersToday.split(":")
+        val dateStr = parts.getOrNull(0) ?: ""
+        val prayersStr = parts.getOrNull(1) ?: ""
+        
+        return if (dateStr != activeDate) {
+            progress.copy(completedPrayersToday = "")
+        } else {
+            progress.copy(completedPrayersToday = prayersStr)
+        }
+    }
+
+    open fun getUserProgressFlow(): Flow<UserProgressEntity> = dao.getUserProgressFlow().map { 
+        val entity = it ?: UserProgressEntity()
+        sanitizeProgress(entity)
+    }
+    open suspend fun getUserProgressDirect(): UserProgressEntity? = dao.getUserProgressDirect()?.let { 
+        sanitizeProgress(it)
+    }
+    open suspend fun saveUserProgress(progress: UserProgressEntity) {
+        val activeDate = getActiveTrackingDate()
+        val newCompleted = if (progress.completedPrayersToday.contains(":")) {
+            progress.completedPrayersToday
+        } else {
+            "$activeDate:${progress.completedPrayersToday}"
+        }
+        dao.saveUserProgress(progress.copy(completedPrayersToday = newCompleted))
+    }
 
     open fun getNotificationsFlow(): Flow<List<NotificationEntity>> = dao.getNotificationsFlow()
     open suspend fun insertNotification(notification: NotificationEntity) = dao.insertNotification(notification)

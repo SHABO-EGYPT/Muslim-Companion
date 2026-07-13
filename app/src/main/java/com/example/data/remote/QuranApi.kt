@@ -64,13 +64,15 @@ interface QuranApi {
         @Path("chapter_number") chapterNumber: Int,
         @Query("language") language: String = "en",
         @Query("translations") translations: Int = 85,
-        @Query("fields") fields: String = "text_uthmani"
+        @Query("fields") fields: String = "text_uthmani",
+        @Query("per_page") perPage: Int = 300
     ): VersesResponse
 
     @GET("recitations/{reciter_id}/by_chapter/{chapter_id}")
     suspend fun getChapterAudio(
         @Path("reciter_id") reciterId: Int,
-        @Path("chapter_id") chapterId: Int
+        @Path("chapter_id") chapterId: Int,
+        @Query("per_page") perPage: Int = 300
     ): AudioResponse
 
     companion object {

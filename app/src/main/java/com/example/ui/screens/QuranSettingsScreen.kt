@@ -33,6 +33,8 @@ import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.viewmodel.SurahReaderViewModel
+import com.example.domain.model.Reciter
+import com.example.data.local.AppSettingEntity
 
 @Composable
 fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostController) {
@@ -197,101 +199,178 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                 val workInfo = workInfos.firstOrNull()
 
                 val audioManager = remember { com.example.data.quran.QuranAudioManager(context) }
-                var downloadedCount by remember(currentReciterId, workInfo) {
-                    mutableStateOf(
-                        (1..114).count { audioManager.isDownloaded(currentReciterId, it) }
+                val reciters = viewModel.recitersList
+                
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    reciters.forEach { reciter ->
+                        val isActive = reciter.id == quranSettings.quranReciter
+                        ReciterDownloadItem(
+                            reciter = reciter,
+                            isActive = isActive,
+                            settings = settings,
+                            viewModel = viewModel,
+                            audioManager = audioManager
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ReciterDownloadItem(
+    reciter: Reciter,
+    isActive: Boolean,
+    settings: AppSettingEntity,
+    viewModel: SurahReaderViewModel,
+    audioManager: com.example.data.quran.QuranAudioManager
+) {
+    val context = LocalContext.current
+    val reciterId = reciter.id
+    val reciterKey = when(reciterId) {
+        "ar.alafasy" -> "mishary_alafasy"
+        "ar.abdulbasitmurattal" -> "abdul_basit"
+        "ar.husary" -> "al_husary"
+        "ar.minshawimujawwad" -> "minshawi"
+        else -> reciterId
+    }
+
+    val workManager = remember { androidx.work.WorkManager.getInstance(context) }
+    val workInfos by workManager.getWorkInfosForUniqueWorkLiveData("recitation_download_$reciterId")
+        .observeAsState(initial = emptyList())
+    val workInfo = workInfos.firstOrNull()
+
+    var downloadedCount by remember(reciterId, workInfo) {
+        mutableStateOf(
+            (1..114).count { audioManager.isDownloaded(reciterId, it) }
+        )
+    }
+
+    val isDownloading = workInfo != null && workInfo.state == androidx.work.WorkInfo.State.RUNNING
+    val progress = if (isDownloading) {
+        workInfo.progress.getInt("progress", 0)
+    } else 0
+
+    val statusText = when {
+        isDownloading -> "${Translator.translate("downloading", settings.language)} ($progress%)"
+        downloadedCount == 114 -> Translator.translate("downloaded", settings.language) + " (114/114) ✓"
+        downloadedCount > 0 -> "${Translator.translate("partial_download", settings.language)} ($downloadedCount/114)"
+        else -> Translator.translate("not_downloaded", settings.language)
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { viewModel.updateQuranReciter(reciterId) }
+            .testTag("offline_download_card_$reciterId"),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isActive) {
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            }
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isActive) DarkTealText else MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = Translator.translate(reciterKey, settings.language),
+                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        if (isActive) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(DarkTealText)
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = Translator.translate("active", settings.language),
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = Color.White
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = statusText,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (downloadedCount == 114) MintTeal else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                val isDownloading = workInfo != null && workInfo.state == androidx.work.WorkInfo.State.RUNNING
-                val progress = if (isDownloading) {
-                    workInfo.progress.getInt("progress", 0)
-                } else 0
-
-                val statusText = when {
-                    isDownloading -> "${Translator.translate("downloading", settings.language)} ($progress%)"
-                    downloadedCount == 114 -> Translator.translate("downloaded", settings.language) + " (114/114) ✓"
-                    downloadedCount > 0 -> "${Translator.translate("partial_download", settings.language)} ($downloadedCount/114)"
-                    else -> Translator.translate("not_downloaded", settings.language)
-                }
-
-                Card(
-                    modifier = Modifier.fillMaxWidth().testTag("offline_download_card"),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (isDownloading) {
+                        TextButton(
+                            onClick = { viewModel.cancelRecitationDownload(reciterId, context) },
+                            modifier = Modifier.testTag("cancel_download_btn_$reciterId")
                         ) {
-                            Column {
-                                Text(
-                                    text = Translator.translate(reciterKey, settings.language),
-                                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Spacer(modifier = Modifier.height(2.dp))
-                                Text(
-                                    text = statusText,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = if (downloadedCount == 114) MintTeal else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-
-                            if (isDownloading) {
-                                TextButton(
-                                    onClick = { viewModel.cancelRecitationDownload(currentReciterId, context) },
-                                    modifier = Modifier.testTag("cancel_download_btn")
-                                ) {
-                                    Text(
-                                        text = Translator.translate("cancel", settings.language),
-                                        color = MaterialTheme.colorScheme.error,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            } else if (downloadedCount < 114) {
-                                Button(
-                                    onClick = { viewModel.startRecitationDownload(currentReciterId, context) },
-                                    colors = ButtonDefaults.buttonColors(containerColor = DarkTealText),
-                                    modifier = Modifier.testTag("start_download_btn")
-                                ) {
-                                    Text(text = Translator.translate("download", settings.language))
-                                }
-                            } else {
-                                IconButton(
-                                    onClick = {
-                                        // Delete files
-                                        (1..114).forEach { sura ->
-                                            val file = audioManager.localFile(currentReciterId, sura)
-                                            if (file.exists()) file.delete()
-                                        }
-                                        downloadedCount = 0
-                                    },
-                                    modifier = Modifier.testTag("delete_download_btn")
-                                ) {
-                                    Icon(
-                                        imageVector = Lucide.Trash2,
-                                        contentDescription = "Delete",
-                                        tint = MaterialTheme.colorScheme.error
-                                    )
-                                }
-                            }
+                            Text(
+                                text = Translator.translate("cancel", settings.language),
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
+                    } else if (downloadedCount < 114) {
+                        IconButton(
+                            onClick = { viewModel.startRecitationDownload(reciterId, context) },
+                            modifier = Modifier.testTag("start_download_btn_$reciterId")
+                        ) {
+                            Icon(
+                                imageVector = Lucide.CloudDownload,
+                                contentDescription = "Download",
+                                tint = DarkTealText,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
 
-                        if (isDownloading) {
-                            Spacer(modifier = Modifier.height(12.dp))
-                            LinearProgressIndicator(
-                                progress = { progress / 100f },
-                                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp)),
-                                color = MintTeal,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    if (downloadedCount > 0 && !isDownloading) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(
+                            onClick = {
+                                (1..114).forEach { sura ->
+                                    val file = audioManager.localFile(reciterId, sura)
+                                    if (file.exists()) file.delete()
+                                }
+                                downloadedCount = 0
+                            },
+                            modifier = Modifier.testTag("delete_download_btn_$reciterId")
+                        ) {
+                            Icon(
+                                imageVector = Lucide.Trash2,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(22.dp)
                             )
                         }
                     }
                 }
+            }
+
+            if (isDownloading) {
+                Spacer(modifier = Modifier.height(12.dp))
+                LinearProgressIndicator(
+                    progress = { progress / 100f },
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(4.dp)),
+                    color = MintTeal,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
             }
         }
     }

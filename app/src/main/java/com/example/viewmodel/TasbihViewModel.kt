@@ -1,38 +1,25 @@
 package com.example.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppSettingEntity
 import com.example.data.local.UserProgressEntity
 import com.example.data.repository.AzkarRepository
 import com.example.data.repository.CompanionRepository
-import com.example.data.repository.QuranRepository
-import com.example.domain.model.*
+import com.example.domain.model.DhikrItem
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
-import org.json.JSONObject
-import org.json.JSONArray
-import com.example.data.remote.GeminiApiService
-import com.example.data.remote.GenerateContentRequest
-import com.example.data.remote.Content
-import com.example.data.remote.Part
-import com.example.data.remote.GenerationConfig
-import java.io.InputStream
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.Duration
-import kotlinx.coroutines.delay
+import javax.inject.Inject
 
 // 5. Tasbih ViewModel
 @HiltViewModel
-class TasbihViewModel @Inject constructor(private val repository: CompanionRepository) : ViewModel() {
+class TasbihViewModel @Inject constructor(
+    private val repository: CompanionRepository,
+    private val azkarRepository: AzkarRepository
+) : ViewModel() {
     val settings: StateFlow<AppSettingEntity> = repository.getSettingsFlow()
         .stateIn(
             scope = viewModelScope,
@@ -55,9 +42,11 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
     private val _activeIndex = MutableStateFlow(0)
     val activeIndex = _activeIndex.asStateFlow()
 
+    private var saveJob: Job? = null
+
     init {
         viewModelScope.launch {
-            repository.azkarRepository.getTasbihPhrasesFlow().collect { list ->
+            azkarRepository.getTasbihPhrasesFlow().collect { list ->
                 _phrases.value = list
                 val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
                 _activeIndex.value = progress.tasbihActivePhraseIndex
@@ -82,7 +71,9 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
 
     fun increment() {
         _count.value++
-        viewModelScope.launch {
+        saveJob?.cancel()
+        saveJob = viewModelScope.launch {
+            delay(1000) // Debounce DB write by 1 second to avoid spamming Room on rapid taps
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(progress.copy(tasbihCount = _count.value))
         }
@@ -90,6 +81,7 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
 
     fun reset() {
         _count.value = 0
+        saveJob?.cancel()
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(progress.copy(tasbihCount = _count.value))
@@ -101,6 +93,7 @@ class TasbihViewModel @Inject constructor(private val repository: CompanionRepos
             _activeIndex.value = index
             _count.value = 0
             updateDhikrAndTargetForActiveIndex()
+            saveJob?.cancel()
             viewModelScope.launch {
                 val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
                 repository.saveUserProgress(progress.copy(

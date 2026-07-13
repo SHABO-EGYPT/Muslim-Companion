@@ -99,6 +99,12 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
         onDispose { activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
 
+    LaunchedEffect(surah) {
+        if (surah == null) {
+            viewModel.loadSurah(activeSurah.number)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize().testTag("surah_reader_screen")) {
         Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
@@ -107,9 +113,6 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                 onBack = { navController.popBackStack() },
                 rightContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { showSettingsDialog = true }, modifier = Modifier.testTag("quran_settings_icon_button")) {
-                            Icon(imageVector = Lucide.Settings, contentDescription = Translator.translate("settings", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
                         IconButton(onClick = { viewModel.toggleBookmark(activeSurah) }, modifier = Modifier.testTag("bookmark_action_button")) {
                             Icon(imageVector = Lucide.Bookmark, contentDescription = "Bookmark", tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                         }
@@ -292,18 +295,12 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                     },
                                 horizontalAlignment = Alignment.Start
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RubElHizbIcon(
-                                        number = ayah.number,
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                                        textColor = MaterialTheme.colorScheme.primary
-                                    )
-                                    
-                                    if (isPlayingThis) {
+                                if (isPlayingThis) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         Text(
                                             text = Translator.translate("playing", settings.language),
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
@@ -313,13 +310,33 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                 }
                                 
                                 Text(
-                                    text = cleanedText,
+                                    text = buildAnnotatedString {
+                                        append(cleanedText)
+                                        append("  ")
+                                        appendInlineContent("ayah_number")
+                                    },
+                                    inlineContent = mapOf(
+                                        "ayah_number" to InlineTextContent(
+                                            Placeholder(
+                                                width = 2.em,
+                                                height = 2.em,
+                                                placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                                            )
+                                        ) {
+                                            RubElHizbIcon(
+                                                number = ayah.number,
+                                                modifier = Modifier.fillMaxSize(),
+                                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                                textColor = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    ),
                                     style = MaterialTheme.typography.displayLarge.copy(
                                         fontFamily = quranFontFamily,
                                         fontSize = quranSettings.quranTextSize.sp,
                                         lineHeight = 1.8.em,
                                         textDirection = TextDirection.Rtl,
-                                        textAlign = TextAlign.Right,
+                                        textAlign = TextAlign.Center,
                                         color = if (isPlayingThis) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                                     ),
                                     modifier = Modifier.fillMaxWidth()

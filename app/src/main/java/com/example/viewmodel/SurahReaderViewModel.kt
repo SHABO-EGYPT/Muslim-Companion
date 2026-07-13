@@ -29,6 +29,7 @@ sealed class ReaderLoadState {
 @HiltViewModel
 class SurahReaderViewModel @Inject constructor(
     private val repository: CompanionRepository,
+    private val quranRepository: com.example.data.repository.QuranRepository,
     private val audioManager: QuranAudioManager,
     @ApplicationContext context: Context
 ) : ViewModel() {
@@ -65,7 +66,7 @@ class SurahReaderViewModel @Inject constructor(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
-    val bookmarks: StateFlow<List<com.example.data.local.BookmarkEntity>> = repository.quranRepository.getBookmarksFlow()
+    val bookmarks: StateFlow<List<com.example.data.local.BookmarkEntity>> = quranRepository.getBookmarksFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val userProgress: StateFlow<UserProgressEntity> = repository.getUserProgressFlow()
@@ -83,7 +84,7 @@ class SurahReaderViewModel @Inject constructor(
 
     fun toggleBookmark(surah: Surah) {
         viewModelScope.launch {
-            repository.quranRepository.toggleBookmark(surah.number, surah.name)
+            quranRepository.toggleBookmark(surah.number, surah.name)
         }
     }
 
@@ -143,12 +144,12 @@ class SurahReaderViewModel @Inject constructor(
             _readerLoadState.value = ReaderLoadState.Loading
             try {
                 // Ensure surahs are refreshed if missing
-                val currentSurahs = repository.quranRepository.getSurahsDirect()
+                val currentSurahs = quranRepository.getSurahsDirect()
                 if (currentSurahs.isEmpty()) {
-                    repository.quranRepository.refreshSurahs()
+                    quranRepository.refreshSurahs()
                 }
                 
-                val surahs = repository.quranRepository.getSurahsDirect()
+                val surahs = quranRepository.getSurahsDirect()
                 val surah = surahs.find { it.number == surahNumber }
                 if (surah != null) {
                     _currentSurah.value = surah
@@ -157,8 +158,8 @@ class SurahReaderViewModel @Inject constructor(
                     val currentReciterId = quranSettings.value.quranReciter
                     
                     // Fetch ayahs
-                    repository.quranRepository.refreshAyahs(surahNumber, currentReciterId)
-                    val ayahsList = repository.quranRepository.getAyahsForSurahFlow(surahNumber, currentReciterId).first()
+                    quranRepository.refreshAyahs(surahNumber, currentReciterId)
+                    val ayahsList = quranRepository.getAyahsForSurahFlow(surahNumber, currentReciterId).first()
                     _ayahs.value = ayahsList
                     
                     _readerLoadState.value = ReaderLoadState.Success
