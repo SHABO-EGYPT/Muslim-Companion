@@ -95,10 +95,12 @@ class PrayerViewModelTest {
 
     @Test
     fun `togglePrayerCompletion increments streak when all 5 completed`() = runTest {
+        val today = fakeRepo.getActiveTrackingDate()
+        val yesterday = java.time.LocalDate.parse(today).minusDays(1).toString()
         fakeRepo.setProgress(UserProgressEntity(
             completedPrayersToday = "Fajr,Dhuhr,Asr,Maghrib",
             streak = 3,
-            lastStreakDate = "2026-07-03"
+            lastStreakDate = yesterday
         ))
 
         viewModel.togglePrayerCompletion("Isha")

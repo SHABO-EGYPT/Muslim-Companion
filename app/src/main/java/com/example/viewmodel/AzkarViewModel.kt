@@ -112,6 +112,7 @@ class AzkarViewModel @Inject constructor(
         viewModelScope.launch {
             _assistantLoading.value = true
             _assistantError.value = null
+            _assistantAzkar.value = emptyList()
 
             val apiKey = com.example.BuildConfig.GEMINI_API_KEY
             if (apiKey.isNotBlank() && apiKey != "MY_GEMINI_API_KEY") {
@@ -153,6 +154,7 @@ class AzkarViewModel @Inject constructor(
                             )
                         }
                         
+                        _assistantAzkar.value = recommendedAzkar
                         _chatHistory.value = _chatHistory.value + ChatMessage(
                             isUser = false,
                             text = messageText,
@@ -170,6 +172,7 @@ class AzkarViewModel @Inject constructor(
             try {
                 azkarRepository.searchDhikrItems(query).collect { results ->
                     if (results.isNotEmpty()) {
+                        _assistantAzkar.value = results
                         _chatHistory.value = _chatHistory.value + ChatMessage(
                             isUser = false,
                             text = "Here are some supplications I found locally:",

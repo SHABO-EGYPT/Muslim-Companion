@@ -1,4 +1,4 @@
-﻿package com.example.fake
+package com.example.fake
 
 import com.example.data.local.AppSettingEntity
 import com.example.data.local.UserProgressEntity
@@ -13,10 +13,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
  * Fake CompanionRepository for unit testing ViewModels.
  * Fully in-memory, no database or network dependencies.
  */
-class FakeCompanionRepository : CompanionRepository(
-    dao = FakeDao(),
-    quranRepository = FakeQuranRepository(),
-    azkarRepository = FakeAzkarRepository()
+class FakeCompanionRepository(
+    val quranRepository: FakeQuranRepository = FakeQuranRepository(),
+    val azkarRepository: FakeAzkarRepository = FakeAzkarRepository(),
+    val dao: FakeDao = FakeDao()
+) : CompanionRepository(
+    dao = dao,
+    quranRepository = quranRepository,
+    azkarRepository = azkarRepository
 ) {
     private val _userProgress = MutableStateFlow(UserProgressEntity())
     private val _settings = MutableStateFlow(AppSettingEntity())

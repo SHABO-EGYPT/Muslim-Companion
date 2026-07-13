@@ -130,16 +130,36 @@ class SurahReaderViewModel @Inject constructor(
         val currentIdx = ayahsList.indexOfFirst { it.number == currentNumber }
         if (currentIdx != -1 && currentIdx + 1 < ayahsList.size) {
             playAyah(ayahsList[currentIdx + 1])
+        } else if (currentIdx != -1 && currentIdx + 1 == ayahsList.size) {
+            playNextSurah()
         }
     }
 
-    fun setSurah(surah: Surah, startAyah: Int = 1) {
-        _currentSurah.value = surah
-        _currentPlayingAyah.value = startAyah
-        loadSurah(surah.number)
+    private fun playNextSurah() {
+        val currentSurahVal = _currentSurah.value ?: return
+        val nextSurahNumber = currentSurahVal.number + 1
+        if (nextSurahNumber <= 114) {
+            viewModelScope.launch {
+                try {
+                    val surahs = quranRepository.getSurahsDirect()
+                    val nextSurah = surahs.find { it.number == nextSurahNumber }
+                    if (nextSurah != null) {
+                        setSurah(nextSurah, startAyah = 1, playImmediately = true)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
-    fun loadSurah(surahNumber: Int) {
+    fun setSurah(surah: Surah, startAyah: Int = 1, playImmediately: Boolean = false) {
+        _currentSurah.value = surah
+        _currentPlayingAyah.value = startAyah
+        loadSurah(surah.number, playImmediately, startAyah)
+    }
+
+    fun loadSurah(surahNumber: Int, playImmediately: Boolean = false, startAyah: Int = 1) {
         viewModelScope.launch {
             _readerLoadState.value = ReaderLoadState.Loading
             try {
@@ -163,6 +183,11 @@ class SurahReaderViewModel @Inject constructor(
                     _ayahs.value = ayahsList
                     
                     _readerLoadState.value = ReaderLoadState.Success
+
+                    if (playImmediately && ayahsList.isNotEmpty()) {
+                        val activeAyah = ayahsList.find { it.number == startAyah } ?: ayahsList.first()
+                        playAyah(activeAyah)
+                    }
                 } else {
                     _readerLoadState.value = ReaderLoadState.Error("Surah not found")
                 }

@@ -32,10 +32,14 @@ class SurahReaderViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         fakeQuranRepo = FakeQuranRepository()
-        fakeRepo = FakeCompanionRepository()
+        fakeRepo = FakeCompanionRepository(quranRepository = fakeQuranRepo)
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        val audioManager = com.example.data.quran.QuranAudioManager(context)
         viewModel = SurahReaderViewModel(
             repository = fakeRepo,
-            context = androidx.test.core.app.ApplicationProvider.getApplicationContext()
+            quranRepository = fakeQuranRepo,
+            audioManager = audioManager,
+            context = context
         )
     }
 
@@ -58,7 +62,7 @@ class SurahReaderViewModelTest {
 
     @Test
     fun `quranReciter defaults to alafasy`() {
-        assertEquals("7", viewModel.quranSettings.value.quranReciter)
+        assertEquals("ar.alafasy", viewModel.quranSettings.value.quranReciter)
     }
 
     @Test
@@ -152,5 +156,16 @@ class SurahReaderViewModelTest {
     @Test
     fun `readerLoadState is Idle initially`() {
         assertTrue(viewModel.readerLoadState.value is ReaderLoadState.Idle)
+    }
+
+    @Test
+    fun `setSurah with playImmediately plays the first ayah`() = runTest {
+        val surah = Surah(1, "Al-Fatiha", "The Opening", 7, "الفاتحة", true)
+        fakeQuranRepo.setSurahs(listOf(surah))
+        
+        viewModel.setSurah(surah, startAyah = 1, playImmediately = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+        
+        assertEquals(1, viewModel.currentPlayingAyah.value)
     }
 }

@@ -14,6 +14,7 @@ class FakeDao : CompanionDao {
     private val _prayerTimes = MutableStateFlow<List<CachedPrayerTimeEntity>>(emptyList())
     private val _surahs = MutableStateFlow<List<CachedSurahEntity>>(emptyList())
     private val _notifications = MutableStateFlow<List<NotificationEntity>>(emptyList())
+    private val _quranAyahs = MutableStateFlow<List<QuranAyahEntity>>(emptyList())
 
     override fun getUserProgressFlow(): Flow<UserProgressEntity?> = _progress
     override suspend fun getUserProgressDirect(): UserProgressEntity? = _progress.value
@@ -49,5 +50,17 @@ class FakeDao : CompanionDao {
         _notifications.value = _notifications.value.map {
             if (it.id == id) it.copy(isRead = true) else it
         }
+    }
+
+    override suspend fun getAyahsForSura(sura: Int): List<QuranAyahEntity> {
+        return _quranAyahs.value.filter { it.sura == sura }
+    }
+
+    override suspend fun insertQuranAyahs(ayahs: List<QuranAyahEntity>) {
+        _quranAyahs.value = _quranAyahs.value + ayahs
+    }
+
+    override suspend fun getQuranAyahCount(): Int {
+        return _quranAyahs.value.size
     }
 }

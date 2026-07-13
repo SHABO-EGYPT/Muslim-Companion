@@ -29,9 +29,10 @@ class AzkarViewModelTest {
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeRepo = FakeCompanionRepository()
-        fakeAzkarRepo = fakeRepo.azkarRepository as FakeAzkarRepository
+        fakeAzkarRepo = fakeRepo.azkarRepository
         viewModel = AzkarViewModel(
-            repository = fakeRepo
+            repository = fakeRepo,
+            azkarRepository = fakeAzkarRepo
         )
     }
 
