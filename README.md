@@ -41,6 +41,11 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 - **Qibla Alignment:** Real-time Qibla compass pointing directly to the Kaaba using device sensors.
 - **Mosque Finder:** Map-linked widget querying nearby mosques using location coordinates and Google Maps (with browser fallback).
 
+### 🎵 Quran Audio Player Widget & Media Session
+- **Background Playback Service:** Custom implementation of AndroidX **MediaSessionService** managing a global `ExoPlayer` instance, enabling uninterrupted audio recitation even when the app is closed or the screen is locked.
+- **System Media Notification:** Automatically displays a standard **MediaStyle Notification** in the system notification panel with Surah title, reciter name, seeking progress bar, and play/pause/skip controls.
+- **Material 3 Home Widget:** Responsive Home screen widget styled with a premium deep-green Material shape. Displays current Surah name, reciter name, and Ayah number, with buttons to control playback (play/pause, next, previous) and tap-to-open shortcuts.
+
 ---
 
 ## Screenshots
@@ -58,6 +63,10 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 | 🕋 Qibla Compass | 📿 Digital Tasbih | ⚙️ Profile / Settings |
 |:---:|:---:|:---:|
 | ![Qibla](screenshots/qibla.png) | ![Tasbih](screenshots/tasbih.png) | ![Settings](screenshots/profile.png) |
+
+| 🎵 Home Screen Player Widget |
+|:---:|
+| ![Player Widget](screenshots/widget_screenshot.png) |
 
 ---
 
@@ -79,6 +88,19 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 
 ## Installation & Setup
 
+### 📲 Directly Installing the Pre-built APK
+
+You can quickly install and run the app on your physical Android phone without needing to compile code:
+
+1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `muslim-companion-debug.apk`.
+2. **Transfer to Mobile:** Copy this file to your phone's storage via USB, cloud sharing, or messaging app.
+3. **Enable Unknown Sources:** On your Android phone, go to **Settings > Security** and enable **"Install unknown apps"** for your file manager or browser.
+4. **Install and Launch:** Open your phone's File Manager, tap on `muslim-companion-debug.apk`, click **Install**, and once completed, open the app from your launcher!
+
+---
+
+### 💻 Building from Source (Developers)
+
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/SHABO-EGYPT/Muslim-Companion.git
@@ -90,4 +112,4 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
    - Create a file named `.env` in the root folder and set your `GEMINI_API_KEY` (if utilizing AI assistant components).
 4. **Deploy:**
    - Build and run the app directly on an emulator or connected physical Android device.
-   - Ready-to-install debug APKs are also located inside the project's [APK](file:///D:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/APK/) folder.
+   - You can compile your own APK by running `Build > Build Bundle(s) / APK(s) > Build APK(s)` in Android Studio.

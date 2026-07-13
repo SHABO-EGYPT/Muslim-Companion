@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Muslim Companion</string>
+    <string name="widget_description">Controls Quran audio recitation directly from your home screen.</string>
 </resources>

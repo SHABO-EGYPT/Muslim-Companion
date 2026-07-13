@@ -13,8 +13,12 @@ import com.example.domain.model.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import android.content.ComponentName
+import com.example.audio.QuranAudioService
 import com.example.data.quran.QuranAudioManager
 import kotlinx.coroutines.launch
 
@@ -33,22 +37,47 @@ class SurahReaderViewModel @Inject constructor(
     private val audioManager: QuranAudioManager,
     @ApplicationContext context: Context
 ) : ViewModel() {
-    private val player: ExoPlayer = ExoPlayer.Builder(context).build().apply {
-        addListener(object : Player.Listener {
-            override fun onPlaybackStateChanged(state: Int) {
-                android.util.Log.d("QuranAudio", "Playback state changed: $state")
-                if (state == Player.STATE_ENDED) {
-                    playNextAyah()
+    private var player: Player? = null
+
+    init {
+        val sessionToken = SessionToken(context, ComponentName(context, QuranAudioService::class.java))
+        val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+        controllerFuture.addListener({
+            try {
+                val controller = controllerFuture.get()
+                player = controller
+                controller.addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(state: Int) {
+                        android.util.Log.d("QuranAudio", "Playback state changed: $state")
+                        if (state == Player.STATE_ENDED) {
+                            playNextSurah()
+                        }
+                    }
+                    override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                        android.util.Log.d("QuranAudio", "Is playing changed: $isPlayingNow")
+                        _isPlaying.value = isPlayingNow
+                    }
+                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                        val index = controller.currentMediaItemIndex
+                        val list = _ayahs.value
+                        if (index >= 0 && index < list.size) {
+                            _currentPlayingAyah.value = list[index].number
+                        }
+                    }
+                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                        android.util.Log.e("QuranAudio", "MediaController Error!", error)
+                    }
+                })
+                _isPlaying.value = controller.isPlaying
+                val index = controller.currentMediaItemIndex
+                val list = _ayahs.value
+                if (controller.isPlaying && index >= 0 && index < list.size) {
+                    _currentPlayingAyah.value = list[index].number
                 }
+            } catch (e: Exception) {
+                android.util.Log.e("QuranAudio", "Failed to build MediaController", e)
             }
-            override fun onIsPlayingChanged(isPlayingNow: Boolean) {
-                android.util.Log.d("QuranAudio", "Is playing changed: $isPlayingNow")
-                _isPlaying.value = isPlayingNow
-            }
-            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                android.util.Log.e("QuranAudio", "ExoPlayer Error!", error)
-            }
-        })
+        }, { runnable -> android.os.Handler(android.os.Looper.getMainLooper()).post(runnable) })
     }
 
     private val _currentSurah = MutableStateFlow<Surah?>(null)
@@ -90,18 +119,34 @@ class SurahReaderViewModel @Inject constructor(
 
     fun playAyah(ayah: Ayah) {
         _currentPlayingAyah.value = ayah.number
+        val activeIndex = _ayahs.value.indexOfFirst { it.number == ayah.number }.coerceAtLeast(0)
+        
         viewModelScope.launch {
             try {
-                val uri = if (ayah.audioUrl.isNotBlank()) ayah.audioUrl else {
-                    val reciterId = quranSettings.value.quranReciter
-                    val surahNumber = _currentSurah.value?.number ?: return@launch
-                    // Fallback to local files or single sura download
-                    audioManager.getPlaybackUri(reciterId, surahNumber)
+                val reciterName = recitersList.find { it.id == quranSettings.value.quranReciter }?.name ?: "Reciter"
+                val surahName = _currentSurah.value?.name ?: "Quran Recitation"
+                
+                val mediaItems = _ayahs.value.map { a ->
+                    val uri = if (a.audioUrl.isNotBlank()) a.audioUrl else {
+                        val reciterId = quranSettings.value.quranReciter
+                        val surahNumber = _currentSurah.value?.number ?: 1
+                        audioManager.getPlaybackUri(reciterId, surahNumber)
+                    }
+                    val metadata = MediaMetadata.Builder()
+                        .setTitle(surahName)
+                        .setArtist(reciterName)
+                        .build()
+                    MediaItem.Builder()
+                        .setUri(uri)
+                        .setMediaMetadata(metadata)
+                        .build()
                 }
-                if (uri.isNotBlank()) {
-                    player.setMediaItem(MediaItem.fromUri(uri))
-                    player.prepare()
-                    player.play()
+                
+                player?.let { p ->
+                    p.setMediaItems(mediaItems)
+                    p.seekTo(activeIndex, 0L)
+                    p.prepare()
+                    p.play()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -110,28 +155,18 @@ class SurahReaderViewModel @Inject constructor(
     }
 
     fun togglePlayPause() {
-        if (player.isPlaying) {
-            player.pause()
+        val p = player ?: return
+        if (p.isPlaying) {
+            p.pause()
         } else {
             val ayahsList = _ayahs.value
-            if (player.mediaItemCount == 0 && ayahsList.isNotEmpty()) {
+            if (p.mediaItemCount == 0 && ayahsList.isNotEmpty()) {
                 val activeAyahNum = _currentPlayingAyah.value ?: 1
                 val activeAyah = ayahsList.find { it.number == activeAyahNum } ?: ayahsList.first()
                 playAyah(activeAyah)
             } else {
-                player.play()
+                p.play()
             }
-        }
-    }
-
-    private fun playNextAyah() {
-        val ayahsList = _ayahs.value
-        val currentNumber = _currentPlayingAyah.value ?: return
-        val currentIdx = ayahsList.indexOfFirst { it.number == currentNumber }
-        if (currentIdx != -1 && currentIdx + 1 < ayahsList.size) {
-            playAyah(ayahsList[currentIdx + 1])
-        } else if (currentIdx != -1 && currentIdx + 1 == ayahsList.size) {
-            playNextSurah()
         }
     }
 
@@ -279,6 +314,6 @@ class SurahReaderViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        player.release()
+        (player as? MediaController)?.release()
     }
 }

@@ -44,7 +44,7 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     
                     val soundType = settings.notificationSoundType
-                    val channelId = "prayer_channel_$soundType"
+                    val channelId = "prayer_channel_${soundType.lowercase().replace(" ", "_")}"
                     val channelName = "Prayer Notifications ($soundType)"
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -67,11 +67,11 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                                     // Default system sound
                                 }
                                 "Full Adhan" -> {
-                                    val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.full_adhan}")
+                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/full_adhan")
                                     setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
                                 }
                                 "First Adhan" -> {
-                                    val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.first_adhan}")
+                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/first_adhan")
                                     setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
                                 }
                             }
@@ -79,10 +79,19 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                         notificationManager.createNotificationChannel(channel)
                     }
 
+                    val lang = settings.language
+                    val translatedPrayer = com.example.ui.Translator.translate(prayerName.lowercase(), lang)
+                    val title = if (lang == "Arabic") "حان وقت الصلاة" else "Time for Prayer"
+                    val contentText = if (lang == "Arabic") {
+                        "حان الآن موعد صلاة $translatedPrayer ($arabicName)"
+                    } else {
+                        "It is time for $translatedPrayer ($arabicName) prayer."
+                    }
+
                     val builder = NotificationCompat.Builder(context, channelId)
                         .setSmallIcon(android.R.drawable.ic_dialog_info) 
-                        .setContentTitle("Upcoming Prayer")
-                        .setContentText("$prayerName ($arabicName) is in 10 minutes.")
+                        .setContentTitle(title)
+                        .setContentText(contentText)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true)
 
@@ -92,11 +101,11 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                             builder.setVibrate(longArrayOf(0, 500, 200, 500))
                         }
                         "Full Adhan" -> {
-                            val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.full_adhan}")
+                            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/full_adhan")
                             builder.setSound(soundUri)
                         }
                         "First Adhan" -> {
-                            val soundUri = Uri.parse("android.resource://${context.packageName}/${R.raw.first_adhan}")
+                            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/first_adhan")
                             builder.setSound(soundUri)
                         }
                     }

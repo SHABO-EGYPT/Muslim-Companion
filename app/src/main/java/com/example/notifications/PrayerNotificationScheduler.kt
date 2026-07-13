@@ -44,8 +44,6 @@ class PrayerNotificationScheduler(private val context: Context) {
                 set(Calendar.MINUTE, localTime.minute)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-                // Subtract 10 minutes
-                add(Calendar.MINUTE, -10)
             }
 
                 // If the time has already passed today, schedule for tomorrow
