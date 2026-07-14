@@ -5,7 +5,7 @@ import com.example.data.local.CachedPrayerTimeEntity
 import com.example.data.local.CompanionDao
 import com.example.data.local.NotificationEntity
 import com.example.data.local.UserProgressEntity
-import com.example.data.mapper.MethodMapper
+import com.example.domain.CalculationMethodMapper
 import com.example.data.remote.PrayerApi
 import com.example.domain.model.AchievementBadge
 import com.example.domain.model.NotificationItem
@@ -25,7 +25,7 @@ open class CompanionRepository(
 
     open suspend fun refreshPrayerTimesByLocation(latitude: Double, longitude: Double) {
         val settings = dao.getSettingsDirect() ?: AppSettingEntity()
-        val methodId = MethodMapper.getMethodId(settings.calculationMethod)
+        val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
         val formatter = java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
         val response = PrayerApi.instance.getTimings(formatter.format(java.util.Date()), latitude, longitude, methodId)
         savePrayerTimes(response.data.timings)
@@ -33,7 +33,7 @@ open class CompanionRepository(
 
     open suspend fun refreshPrayerTimes(city: String = "Cairo", country: String = "Egypt") {
         val settings = dao.getSettingsDirect() ?: AppSettingEntity()
-        val methodId = MethodMapper.getMethodId(settings.calculationMethod)
+        val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
         val response = PrayerApi.instance.getTimingsByCity(city, country, methodId)
         savePrayerTimes(response.data.timings)
     }

@@ -20,7 +20,6 @@ import androidx.media3.session.SessionToken
 import android.content.ComponentName
 import com.example.audio.QuranAudioService
 import com.example.data.quran.QuranAudioManager
-import kotlinx.coroutines.launch
 
 sealed class ReaderLoadState {
     object Idle : ReaderLoadState()
