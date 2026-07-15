@@ -44,8 +44,6 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
     )
 
     val menuItems = listOf(
-        Triple(Translator.translate("reading_history", settings.language), Lucide.BookOpen, ""),
-        Triple(Translator.translate("bookmarked", settings.language), Lucide.Bookmark, Routes.QURAN),
         Triple(Translator.translate("notifications", settings.language), Lucide.Bell, Routes.NOTIFICATIONS),
         Triple(Translator.translate("settings", settings.language), Lucide.Settings, Routes.SETTINGS)
     )

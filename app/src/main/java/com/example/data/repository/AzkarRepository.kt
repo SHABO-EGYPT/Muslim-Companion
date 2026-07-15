@@ -86,9 +86,19 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     name.contains("الصلاة") -> progress.afterPrayerDone
                     else -> 0
                 }
+                val title = when (name) {
+                    "أذكار الصباح" -> "Morning Azkar"
+                    "أذكار المساء" -> "Evening Azkar"
+                    "أذكار النوم" -> "Sleep Azkar"
+                    "أذكار بعد الصلاة" -> "Post-Prayer Azkar"
+                    "أذكار الاستيقاظ" -> "Wakeup Azkar"
+                    "دعاء الاستخارة" -> "Dua Al-Istikhara"
+                    "دعاء للمريض" -> "Dua for the Sick"
+                    else -> name
+                }
                 AzkarCategory(
                     id = name,
-                    title = name,
+                    title = title,
                     arabicTitle = name,
                     totalCount = azkarData[name]?.size ?: 0,
                     doneCount = progressCount,

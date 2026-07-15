@@ -7,10 +7,14 @@ import javax.inject.Inject
 import com.example.data.repository.CompanionRepository
 import com.example.domain.model.NotificationItem
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 // 9. Notifications ViewModel
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(private val repository: CompanionRepository) : ViewModel() {
+    val settings = repository.getSettingsFlow()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), com.example.data.local.AppSettingEntity())
+
     val notifications = repository.getNotificationsFlow()
         .map { entities ->
             entities.map { entity ->
@@ -26,7 +30,9 @@ class NotificationsViewModel @Inject constructor(private val repository: Compani
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun markAllAsRead() {
-        // Implement when necessary or update DB directly
+        viewModelScope.launch {
+            repository.markAllNotificationsAsRead()
+        }
     }
     
     private fun getIconName(iconId: Int): String {

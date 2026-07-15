@@ -55,8 +55,17 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
     val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsState()
 
     val today = LocalDate.now()
-    val gregorianDate = today.format(DateTimeFormatter.ofPattern("EEE, d MMM yyyy"))
-    val hijriDateString = java.time.chrono.HijrahDate.from(today).format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy")) + " AH"
+    val appLocale = remember(settings.language) {
+        if (settings.language == "Arabic") java.util.Locale.forLanguageTag("ar-u-nu-latn") else java.util.Locale.US
+    }
+    val gregorianDate = remember(today, appLocale) {
+        today.format(java.time.format.DateTimeFormatter.ofPattern("EEE, d MMM yyyy", appLocale))
+    }
+    val hijriDateString = remember(today, appLocale) {
+        val date = java.time.chrono.HijrahDate.from(today)
+        val suffix = if (settings.language == "Arabic") " هـ" else " AH"
+        date.format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)) + suffix
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize().testTag("home_screen_container"),
@@ -83,7 +92,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(imageVector = Lucide.Clock, contentDescription = null, tint = contentColor.copy(alpha = 0.7f), modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            val timeString = LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a"))
+                            val timeString = LocalTime.now().format(java.time.format.DateTimeFormatter.ofPattern("hh:mm a", appLocale))
                             Text(text = timeString, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = contentColor)
                         }
                         Spacer(modifier = Modifier.height(4.dp))

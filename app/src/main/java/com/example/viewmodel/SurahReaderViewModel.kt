@@ -60,7 +60,17 @@ class SurahReaderViewModel @Inject constructor(
                         val index = controller.currentMediaItemIndex
                         val list = _ayahs.value
                         if (index >= 0 && index < list.size) {
-                            _currentPlayingAyah.value = list[index].number
+                            val activeAyah = list[index]
+                            _currentPlayingAyah.value = activeAyah.number
+                            _currentSurah.value?.let { surah ->
+                                updateProgress(
+                                    surahNumber = surah.number,
+                                    surahName = surah.name,
+                                    surahArabicName = surah.arabicName,
+                                    ayahNumber = activeAyah.number,
+                                    progress = activeAyah.number.toFloat() / surah.ayahsCount
+                                )
+                            }
                         }
                     }
                     override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
@@ -217,7 +227,8 @@ class SurahReaderViewModel @Inject constructor(
                     _ayahs.value = ayahsList
                     
                     _readerLoadState.value = ReaderLoadState.Success
-
+                    _currentPlayingAyah.value = startAyah
+                    
                     if (playImmediately && ayahsList.isNotEmpty()) {
                         val activeAyah = ayahsList.find { it.number == startAyah } ?: ayahsList.first()
                         playAyah(activeAyah)
@@ -299,13 +310,17 @@ class SurahReaderViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val currentProgress = repository.getUserProgressDirect() ?: UserProgressEntity()
+            val wasAlreadyCompleted = currentProgress.lastReadSurahNumber == surahNumber && currentProgress.lastReadProgress >= 0.99f
+            val incrementReadCount = if (progress >= 0.99f && !wasAlreadyCompleted) 1 else 0
+
             repository.saveUserProgress(
                 currentProgress.copy(
                     lastReadSurahNumber = surahNumber,
                     lastReadSurahName = surahName,
                     lastReadSurahArabicName = surahArabicName,
                     lastReadAyahNumber = ayahNumber,
-                    lastReadProgress = progress
+                    lastReadProgress = progress,
+                    surahsReadCount = currentProgress.surahsReadCount + incrementReadCount
                 )
             )
         }

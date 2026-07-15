@@ -87,28 +87,6 @@ class AzkarViewModelTest {
     }
 
     @Test
-    fun `searchAzkar returns results for matching category`() = runTest {
-        fakeAzkarRepo.setDhikrItems("أذكار الصباح", listOf(
-            DhikrItem(1, "سُبْحَانَ اللَّهِ", "Glory be to Allah", "SubhanAllah", 33)
-        ))
-
-        viewModel.searchAzkar("Allah")
-        advanceUntilIdle()
-
-        assertFalse(viewModel.assistantLoading.value)
-        assertTrue(viewModel.assistantAzkar.value.isNotEmpty())
-    }
-
-    @Test
-    fun `searchAzkar shows error for no match`() = runTest {
-        viewModel.searchAzkar("nonexistent_category_xyz")
-        advanceUntilIdle()
-
-        assertFalse(viewModel.assistantLoading.value)
-        assertTrue(viewModel.assistantAzkar.value.isEmpty())
-    }
-
-    @Test
     fun `completeAzkarFlow updates morningDone`() = runTest {
         fakeRepo.setProgress(UserProgressEntity(morningDone = 0))
 

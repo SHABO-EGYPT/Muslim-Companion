@@ -72,7 +72,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                             val city = address.locality ?: address.subAdminArea
                                             val country = address.countryName
                                             if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
-                                        } else "Coordinates: %.2f, %.2f".format(location.latitude, location.longitude)
+                                        } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
                                         viewModel.updateLocation(location.latitude, location.longitude, name)
                                     }
                                     override fun onError(errorMessage: String?) {
@@ -87,7 +87,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                     val city = address.locality ?: address.subAdminArea
                                     val country = address.countryName
                                     if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
-                                } else "Coordinates: %.2f, %.2f".format(location.latitude, location.longitude)
+                                } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
                                 viewModel.updateLocation(location.latitude, location.longitude, name)
                             }
                         } catch (_: Exception) {
@@ -116,10 +116,18 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                     Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                         val today = LocalDate.now()
                         val hijri = HijrahDate.from(today)
-                        val formatter = DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", Locale.US)
-                        val hijriFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.US)
+                        val appLocale = remember(settings.language) {
+                            if (settings.language == "Arabic") java.util.Locale.forLanguageTag("ar-u-nu-latn") else java.util.Locale.US
+                        }
+                        val formatter = remember(today, appLocale) {
+                            DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", appLocale)
+                        }
+                        val hijriFormatter = remember(today, appLocale) {
+                            DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)
+                        }
+                        val dateSuffix = if (settings.language == "Arabic") " هـ" else " AH"
                         
-                        Text(text = "${today.format(formatter)} · ${hijri.format(hijriFormatter)} AH", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
+                        Text(text = "${today.format(formatter)} · ${hijri.format(hijriFormatter)}$dateSuffix", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(text = nextPrayerInfo.second, style = MaterialTheme.typography.displayLarge.copy(fontSize = 36.sp, fontWeight = FontWeight.Bold), color = Color.White)
                         Spacer(modifier = Modifier.height(4.dp))
@@ -168,9 +176,14 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                 val parts = item.timeString.split(":")
                                 val h = parts[0].toInt()
                                 val m = parts[1]
-                                val suffix = if (h >= 12) "PM" else "AM"
+                                val isPm = h >= 12
                                 val h12 = if (h % 12 == 0) 12 else h % 12
-                                "%02d:%s %s".format(h12, m, suffix)
+                                val suffix = if (isPm) {
+                                    if (settings.language == "Arabic") "م" else "PM"
+                                } else {
+                                    if (settings.language == "Arabic") "ص" else "AM"
+                                }
+                                String.format(java.util.Locale.US, "%02d:%s %s", h12, m, suffix)
                             } catch (_: Exception) { item.timeString }
 
                             Text(text = time12, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurface)

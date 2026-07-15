@@ -18,21 +18,23 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 - **Customization Settings:** Custom preferences to scale Arabic text size, change fonts, and keep screen awake.
 
 ### 📿 Digital Tasbih Counter
-- **Phrase Selector:** Chip selectors to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*) loaded dynamically.
+- **Phrase Selector:** Chip selectors at the top to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*) loaded dynamically.
 - **Target Tracking:** Set custom targets per phrase and track counts with interactive tap-to-increment circle controls.
+- **Auto-Advance Flow:** Auto-advances to the next phrase in the list upon completing a phrase cycle (reaching target count).
+- **Count Lock and Reset:** The last phrase locks its count upon completion and does not reset to 0 until the user taps Reset or the next prayer time comes.
 - **Tactile Feedback:** Built-in vibration haptic feedback on increments.
 
-### 🌟 Daily Azkar
-- **3x2 Grid Widget:** The Home screen features a responsive 3x2 grid natively displaying all 5 daily remembrance categories.
+### 🌟 Daily Azkar & Supplications
+- **3x2 Grid Widget:** The Home screen features a responsive 3x2 grid natively displaying daily remembrance categories.
+- **Expanded Supplications:** Includes newly added sections for **Dua Al-Istikhara (دعاء الاستخارة)** and **Dua for the Sick (دعاء للمريض)**.
 - **Dark Mode Optimization:** Custom tinted icons adapting gracefully with elevated brightness on Dark Mode.
 - **Progress Trackers:** Features inline category-themed `LinearProgressIndicator`s to dynamically track dhikr progress.
 - **Completion Badges:** Displays solid checkmark icons once categories reach 100% completion.
 - **Horizontal Pager Flow:** In the Azkar reading screen, uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
 - **Auto-Advance:** Card automatically scrolls to the next remembrance once the target count is completed.
 
-### 🤖 Ask Azkar Assistant
-- **Conversational AI:** Integrated a robust chat interface powered by the **Gemini API** to help users find specific supplications or ask context-aware questions.
-- **Continuous Context:** Maintains chat history within the session so users can ask follow-up questions naturally.
+### 🏆 Achievement Badges
+- **Dynamic Unlocking:** Badges such as "First Juz", "7-day streak", "Night Owl", and "Early Riser" unlock dynamically on the Profile screen based on your real-time reading progress and checked prayers.
 
 ### 🕋 Prayer Times, Qibla Compass & Notifications
 - **Accurate Schedules:** Displays local prayer times (Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha).
@@ -108,8 +110,6 @@ You can quickly install and run the app on your physical Android phone without n
 2. **Open in Android Studio:**
    - Open Android Studio, select **Open**, and navigate to the cloned project folder.
    - Allow Gradle to sync and download required dependencies.
-3. **API Keys:**
-   - Create a file named `.env` in the root folder and set your `GEMINI_API_KEY` (if utilizing AI assistant components).
-4. **Deploy:**
+3. **Deploy:**
    - Build and run the app directly on an emulator or connected physical Android device.
    - You can compile your own APK by running `Build > Build Bundle(s) / APK(s) > Build APK(s)` in Android Studio.

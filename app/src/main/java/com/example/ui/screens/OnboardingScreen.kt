@@ -67,7 +67,7 @@ fun OnboardingScreen(viewModel: ProfileViewModel, navController: NavHostControll
                                 val country = address.countryName
                                 location = if (city != null && country != null) "$city, $country" else city ?: country ?: "Unknown Location"
                             } else {
-                                location = "Coordinates: %.2f, %.2f".format(loc.latitude, loc.longitude)
+                                location = "Coordinates: %.2f, %.2f".format(java.util.Locale.US, loc.latitude, loc.longitude)
                             }
                         } catch (e: Exception) {
                             location = "Unknown Location"

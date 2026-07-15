@@ -99,12 +99,6 @@ fun AppNavHost(navController: NavHostController, repository: CompanionRepository
                 navController = navController
             )
         }
-        composable(Routes.AZKAR_ASSISTANT) {
-            AzkarAssistantScreen(
-                viewModel = azkarViewModel,
-                navController = navController
-            )
-        }
         composable(Routes.AZKAR_FLOW) {
             AzkarReadingFlowScreen(
                 viewModel = azkarViewModel,

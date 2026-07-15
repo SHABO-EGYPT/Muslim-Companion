@@ -6,7 +6,6 @@ object Routes {
     const val QURAN = "quran"
     const val SURAH_READER = "surah_reader"
     const val AZKAR = "azkar"
-    const val AZKAR_ASSISTANT = "azkar_assistant"
     const val AZKAR_FLOW = "azkar_flow"
     const val TASBIH = "tasbih"
     const val PRAYER = "prayer"

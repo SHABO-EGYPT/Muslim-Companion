@@ -60,27 +60,6 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                 }
             }
 
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.AZKAR_ASSISTANT) }.testTag("azkar_assistant_card"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Box(modifier = Modifier.size(56.dp).background(MaterialTheme.colorScheme.primary, CircleShape), contentAlignment = Alignment.Center) {
-                            Icon(imageVector = Lucide.Sparkles, contentDescription = "AI Assistant", tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(28.dp))
-                        }
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = Translator.translate("ask_azkar_assistant", settings.language), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = Translator.translate("find_specific_supplications", settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
-                        }
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Go", tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.5f))
-                    }
-                }
-            }
-
             items(categories) { cat ->
                 val colorHex = Color(cat.colorHex)
                 val icon = when (cat.iconName) {

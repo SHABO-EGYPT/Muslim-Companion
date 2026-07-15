@@ -52,6 +52,12 @@ class FakeDao : CompanionDao {
         }
     }
 
+    override suspend fun markAllNotificationsAsRead() {
+        _notifications.value = _notifications.value.map {
+            it.copy(isRead = true)
+        }
+    }
+
     override suspend fun getAyahsForSura(sura: Int): List<QuranAyahEntity> {
         return _quranAyahs.value.filter { it.sura == sura }
     }

@@ -47,7 +47,7 @@ class QuranAudioManager(private val context: Context) {
     fun localFile(reciterId: String, suraNumber: Int): File {
         val path = RECITER_PATHS[reciterId] ?: reciterId
         val dir = File(context.filesDir, "audio/$path")
-        return File(dir, "%03d.mp3".format(suraNumber))
+        return File(dir, "%03d.mp3".format(java.util.Locale.US, suraNumber))
     }
 
     /** Returns true if the sura file is already downloaded locally. */
@@ -59,7 +59,7 @@ class QuranAudioManager(private val context: Context) {
     /** Returns the CDN URL for the given sura. */
     fun remoteUrl(reciterId: String, suraNumber: Int): String {
         val path = RECITER_PATHS[reciterId] ?: reciterId
-        return "$BASE_CDN/$path/%03d.mp3".format(suraNumber)
+        return "$BASE_CDN/$path/%03d.mp3".format(java.util.Locale.US, suraNumber)
     }
 
     // ── Download ─────────────────────────────────────────────────────────────

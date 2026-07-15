@@ -16,14 +16,33 @@ import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import com.example.ui.Translator
 import com.example.viewmodel.NotificationsViewModel
 
 @Composable
 fun NotificationsScreen(viewModel: NotificationsViewModel, navController: NavHostController) {
     val list by viewModel.notifications.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().testTag("notifications_screen").padding(bottom = 80.dp)) {
-        AppHeader(title = "Notifications", onBack = { navController.popBackStack() })
+    Column(modifier = Modifier.fillMaxSize().testTag("notifications_screen").padding(bottom = 16.dp)) {
+        AppHeader(
+            title = Translator.translate("notifications", settings.language),
+            onBack = { navController.popBackStack() },
+            rightContent = {
+                if (list.any { it.isUnread }) {
+                    TextButton(
+                        onClick = { viewModel.markAllAsRead() },
+                        modifier = Modifier.testTag("mark_all_read_button")
+                    ) {
+                        Text(
+                            text = Translator.translate("mark_all_read", settings.language),
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth().weight(1f).testTag("notifications_list"),

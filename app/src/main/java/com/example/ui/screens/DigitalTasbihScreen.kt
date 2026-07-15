@@ -41,43 +41,42 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
     Column(modifier = Modifier.fillMaxSize().testTag("tasbih_screen")) {
         AppHeader(title = Translator.translate("digital_tasbih", settings.language), onBack = { navController.popBackStack() })
 
-        Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 20.dp, vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            
-            // Phrase Selector List
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-                    .testTag("tasbih_phrases_row"),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                itemsIndexed(phrases) { index, item ->
-                    val isSelected = index == activeIndex
-                    val containerColor = if (isSelected) MintTeal else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                    val contentColor = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant
-                    val borderStroke = if (isSelected) BorderStroke(1.5.dp, DarkTealText) else null
+        // Phrase Selector List
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, top = 12.dp, end = 20.dp, bottom = 8.dp)
+                .testTag("tasbih_phrases_row"),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 4.dp)
+        ) {
+            itemsIndexed(phrases) { index, item ->
+                val isSelected = index == activeIndex
+                val containerColor = if (isSelected) MintTeal else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                val contentColor = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant
+                val borderStroke = if (isSelected) BorderStroke(1.5.dp, DarkTealText) else null
 
-                    Card(
-                        modifier = Modifier
-                            .clickable { viewModel.selectPhrase(index) }
-                            .testTag("tasbih_phrase_item_$index"),
-                        colors = CardDefaults.cardColors(containerColor = containerColor),
-                        shape = RoundedCornerShape(100.dp),
-                        border = borderStroke
-                    ) {
-                        Text(
-                            text = item.arabicText,
-                            fontFamily = ArabicSerifFamily,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = contentColor,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
+                Card(
+                    modifier = Modifier
+                        .clickable { viewModel.selectPhrase(index) }
+                        .testTag("tasbih_phrase_item_$index"),
+                    colors = CardDefaults.cardColors(containerColor = containerColor),
+                    shape = RoundedCornerShape(100.dp),
+                    border = borderStroke
+                ) {
+                    Text(
+                        text = item.arabicText,
+                        fontFamily = ArabicSerifFamily,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
                 }
             }
+        }
 
+        Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 20.dp, vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Text(text = dhikr, style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 34.sp), color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -95,26 +94,12 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(
-                    onClick = { viewModel.reset() },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                    shape = RoundedCornerShape(100.dp),
-                    modifier = Modifier.testTag("tasbih_reset_button")
-                ) { Text(Translator.translate("reset", settings.language), color = MaterialTheme.colorScheme.onSurfaceVariant) }
-
-                Button(
-                    onClick = {
-                        viewModel.reset()
-                        navController.popBackStack()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    shape = RoundedCornerShape(100.dp),
-                    modifier = Modifier.testTag("tasbih_done_button")
-                ) {
-                    Icon(imageVector = Lucide.Check, contentDescription = "Done"); Spacer(modifier = Modifier.width(4.dp)); Text(Translator.translate("mark_done", settings.language), color = Color.White)
-                }
-            }
+            Button(
+                onClick = { viewModel.reset() },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                shape = RoundedCornerShape(100.dp),
+                modifier = Modifier.testTag("tasbih_reset_button")
+            ) { Text(Translator.translate("reset", settings.language), color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     }
 }

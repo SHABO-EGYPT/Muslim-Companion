@@ -84,8 +84,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
     val currentAyahNumber by viewModel.currentPlayingAyah.collectAsState()
     val reciters = viewModel.recitersList
 
-    var showSettingsDialog by remember { mutableStateOf(false) }
-    var reciterExpanded by remember { mutableStateOf(false) }
+
     val isPlaying by viewModel.isPlaying.collectAsState()
 
     var showAyahMenu by remember { mutableStateOf(false) }
@@ -101,7 +100,8 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
 
     LaunchedEffect(surah) {
         if (surah == null) {
-            viewModel.loadSurah(activeSurah.number)
+            val startAyah = progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+            viewModel.loadSurah(activeSurah.number, startAyah = startAyah)
         }
     }
 
@@ -119,65 +119,6 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                     }
                 }
             )
-
-            Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
-                val currentReciter = reciters.find { it.id == quranSettings.quranReciter } ?: reciters[0]
-                val currentReciterKey = when(currentReciter.id) {
-                    "ar.alafasy" -> "mishary_alafasy"
-                    "ar.abdulbasitmurattal" -> "abdul_basit"
-                    "ar.husary" -> "al_husary"
-                    "ar.minshawimujawwad" -> "minshawi"
-                    else -> currentReciter.id
-                }
-                Surface(
-                    modifier = Modifier.fillMaxWidth().clickable { reciterExpanded = true }.testTag("reciter_dropdown_trigger"),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Lucide.Mic, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = Translator.translate(currentReciterKey, settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                        }
-                        Icon(imageVector = if (reciterExpanded) Lucide.ChevronUp else Lucide.ChevronDown, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                    }
-                }
-
-                DropdownMenu(
-                    expanded = reciterExpanded,
-                    onDismissRequest = { reciterExpanded = false },
-                    modifier = Modifier.fillMaxWidth(0.9f).background(MaterialTheme.colorScheme.surface).border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
-                ) {
-                    reciters.forEach { reciter ->
-                        val reciterKey = when(reciter.id) {
-                            "ar.alafasy" -> "mishary_alafasy"
-                            "ar.abdulbasitmurattal" -> "abdul_basit"
-                            "ar.husary" -> "al_husary"
-                            "ar.minshawimujawwad" -> "minshawi"
-                            else -> reciter.id
-                        }
-                        DropdownMenuItem(
-                            text = { 
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = Translator.translate(reciterKey, settings.language), style = MaterialTheme.typography.bodyLarge, color = if (quranSettings.quranReciter == reciter.id) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
-                                    if (quranSettings.quranReciter == reciter.id) {
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Icon(imageVector = Lucide.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
-                                    }
-                                }
-                            },
-                            onClick = { viewModel.updateQuranReciter(reciter.id); reciterExpanded = false },
-                            modifier = Modifier.testTag("reciter_option_${reciter.id}")
-                        )
-                    }
-                }
-            }
 
             when (val state = loadState) {
                 is ReaderLoadState.Loading -> {
@@ -198,6 +139,18 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                     val density = androidx.compose.ui.platform.LocalDensity.current
                     val topPadding = with(density) { 16.dp.toPx().toInt() }
                     val quranFontFamily = remember(quranSettings.quranFont) { getQuranFontFamily(quranSettings.quranFont) }
+
+                    var hasScrolledToInitial by remember { mutableStateOf(false) }
+                    LaunchedEffect(ayahs) {
+                        if (ayahs.isNotEmpty() && !hasScrolledToInitial) {
+                            val startAyah = currentAyahNumber ?: progress.lastReadAyahNumber
+                            val index = ayahs.indexOfFirst { it.number == startAyah }
+                            if (index != -1) {
+                                listState.scrollToItem(index + 1, -topPadding)
+                                hasScrolledToInitial = true
+                            }
+                        }
+                    }
 
                     LaunchedEffect(currentAyahNumber, isPlaying) {
                         if (isPlaying && currentAyahNumber != null) {
@@ -405,112 +358,5 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
         }
     }
 
-    if (showSettingsDialog) {
-        AlertDialog(
-            onDismissRequest = { showSettingsDialog = false },
-            confirmButton = {
-                TextButton(onClick = { showSettingsDialog = false }, modifier = Modifier.testTag("quran_settings_close_btn")) {
-                    Text(Translator.translate("close", settings.language), color = DarkTealText, fontWeight = FontWeight.Bold)
-                }
-            },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Icon(imageVector = Lucide.Settings, contentDescription = null, tint = DarkTealText)
-                    Text(text = Translator.translate("quran_settings", settings.language), style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                }
-            },
-            text = {
-                Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Column {
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                            Text(Translator.translate("arabic_text_size", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("${quranSettings.quranTextSize.toInt()} sp", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = DarkTealText)
-                        }
-                        Slider(
-                            value = quranSettings.quranTextSize, onValueChange = { viewModel.updateQuranTextSize(it) }, valueRange = 18f..44f,
-                            colors = SliderDefaults.colors(thumbColor = DarkTealText, activeTrackColor = MintTeal, inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant),
-                            modifier = Modifier.testTag("quran_text_size_slider")
-                        )
-                    }
 
-                    Column {
-                        Text(Translator.translate("quran_font_style", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
-                        val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
-                        val fontFamilies = remember { fonts.associateWith { getQuranFontFamily(it) } }
-                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            fonts.forEach { fontName ->
-                                val isSelected = quranSettings.quranFont == fontName
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                                        .background(if (isSelected) MintTeal.copy(alpha = 0.3f) else Color.Transparent)
-                                        .border(BorderStroke(1.dp, if (isSelected) MintTeal else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)), RoundedCornerShape(8.dp))
-                                        .clickable { viewModel.updateQuranFont(fontName) }.padding(horizontal = 12.dp, vertical = 10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                    Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName], fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
-                            }
-                        }
-                    }
-
-                    Column {
-                        Text(Translator.translate("recitation_voice", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 8.dp))
-                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            reciters.forEach { reciter ->
-                                val isSelected = quranSettings.quranReciter == reciter.id
-                                Row(
-                                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
-                                        .background(if (isSelected) MintTeal.copy(alpha = 0.3f) else Color.Transparent)
-                                        .border(BorderStroke(1.dp, if (isSelected) MintTeal else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)), RoundedCornerShape(8.dp))
-                                        .clickable { viewModel.updateQuranReciter(reciter.id) }.padding(horizontal = 12.dp, vertical = 10.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    RadioButton(selected = isSelected, onClick = { viewModel.updateQuranReciter(reciter.id) }, colors = RadioButtonDefaults.colors(selectedColor = DarkTealText, unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant))
-                                    val reciterKey = when(reciter.id) {
-                                        "ar.alafasy" -> "mishary_alafasy"
-                                        "ar.abdulbasitmurattal" -> "abdul_basit"
-                                        "ar.husary" -> "al_husary"
-                                        "ar.minshawimujawwad" -> "minshawi"
-                                        else -> reciter.id
-                                    }
-                                    Text(text = Translator.translate(reciterKey, settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal), color = if (isSelected) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                }
-                            }
-                        }
-                    }
-
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable { viewModel.updateQuranShowTranslation(!quranSettings.quranShowTranslation) }.padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = Translator.translate("show_translation", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                Text(text = Translator.translate("show_translation_desc", settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Switch(checked = quranSettings.quranShowTranslation, onCheckedChange = { viewModel.updateQuranShowTranslation(it) }, modifier = Modifier.testTag("show_translation_switch"), colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = DarkTealText, uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant))
-                        }
-
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), thickness = 1.dp)
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable { viewModel.updateQuranKeepScreenOn(!quranSettings.quranKeepScreenOn) }.padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(text = Translator.translate("keep_screen_on", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
-                                Text(text = Translator.translate("keep_screen_on_desc", settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Switch(checked = quranSettings.quranKeepScreenOn, onCheckedChange = { viewModel.updateQuranKeepScreenOn(it) }, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = DarkTealText, uncheckedThumbColor = MaterialTheme.colorScheme.outline, uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant))
-                        }
-                    }
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            shape = RoundedCornerShape(20.dp)
-        )
-    }
 }

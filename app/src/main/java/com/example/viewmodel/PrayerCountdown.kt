@@ -65,7 +65,7 @@ fun calculateNextPrayerInfo(
 
             val duration = Duration.between(now, next.second)
             val seconds = duration.seconds
-            val countdown = String.format("%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
+            val countdown = String.format(java.util.Locale.US, "%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
             
             Triple(next.first, countdown, next.first.name)
         }

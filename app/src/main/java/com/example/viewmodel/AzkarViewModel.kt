@@ -11,13 +11,7 @@ import com.example.data.repository.CompanionRepository
 import com.example.domain.model.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.json.JSONObject
-import org.json.JSONArray
-import com.example.data.remote.GeminiApiService
-import com.example.data.remote.GenerateContentRequest
-import com.example.data.remote.Content
-import com.example.data.remote.Part
-import com.example.data.remote.GenerationConfig
+
 
 // 4. Azkar ViewModel
 @HiltViewModel
@@ -40,14 +34,7 @@ class AzkarViewModel @Inject constructor(
     private val _currentAzkarList = MutableStateFlow<List<DhikrItem>>(emptyList())
     val currentAzkarList = _currentAzkarList.asStateFlow()
 
-    private val _assistantAzkar = MutableStateFlow<List<DhikrItem>>(emptyList())
-    val assistantAzkar = _assistantAzkar.asStateFlow()
 
-    private val _assistantLoading = MutableStateFlow(false)
-    val assistantLoading = _assistantLoading.asStateFlow()
-
-    private val _assistantError = MutableStateFlow<String?>(null)
-    val assistantError = _assistantError.asStateFlow()
 
     private val _flowIndex = MutableStateFlow(0)
     val flowIndex = _flowIndex.asStateFlow()
@@ -92,110 +79,7 @@ class AzkarViewModel @Inject constructor(
         updateAzkarProgress(categoryId, 0, total)
     }
 
-    data class ChatMessage(
-        val id: String = java.util.UUID.randomUUID().toString(),
-        val isUser: Boolean,
-        val text: String,
-        val azkar: List<DhikrItem> = emptyList(),
-        val isError: Boolean = false
-    )
 
-    private val _chatHistory = MutableStateFlow<List<ChatMessage>>(emptyList())
-    val chatHistory = _chatHistory.asStateFlow()
-
-    fun searchAzkar(query: String) {
-        if (query.isBlank()) return
-
-        val userMessage = ChatMessage(isUser = true, text = query)
-        _chatHistory.value = _chatHistory.value + userMessage
-
-        viewModelScope.launch {
-            _assistantLoading.value = true
-            _assistantError.value = null
-            _assistantAzkar.value = emptyList()
-
-            val apiKey = com.example.BuildConfig.GEMINI_API_KEY
-            if (apiKey.isNotBlank() && apiKey != "MY_GEMINI_API_KEY") {
-                try {
-                    val systemInstruction = "You are a helpful, compassionate Islamic supplications assistant. Respond to the user's message with comforting and relevant advice or context, and then recommend a list of relevant Azkar (supplications) from Quran and Sunnah. You must respond ONLY with a JSON object matching this schema: { \"message\": \"Your conversational response here\", \"azkar\": [ { \"arabicText\": \"string (in Arabic script)\", \"repetitionCount\": integer, \"virtue\": \"string (English translation/virtue)\", \"category\": \"string\" } ] }"
-                    
-                    // Build conversation history for context
-                    val contents = _chatHistory.value.map { msg ->
-                        Content(
-                            role = if (msg.isUser) "user" else "model",
-                            parts = listOf(Part(text = if (msg.isUser) msg.text else msg.text + "\n(Suggested ${msg.azkar.size} azkar)"))
-                        )
-                    }
-
-                    val request = GenerateContentRequest(
-                        contents = contents,
-                        systemInstruction = Content(parts = listOf(Part(text = systemInstruction))),
-                        generationConfig = GenerationConfig(responseMimeType = "application/json")
-                    )
-                    
-                    val apiResponse = GeminiApiService.instance.generateContent(apiKey, request)
-                    val jsonText = apiResponse.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
-                    if (!jsonText.isNullOrBlank()) {
-                        val responseObj = JSONObject(jsonText)
-                        val messageText = responseObj.optString("message", "Here are some supplications that might help:")
-                        val azkarArray = responseObj.optJSONArray("azkar") ?: JSONArray()
-                        
-                        val recommendedAzkar = mutableListOf<DhikrItem>()
-                        for (idx in 0 until azkarArray.length()) {
-                            val item = azkarArray.getJSONObject(idx)
-                            recommendedAzkar.add(
-                                DhikrItem(
-                                    id = idx + 1,
-                                    arabicText = item.optString("arabicText", ""),
-                                    englishTranslation = item.optString("virtue", ""),
-                                    translit = "",
-                                    repeatTarget = item.optInt("repetitionCount", 1)
-                                )
-                            )
-                        }
-                        
-                        _assistantAzkar.value = recommendedAzkar
-                        _chatHistory.value = _chatHistory.value + ChatMessage(
-                            isUser = false,
-                            text = messageText,
-                            azkar = recommendedAzkar
-                        )
-                        _assistantLoading.value = false
-                        return@launch
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-            // Local fallback search
-            try {
-                azkarRepository.searchDhikrItems(query).collect { results ->
-                    if (results.isNotEmpty()) {
-                        _assistantAzkar.value = results
-                        _chatHistory.value = _chatHistory.value + ChatMessage(
-                            isUser = false,
-                            text = "Here are some supplications I found locally:",
-                            azkar = results
-                        )
-                    } else {
-                        _chatHistory.value = _chatHistory.value + ChatMessage(
-                            isUser = false,
-                            text = "I couldn't find any specific supplications for that locally. Please try different keywords."
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                _chatHistory.value = _chatHistory.value + ChatMessage(
-                    isUser = false,
-                    text = "Sorry, an error occurred while searching: ${e.message}",
-                    isError = true
-                )
-            } finally {
-                _assistantLoading.value = false
-            }
-        }
-    }
 
     val userProgress: StateFlow<UserProgressEntity> = repository.getUserProgressFlow()
         .stateIn(

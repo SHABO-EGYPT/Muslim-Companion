@@ -87,4 +87,7 @@ interface CompanionDao {
 
     @Query("UPDATE notifications SET isRead = 1 WHERE id = :id")
     suspend fun markNotificationAsRead(id: Int)
+
+    @Query("UPDATE notifications SET isRead = 1")
+    suspend fun markAllNotificationsAsRead()
 }
