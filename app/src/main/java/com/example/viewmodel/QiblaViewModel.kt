@@ -76,23 +76,30 @@ class QiblaViewModel @Inject constructor(
             latitude = kaabaLat
             longitude = kaabaLng
         }
-        _qiblaBearing.value = userLoc.bearingTo(kaabaLoc)
+        val bearing = userLoc.bearingTo(kaabaLoc)
+        _qiblaBearing.value = (bearing + 360f) % 360f
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) return
-        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) gravity = event.values
-        if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) geomagnetic = event.values
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            gravity = event.values.clone()
+        }
+        if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            geomagnetic = event.values.clone()
+        }
 
-        if (gravity != null && geomagnetic != null) {
+        val g = gravity
+        val m = geomagnetic
+        if (g != null && m != null) {
             val R = FloatArray(9)
             val I = FloatArray(9)
-            val success = SensorManager.getRotationMatrix(R, I, gravity, geomagnetic)
+            val success = SensorManager.getRotationMatrix(R, I, g, m)
             if (success) {
                 val orientation = FloatArray(3)
                 SensorManager.getOrientation(R, orientation)
-                // orientation[0] is azimuth
-                _azimuth.value = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                val azimuthDeg = Math.toDegrees(orientation[0].toDouble()).toFloat()
+                _azimuth.value = (azimuthDeg + 360f) % 360f
             }
         }
     }
