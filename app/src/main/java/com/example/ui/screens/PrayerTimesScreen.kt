@@ -60,38 +60,60 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
         if (locationPermissionState.allPermissionsGranted) {
             try {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                
+                val handleLocation = { location: android.location.Location ->
+                    val geocoder = Geocoder(context, Locale.getDefault())
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            geocoder.getFromLocation(location.latitude, location.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
+                                override fun onGeocode(addresses: MutableList<android.location.Address>) {
+                                    val name = if (addresses.isNotEmpty()) {
+                                        val address = addresses[0]
+                                        val city = address.locality ?: address.subAdminArea
+                                        val country = address.countryName
+                                        if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
+                                    } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
+                                    viewModel.updateLocation(location.latitude, location.longitude, name)
+                                }
+                                override fun onError(errorMessage: String?) {
+                                    viewModel.updateLocation(location.latitude, location.longitude, "Current Location")
+                                }
+                            })
+                        } else {
+                            @Suppress("DEPRECATION")
+                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                            val name = if (addresses != null && addresses.isNotEmpty()) {
+                                val address = addresses[0]
+                                val city = address.locality ?: address.subAdminArea
+                                val country = address.countryName
+                                if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
+                            } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
+                            viewModel.updateLocation(location.latitude, location.longitude, name)
+                        }
+                    } catch (_: Exception) {
+                        viewModel.updateLocation(location.latitude, location.longitude, "Current Location")
+                    }
+                }
+
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
-                        val geocoder = Geocoder(context, Locale.getDefault())
+                        handleLocation(location)
+                    } else {
                         try {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                                geocoder.getFromLocation(location.latitude, location.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
-                                    override fun onGeocode(addresses: MutableList<android.location.Address>) {
-                                        val name = if (addresses.isNotEmpty()) {
-                                            val address = addresses[0]
-                                            val city = address.locality ?: address.subAdminArea
-                                            val country = address.countryName
-                                            if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
-                                        } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
-                                        viewModel.updateLocation(location.latitude, location.longitude, name)
-                                    }
-                                    override fun onError(errorMessage: String?) {
-                                        viewModel.updateLocation(location.latitude, location.longitude, "Current Location")
-                                    }
-                                })
-                            } else {
-                                @Suppress("DEPRECATION")
-                                val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                                val name = if (addresses != null && addresses.isNotEmpty()) {
-                                    val address = addresses[0]
-                                    val city = address.locality ?: address.subAdminArea
-                                    val country = address.countryName
-                                    if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
-                                } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, location.latitude, location.longitude)
-                                viewModel.updateLocation(location.latitude, location.longitude, name)
+                            fusedLocationClient.getCurrentLocation(
+                                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                                null
+                            ).addOnSuccessListener { freshLocation ->
+                                if (freshLocation != null) {
+                                    handleLocation(freshLocation)
+                                } else {
+                                    viewModel.updateLocation(21.422487, 39.826206, "Makkah (Default)")
+                                }
+                            }.addOnFailureListener {
+                                viewModel.updateLocation(21.422487, 39.826206, "Makkah (Default)")
                             }
-                        } catch (_: Exception) {
-                            viewModel.updateLocation(location.latitude, location.longitude, "Current Location")
+                        } catch (e: Exception) {
+                            viewModel.updateLocation(21.422487, 39.826206, "Makkah (Default)")
                         }
                     }
                 }

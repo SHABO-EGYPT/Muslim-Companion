@@ -54,36 +54,58 @@ fun QiblaCompassScreen(viewModel: QiblaViewModel, navController: NavHostControll
         if (locationPermissionState.allPermissionsGranted) {
             try {
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                
+                val handleLocation = { location: android.location.Location ->
+                    viewModel.updateLocation(location.latitude, location.longitude)
+                    val geocoder = Geocoder(context, Locale.getDefault())
+                    try {
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                            geocoder.getFromLocation(location.latitude, location.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
+                                override fun onGeocode(addresses: MutableList<android.location.Address>) {
+                                    if (addresses.isNotEmpty()) {
+                                        val address = addresses[0]
+                                        val city = address.locality ?: address.subAdminArea
+                                        val country = address.countryName
+                                        locationName = if (city != null && country != null) "$city, $country"
+                                        else city ?: country ?: "Current Location"
+                                    }
+                                }
+                            })
+                        } else {
+                            @Suppress("DEPRECATION")
+                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                            if (addresses != null && addresses.isNotEmpty()) {
+                                val address = addresses[0]
+                                val city = address.locality ?: address.subAdminArea
+                                val country = address.countryName
+                                locationName = if (city != null && country != null) "$city, $country"
+                                else city ?: country ?: "Current Location"
+                            }
+                        }
+                    } catch (e: Exception) {
+                        locationName = "Current Location"
+                    }
+                }
+
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
-                        viewModel.updateLocation(location.latitude, location.longitude)
-                        val geocoder = Geocoder(context, Locale.getDefault())
+                        handleLocation(location)
+                    } else {
                         try {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                                geocoder.getFromLocation(location.latitude, location.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
-                                    override fun onGeocode(addresses: MutableList<android.location.Address>) {
-                                        if (addresses.isNotEmpty()) {
-                                            val address = addresses[0]
-                                            val city = address.locality ?: address.subAdminArea
-                                            val country = address.countryName
-                                            locationName = if (city != null && country != null) "$city, $country"
-                                            else city ?: country ?: "Current Location"
-                                        }
-                                    }
-                                })
-                            } else {
-                                @Suppress("DEPRECATION")
-                                val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                                if (addresses != null && addresses.isNotEmpty()) {
-                                    val address = addresses[0]
-                                    val city = address.locality ?: address.subAdminArea
-                                    val country = address.countryName
-                                    locationName = if (city != null && country != null) "$city, $country"
-                                    else city ?: country ?: "Current Location"
+                            fusedLocationClient.getCurrentLocation(
+                                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                                null
+                            ).addOnSuccessListener { freshLocation ->
+                                if (freshLocation != null) {
+                                    handleLocation(freshLocation)
+                                } else {
+                                    locationName = "Location Signal Weak"
                                 }
+                            }.addOnFailureListener {
+                                locationName = "Location Signal Weak"
                             }
                         } catch (e: Exception) {
-                            // Ignored
+                            locationName = "Location Signal Weak"
                         }
                     }
                 }
