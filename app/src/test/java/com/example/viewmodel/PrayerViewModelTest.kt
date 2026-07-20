@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -124,5 +125,25 @@ class PrayerViewModelTest {
         testDispatcher.scheduler.runCurrent()
 
         assertEquals("Cairo, Egypt", viewModel.locationName.value)
+    }
+
+    @Test
+    fun `calculateNextPrayerInfo handles midnight rollover correctly after Isha`() = runTest {
+        val times = listOf(
+            PrayerTime("Fajr", "الفجر", "04:12", "sunrise"),
+            PrayerTime("Dhuhr", "الظهر", "12:30", "sun"),
+            PrayerTime("Asr", "العصر", "16:04", "sun"),
+            PrayerTime("Maghrib", "المغرب", "18:50", "sunset"),
+            PrayerTime("Isha", "العشاء", "20:52", "moon")
+        )
+        val prayerTimesFlow = kotlinx.coroutines.flow.flowOf(times)
+        val currentTimeFlow = kotlinx.coroutines.flow.flowOf(java.time.LocalTime.of(22, 0)) // 10:00 PM, after Isha
+
+        val nextPrayerInfoFlow = calculateNextPrayerInfo(prayerTimesFlow, currentTimeFlow)
+        val result = nextPrayerInfoFlow.first()
+
+        assertEquals("Fajr", result.first.name)
+        // 10:00 PM to 04:12 AM is 6 hours and 12 minutes = 06:12:00
+        assertEquals("06:12:00", result.second)
     }
 }

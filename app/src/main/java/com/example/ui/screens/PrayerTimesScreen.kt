@@ -40,13 +40,45 @@ import java.time.chrono.HijrahDate
 fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostController) {
     val times by viewModel.prayerTimes.collectAsState()
     val settings by viewModel.settings.collectAsState()
+    val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     val locationName by viewModel.locationName.collectAsState()
     val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsState()
     val checkablePrayers by viewModel.checkablePrayers.collectAsState()
     val prayerLoadError by viewModel.prayerLoadError.collectAsState()
 
     val context = LocalContext.current
+    var showCalculationDialog by remember { mutableStateOf(false) }
     
+    if (showCalculationDialog) {
+        AlertDialog(
+            onDismissRequest = { showCalculationDialog = false },
+            title = { Text(text = Translator.translate("prayer_calculation", settings.language), style = MaterialTheme.typography.titleLarge) },
+            text = {
+                Column {
+                    listOf("Egyptian General Authority", "University of Islamic Sciences, Karachi", "Islamic Society of North America (ISNA)", "Muslim World League").forEach { method ->
+                        val methodKey = when(method) {
+                            "Egyptian General Authority" -> "egyptian_authority"
+                            "University of Islamic Sciences, Karachi" -> "karachi_university"
+                            "Islamic Society of North America (ISNA)" -> "isna"
+                            "Muslim World League" -> "muslim_world_league"
+                            else -> method
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable { viewModel.updateCalculationMethod(method); showCalculationDialog = false }.padding(vertical = 12.dp, horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(selected = settings.calculationMethod == method, onClick = { viewModel.updateCalculationMethod(method); showCalculationDialog = false })
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text(text = Translator.translate(methodKey, settings.language), style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { showCalculationDialog = false }) { Text(Translator.translate("cancel", settings.language)) } }
+        )
+    }
+
     LaunchedEffect(prayerLoadError) {
         prayerLoadError?.let {
             android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_LONG).show()
@@ -55,6 +87,12 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
     val locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
     )
+
+    LaunchedEffect(Unit) {
+        if (!locationPermissionState.allPermissionsGranted) {
+            locationPermissionState.launchMultiplePermissionRequest()
+        }
+    }
 
     LaunchedEffect(locationPermissionState.allPermissionsGranted) {
         if (locationPermissionState.allPermissionsGranted) {
@@ -246,7 +284,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                 Text(text = Translator.translate("qibla_subtitle", settings.language), style = MaterialTheme.typography.bodySmall, color = DarkWarmPeachText.copy(alpha = 0.8f))
                             }
                         }
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = null, tint = DarkWarmPeachText)
+                        Icon(imageVector = chevron, contentDescription = null, tint = DarkWarmPeachText)
                     }
                 }
             }
@@ -255,7 +293,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                 Spacer(modifier = Modifier.height(20.dp))
                 SectionHeader(title = Translator.translate("calculation_method", settings.language))
                 Card(
-                    modifier = Modifier.fillMaxWidth().clickable {}.testTag("calculation_method_settings_row"),
+                    modifier = Modifier.fillMaxWidth().clickable { showCalculationDialog = true }.testTag("calculation_method_settings_row"),
                     shape = MaterialTheme.shapes.medium,
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                 ) {
@@ -268,7 +306,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                             else -> settings.calculationMethod
                         }
                         Text(text = Translator.translate(methodKey, settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(imageVector = chevron, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }

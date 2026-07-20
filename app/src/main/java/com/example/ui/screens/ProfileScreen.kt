@@ -25,16 +25,134 @@ import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.viewmodel.ProfileViewModel
+import android.Manifest
+import android.location.Geocoder
+import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
+import java.util.Locale
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.foundation.Image
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController) {
     val progress by viewModel.userProgress.collectAsState()
     val settings by viewModel.settings.collectAsState()
+    val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     val badges by viewModel.badges.collectAsState()
 
     var showEditDialog by remember { mutableStateOf(false) }
     var editName by remember(progress.username) { mutableStateOf(progress.username) }
+    var editImageUri by remember(progress.profileImageUri) { mutableStateOf(progress.profileImageUri) }
     var editLocation by remember(progress.location) { mutableStateOf(progress.location) }
+
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            uri?.let { selectedUri ->
+                try {
+                    val inputStream = context.contentResolver.openInputStream(selectedUri)
+                    val file = java.io.File(context.filesDir, "profile_photo_${System.currentTimeMillis()}.jpg")
+                    context.filesDir.listFiles { _, name -> name.startsWith("profile_photo_") }?.forEach { it.delete() }
+                    inputStream?.use { input ->
+                        file.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    editImageUri = file.toURI().toString()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    )
+
+    val profileBitmap = remember(progress.profileImageUri) {
+        progress.profileImageUri?.let { uriStr ->
+            try {
+                val uri = android.net.Uri.parse(uriStr)
+                context.contentResolver.openInputStream(uri)?.use { stream ->
+                    android.graphics.BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    val editProfileBitmap = remember(editImageUri) {
+        editImageUri?.let { uriStr ->
+            try {
+                val uri = android.net.Uri.parse(uriStr)
+                context.contentResolver.openInputStream(uri)?.use { stream ->
+                    android.graphics.BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+    val locationPermissionState = rememberMultiplePermissionsState(
+        permissions = listOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+    )
+
+    LaunchedEffect(showEditDialog, locationPermissionState.allPermissionsGranted) {
+        if (showEditDialog) {
+            if (locationPermissionState.allPermissionsGranted) {
+                editLocation = "Determining..."
+                try {
+                    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                    fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
+                        if (loc != null) {
+                            val geocoder = Geocoder(context, Locale.getDefault())
+                            try {
+                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                                    geocoder.getFromLocation(loc.latitude, loc.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
+                                        override fun onGeocode(addresses: MutableList<android.location.Address>) {
+                                            val name = if (addresses.isNotEmpty()) {
+                                                val address = addresses[0]
+                                                val city = address.locality ?: address.subAdminArea
+                                                val country = address.countryName
+                                                if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
+                                            } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, loc.latitude, loc.longitude)
+                                            editLocation = name
+                                        }
+                                        override fun onError(errorMessage: String?) {
+                                            editLocation = "Coordinates: %.2f, %.2f".format(java.util.Locale.US, loc.latitude, loc.longitude)
+                                        }
+                                    })
+                                } else {
+                                    @Suppress("DEPRECATION")
+                                    val addresses = geocoder.getFromLocation(loc.latitude, loc.longitude, 1)
+                                    val name = if (addresses != null && addresses.isNotEmpty()) {
+                                        val address = addresses[0]
+                                        val city = address.locality ?: address.subAdminArea
+                                        val country = address.countryName
+                                        if (city != null && country != null) "$city, $country" else city ?: country ?: "Current Location"
+                                    } else "Coordinates: %.2f, %.2f".format(java.util.Locale.US, loc.latitude, loc.longitude)
+                                    editLocation = name
+                                }
+                            } catch (_: Exception) {
+                                editLocation = "Coordinates: %.2f, %.2f".format(java.util.Locale.US, loc.latitude, loc.longitude)
+                            }
+                        } else {
+                            editLocation = progress.location
+                        }
+                    }
+                } catch (_: SecurityException) {
+                    editLocation = progress.location
+                }
+            } else {
+                locationPermissionState.launchMultiplePermissionRequest()
+            }
+        }
+    }
 
     val earnedBadgesCount = badges.count { it.earned }
     val stats = listOf(
@@ -54,8 +172,29 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
         LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp)) {
             item {
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(68.dp).background(MintTeal, CircleShape), contentAlignment = Alignment.Center) {
-                        Text(text = progress.username.take(1).uppercase(), style = MaterialTheme.typography.displayLarge.copy(fontSize = 26.sp, fontWeight = FontWeight.Bold), color = DarkTealText)
+                    Box(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .clip(CircleShape)
+                            .background(MintTeal)
+                            .clickable { imagePickerLauncher.launch("image/*") }
+                            .testTag("profile_photo_box"),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (profileBitmap != null) {
+                            Image(
+                                bitmap = profileBitmap,
+                                contentDescription = "Profile Photo",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Text(
+                                text = progress.username.take(1).uppercase(),
+                                style = MaterialTheme.typography.displayLarge.copy(fontSize = 26.sp, fontWeight = FontWeight.Bold),
+                                color = DarkTealText
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
@@ -124,7 +263,7 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
                                 Spacer(modifier = Modifier.width(14.dp))
                                 Text(text = label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                             }
-                            Icon(imageVector = Lucide.ChevronRight, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                            Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                     }
@@ -138,15 +277,53 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
             onDismissRequest = { showEditDialog = false },
             title = { Text("Edit Profile") },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .clickable { imagePickerLauncher.launch("image/*") },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (editProfileBitmap != null) {
+                            Image(
+                                bitmap = editProfileBitmap,
+                                contentDescription = "Profile Photo Preview",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Lucide.Camera,
+                                contentDescription = "Camera",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(28.dp)
+                            )
+                        }
+                    }
+                    TextButton(onClick = { imagePickerLauncher.launch("image/*") }) {
+                        Text("Change Photo")
+                    }
                     TextField(value = editName, onValueChange = { editName = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
                     TextField(value = editLocation, onValueChange = { editLocation = it }, label = { Text("Location") }, modifier = Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {
-                TextButton(onClick = { viewModel.updateProfile(editName, editLocation); showEditDialog = false }) { Text("Save") }
+                TextButton(onClick = { 
+                    viewModel.updateProfile(editName, editLocation, editImageUri)
+                    showEditDialog = false 
+                }) { Text("Save") }
             },
-            dismissButton = { TextButton(onClick = { showEditDialog = false }) { Text("Cancel") } }
+            dismissButton = { 
+                TextButton(onClick = { 
+                    editImageUri = progress.profileImageUri
+                    showEditDialog = false 
+                }) { Text("Cancel") } 
+            }
         )
     }
 }

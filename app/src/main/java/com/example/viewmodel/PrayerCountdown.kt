@@ -61,9 +61,12 @@ fun calculateNextPrayerInfo(
             }
             
             val next = formattedTimes.find { it.second.isAfter(now) }
-                ?: (formattedTimes.first().first to formattedTimes.first().second.plusHours(24))
+                ?: (formattedTimes.first().first to formattedTimes.first().second)
 
-            val duration = Duration.between(now, next.second)
+            var duration = Duration.between(now, next.second)
+            if (duration.isNegative) {
+                duration = duration.plusDays(1)
+            }
             val seconds = duration.seconds
             val countdown = String.format(java.util.Locale.US, "%02d:%02d:%02d", seconds / 3600, (seconds % 3600) / 60, seconds % 60)
             

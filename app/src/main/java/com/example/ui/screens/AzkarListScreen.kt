@@ -55,15 +55,42 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                                 Text(text = Translator.translate("digital_tasbih_subtitle", settings.language), style = MaterialTheme.typography.bodySmall, color = DarkTealText.copy(alpha = 0.8f))
                             }
                         }
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Open", tint = DarkTealText)
+                        val tasbihChevron = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
+                        Icon(imageVector = tasbihChevron, contentDescription = "Open", tint = DarkTealText)
                     }
                 }
             }
 
             items(categories) { cat ->
-                val colorHex = Color(cat.colorHex)
+                val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
+                val (boxBg, iconTint) = when (cat.iconName) {
+                    "sunrise" -> {
+                        if (isDark) Color(0xFFE65100).copy(alpha = 0.2f) to Color(0xFFFFB74D)
+                        else Color(0xFFFFE0B2) to Color(0xFFE65100)
+                    }
+                    "sunset" -> {
+                        if (isDark) Color(0xFF004D40).copy(alpha = 0.2f) to Color(0xFF4DB6AC)
+                        else Color(0xFFE0F2F1) to Color(0xFF004D40)
+                    }
+                    "moon" -> {
+                        if (isDark) Color(0xFF311B92).copy(alpha = 0.2f) to Color(0xFF9575CD)
+                        else Color(0xFFEDE7F6) to Color(0xFF311B92)
+                    }
+                    "star" -> {
+                        if (isDark) Color(0xFF01579B).copy(alpha = 0.2f) to Color(0xFF4FC3F7)
+                        else Color(0xFFE1F5FE) to Color(0xFF01579B)
+                    }
+                    else -> {
+                        if (isDark) Color(0xFF1B5E20).copy(alpha = 0.2f) to Color(0xFF81C784)
+                        else Color(0xFFE8F5E9) to Color(0xFF1B5E20)
+                    }
+                }
                 val icon = when (cat.iconName) {
-                    "sunrise" -> Lucide.Sunrise; "sunset" -> Lucide.Sunset; "moon" -> Lucide.Moon; else -> Lucide.Star
+                    "sunrise" -> Lucide.Sunrise
+                    "sunset" -> Lucide.Sunset
+                    "moon" -> Lucide.Moon
+                    "star" -> Lucide.Star
+                    else -> Lucide.Sparkles
                 }
                 Card(
                     modifier = Modifier.fillMaxWidth().clickable { viewModel.selectCategory(cat); navController.navigate(Routes.AZKAR_FLOW) }.testTag("azkar_category_card_${cat.id}"),
@@ -73,8 +100,8 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                 ) {
                     Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(modifier = Modifier.size(48.dp).background(colorHex, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                                Icon(imageVector = icon, contentDescription = cat.title, tint = if (settings.darkTheme) DarkTealText.copy(alpha = 0.9f) else DarkTealText)
+                            Box(modifier = Modifier.size(48.dp).background(boxBg, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = icon, contentDescription = cat.title, tint = iconTint)
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {

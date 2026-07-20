@@ -21,11 +21,13 @@ import com.example.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostController) {
     val settings by viewModel.settings.collectAsState()
+    val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showSoundTypeDialog by remember { mutableStateOf(false) }
     var showReciterDialog by remember { mutableStateOf(false) }
     var showCalculationDialog by remember { mutableStateOf(false) }
     var showTextSizeDialog by remember { mutableStateOf(false) }
+
 
     if (showSoundTypeDialog) {
         AlertDialog(
@@ -195,7 +197,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(text = Translator.translate(soundTypeKey, settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(6.dp))
-                            Icon(imageVector = Lucide.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                            Icon(imageVector = chevron, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -216,7 +218,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = if (settings.language == "Arabic") "العربية" else "English", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                        Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
@@ -235,7 +237,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                         }
                         Text(text = Translator.translate(reciterKey, settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                        Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
@@ -256,7 +258,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                         val displayMethod = if (methodShort.length > 20) methodShort.take(17) + "..." else methodShort
                         Text(text = displayMethod, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                        Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
@@ -268,7 +270,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = Translator.translate(settings.textSize.lowercase(), settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                        Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
@@ -283,7 +285,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = Translator.translate("customize", settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = Lucide.ChevronRight, contentDescription = "Navigate", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                        Icon(imageVector = chevron, contentDescription = "Navigate", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))

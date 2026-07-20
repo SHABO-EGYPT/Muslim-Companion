@@ -79,7 +79,9 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp).testTag("greeting_card"),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = cardColor)
+                colors = CardDefaults.cardColors(containerColor = cardColor),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                border = BorderStroke(1.dp, contentColor.copy(alpha = 0.2f))
             ) {
                 Row(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
@@ -87,7 +89,8 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                                       else if (hour < 18) Translator.translate("good_afternoon", settings.language) 
                                       else Translator.translate("good_evening", settings.language)
                         Text(text = "$greeting,", style = MaterialTheme.typography.bodyMedium, color = contentColor.copy(alpha = 0.8f))
-                        Text(text = progress.username, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = contentColor)
+                        val displayName = if (progress.username.trim().isEmpty() || progress.username.trim().lowercase() == "a") "Guest" else progress.username
+                        Text(text = displayName, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = contentColor)
                         Spacer(modifier = Modifier.height(12.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(imageVector = Lucide.Clock, contentDescription = null, tint = contentColor.copy(alpha = 0.7f), modifier = Modifier.size(16.dp))
@@ -109,8 +112,10 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                         }
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Box(modifier = Modifier.size(64.dp).background(Color.White.copy(alpha = 0.15f), CircleShape), contentAlignment = Alignment.Center) {
-                            Icon(imageVector = if (isNight) Lucide.Moon else Lucide.Sun, contentDescription = "Time of day", tint = if (isNight) Color(0xFFFFD54F) else Color(0xFFFFF176), modifier = Modifier.size(36.dp))
+                        val iconBg = if (isNight) Color.White.copy(alpha = 0.15f) else Color(0xFFFFE0B2)
+                        val iconTint = if (isNight) Color(0xFFFFD54F) else Color(0xFFE65100)
+                        Box(modifier = Modifier.size(64.dp).background(iconBg, CircleShape), contentAlignment = Alignment.Center) {
+                            Icon(imageVector = if (isNight) Lucide.Moon else Lucide.Sun, contentDescription = "Time of day", tint = iconTint, modifier = Modifier.size(36.dp))
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         IconButton(onClick = { navController.navigate(Routes.NOTIFICATIONS) }, modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.1f), CircleShape).testTag("home_notification_button")) {
@@ -124,7 +129,9 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
         item {
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navigateToTab(Routes.PRAYER) }.testTag("next_prayer_card"),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                border = BorderStroke(1.dp, PrimaryTeal.copy(alpha = 0.2f))
             ) {
                 Box(modifier = Modifier.background(Brush.linearGradient(colors = listOf(PrimaryTeal, Secondary))).padding(24.dp)) {
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -166,34 +173,139 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
         }
 
         item {
+            Spacer(modifier = Modifier.height(12.dp))
             val completedPrayersCount = progress.completedPrayersToday.split(",").filter { it.isNotBlank() }.size
             val totalAzkarCount = azkarCats.sumOf { it.totalCount }.takeIf { it > 0 } ?: 1
             val doneAzkarCount = azkarCats.sumOf { it.doneCount }
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Card(modifier = Modifier.weight(1f).testTag("streak_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), shape = MaterialTheme.shapes.medium, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.Center) {
-                        Box(modifier = Modifier.size(32.dp).background(WarmPeach, RoundedCornerShape(8.dp)), contentAlignment = Alignment.Center) {
-                            Icon(imageVector = Lucide.Flame, contentDescription = "Streak", tint = DarkWarmPeachText, modifier = Modifier.size(16.dp))
+            Row(modifier = Modifier.fillMaxWidth().padding(start = 20.dp, end = 20.dp, bottom = 8.dp, top = 4.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Card(
+                    modifier = Modifier.weight(1f).testTag("streak_card"),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.size(32.dp).background(Color(0xFFFFF3E0), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Lucide.Flame,
+                                contentDescription = "Streak",
+                                tint = Color(0xFFE65100),
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "${progress.streak} ${Translator.translate("days", settings.language)}", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp), color = MaterialTheme.colorScheme.onBackground)
-                        Text(text = Translator.translate("streak", settings.language), style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = "${progress.streak} ${Translator.translate("days", settings.language)}",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = Translator.translate("streak", settings.language),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
                     }
                 }
-                Card(modifier = Modifier.weight(1f).testTag("azkar_stat_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), shape = MaterialTheme.shapes.medium, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.Center) {
-                        CircularProgressIndicatorM3(percentage = doneAzkarCount.toFloat() / totalAzkarCount.toFloat(), size = 32, strokeWidth = 3)
+                Card(
+                    modifier = Modifier.weight(1f).testTag("azkar_stat_card"),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        val azkarColor = Color(0xFFE91E63)
+                        val azkarBg = Color(0xFFFCE4EC)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.size(32.dp).background(azkarBg, CircleShape)
+                        ) {
+                            CircularProgressIndicatorM3(
+                                percentage = doneAzkarCount.toFloat() / totalAzkarCount.toFloat(),
+                                size = 32,
+                                strokeWidth = 2,
+                                color = azkarColor
+                            )
+                            Icon(
+                                imageVector = Lucide.BookOpen,
+                                contentDescription = null,
+                                tint = azkarColor,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "${(doneAzkarCount.toFloat() / totalAzkarCount.toFloat() * 100).toInt()}%", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp), color = MaterialTheme.colorScheme.onBackground)
-                        Text(text = Translator.translate("azkar", settings.language), style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = "${(doneAzkarCount.toFloat() / totalAzkarCount.toFloat() * 100).toInt()}%",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = Translator.translate("azkar", settings.language),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
                     }
                 }
-                Card(modifier = Modifier.weight(1f).clickable { navigateToTab(Routes.PRAYER) }.testTag("prayer_stat_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), shape = MaterialTheme.shapes.medium, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.Center) {
-                        CircularProgressIndicatorM3(percentage = completedPrayersCount.toFloat() / 5f, size = 32, strokeWidth = 3, color = MintTeal)
+                Card(
+                    modifier = Modifier.weight(1f).clickable { navigateToTab(Routes.PRAYER) }.testTag("prayer_stat_card"),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = MaterialTheme.shapes.medium,
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        val prayerColor = PrimaryTeal
+                        val prayerBg = MintTeal.copy(alpha = 0.4f)
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.size(32.dp).background(prayerBg, CircleShape)
+                        ) {
+                            CircularProgressIndicatorM3(
+                                percentage = completedPrayersCount.toFloat() / 5f,
+                                size = 32,
+                                strokeWidth = 2,
+                                color = prayerColor
+                            )
+                            Icon(
+                                imageVector = Lucide.Star,
+                                contentDescription = null,
+                                tint = prayerColor,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "$completedPrayersCount/5", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp), color = MaterialTheme.colorScheme.onBackground)
-                        Text(text = "${Translator.translate("prayer", settings.language)} (+${progress.prayerScore})", style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(
+                            text = "$completedPrayersCount/5",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Text(
+                            text = "${Translator.translate("prayer", settings.language)} (+${progress.prayerScore})",
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
                     }
                 }
             }
@@ -202,14 +314,20 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
         item {
             Spacer(modifier = Modifier.height(10.dp))
             SectionHeader(title = Translator.translate("read_quran", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navigateToTab(Routes.QURAN) })
-            Card(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navController.navigate(Routes.SURAH_READER) }.testTag("continue_reading_card"), shape = MaterialTheme.shapes.medium, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navController.navigate(Routes.SURAH_READER) }.testTag("continue_reading_card"),
+                shape = MaterialTheme.shapes.medium,
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            ) {
                 Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                         Box(modifier = Modifier.size(48.dp).background(MintTeal, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
                             Text(text = "${progress.lastReadSurahNumber}", style = MaterialTheme.typography.headlineMedium.copy(fontSize = 20.sp, fontFamily = ArabicSerifFamily), color = DarkTealText)
                         }
                         Spacer(modifier = Modifier.width(14.dp))
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = progress.lastReadSurahArabicName.ifBlank { Translator.translate("fatiha_arabic", settings.language) }, 
                                 style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp, fontFamily = ArabicSerifFamily), 
@@ -218,9 +336,17 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                             val translatedOf = Translator.translate("of", settings.language)
                             val translatedCompleted = Translator.translate("completed", settings.language)
                             Text(text = "${Translator.translate("verse", settings.language)} ${progress.lastReadAyahNumber} $translatedOf 110 · ${(progress.lastReadProgress * 100).toInt()}% $translatedCompleted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Spacer(modifier = Modifier.height(6.dp))
+                            LinearProgressIndicator(
+                                progress = { progress.lastReadProgress },
+                                modifier = Modifier.fillMaxWidth(0.9f).height(4.dp).clip(CircleShape),
+                                color = PrimaryTeal,
+                                trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
+                            )
                         }
                     }
-                    Icon(imageVector = Lucide.ChevronRight, contentDescription = Translator.translate("resume", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val quranChevron = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
+                    Icon(imageVector = quranChevron, contentDescription = Translator.translate("resume", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -240,21 +366,35 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         rowCats.forEach { cat ->
-                            val accentColor = when (cat.id) {
-                                "morning" -> WarmPeach
-                                "evening" -> MintTeal
-                                else -> SageGreen
-                            }
                             val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
-                            val iconTint = when (cat.id) {
-                                "morning" -> if (isDark) WarmPeach else DarkWarmPeachText
-                                "evening" -> if (isDark) MintTeal else DarkTealText
-                                else -> if (isDark) SageGreen else DarkGreenText
+                            val (boxBg, iconTint) = when (cat.iconName) {
+                                "sunrise" -> {
+                                    if (isDark) Color(0xFFE65100).copy(alpha = 0.2f) to Color(0xFFFFB74D)
+                                    else Color(0xFFFFE0B2) to Color(0xFFE65100)
+                                }
+                                "sunset" -> {
+                                    if (isDark) Color(0xFF004D40).copy(alpha = 0.2f) to Color(0xFF4DB6AC)
+                                    else Color(0xFFE0F2F1) to Color(0xFF004D40)
+                                }
+                                "moon" -> {
+                                    if (isDark) Color(0xFF311B92).copy(alpha = 0.2f) to Color(0xFF9575CD)
+                                    else Color(0xFFEDE7F6) to Color(0xFF311B92)
+                                }
+                                "star" -> {
+                                    if (isDark) Color(0xFF01579B).copy(alpha = 0.2f) to Color(0xFF4FC3F7)
+                                    else Color(0xFFE1F5FE) to Color(0xFF01579B)
+                                }
+                                else -> {
+                                    if (isDark) Color(0xFF1B5E20).copy(alpha = 0.2f) to Color(0xFF81C784)
+                                    else Color(0xFFE8F5E9) to Color(0xFF1B5E20)
+                                }
                             }
                             val icon = when (cat.iconName) {
                                 "sunrise" -> Lucide.Sunrise
                                 "sunset" -> Lucide.Sunset
-                                else -> Lucide.Moon
+                                "moon" -> Lucide.Moon
+                                "star" -> Lucide.Star
+                                else -> Lucide.Sparkles
                             }
                             Card(
                                 modifier = Modifier
@@ -269,7 +409,8 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.surface
                                 ),
-                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                             ) {
                                 Column(
                                     modifier = Modifier
@@ -278,7 +419,6 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.Center
                                 ) {
-                                    val boxBg = if (isDark) accentColor.copy(alpha = 0.2f) else accentColor.copy(alpha = 0.15f)
                                     Box(
                                         modifier = Modifier
                                             .size(40.dp)
@@ -329,15 +469,48 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
             SectionHeader(title = Translator.translate("tools_features", settings.language))
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
-                HomeWidget(title = Translator.translate("digital_tasbih", settings.language), subtitle = Translator.translate("digital_tasbih_subtitle", settings.language), icon = Lucide.Fingerprint, iconBackground = MintTeal, iconTint = if (isDark) MintTeal else DarkTealText, onClick = { navController.navigate(Routes.TASBIH) })
-                HomeWidget(title = Translator.translate("qibla_direction", settings.language), subtitle = Translator.translate("qibla_subtitle", settings.language), icon = Lucide.Compass, iconBackground = WarmPeach, iconTint = if (isDark) WarmPeach else DarkWarmPeachText, onClick = { navController.navigate(Routes.QIBLA) })
-                HomeWidget(title = Translator.translate("prayer_times", settings.language), subtitle = Translator.translate("full_day_schedule", settings.language), icon = Lucide.Calendar, iconBackground = SageGreen, iconTint = if (isDark) SageGreen else DarkGreenText, onClick = { navigateToTab(Routes.PRAYER) })
+                val tasbihBg = Color(0xFF009688)
+                val tasbihTint = if (isDark) Color(0xFF4DB6AC) else Color(0xFF00796B)
+                
+                val qiblaBg = Color(0xFFFF9800)
+                val qiblaTint = if (isDark) Color(0xFFFFB74D) else Color(0xFFF57C00)
+                
+                val prayerBg = Color(0xFF0288D1)
+                val prayerTint = if (isDark) Color(0xFF4FC3F7) else Color(0xFF0277BD)
+                
+                val mosqueBg = Color(0xFF4CAF50)
+                val mosqueTint = if (isDark) Color(0xFF81C784) else Color(0xFF388E3C)
+
+                HomeWidget(
+                    title = Translator.translate("digital_tasbih", settings.language),
+                    subtitle = Translator.translate("digital_tasbih_subtitle", settings.language),
+                    icon = Lucide.Fingerprint,
+                    iconBackground = tasbihBg,
+                    iconTint = tasbihTint,
+                    onClick = { navController.navigate(Routes.TASBIH) }
+                )
+                HomeWidget(
+                    title = Translator.translate("qibla_direction", settings.language),
+                    subtitle = Translator.translate("qibla_subtitle", settings.language),
+                    icon = Lucide.Compass,
+                    iconBackground = qiblaBg,
+                    iconTint = qiblaTint,
+                    onClick = { navController.navigate(Routes.QIBLA) }
+                )
+                HomeWidget(
+                    title = Translator.translate("prayer_times", settings.language),
+                    subtitle = Translator.translate("full_day_schedule", settings.language),
+                    icon = Lucide.Calendar,
+                    iconBackground = prayerBg,
+                    iconTint = prayerTint,
+                    onClick = { navigateToTab(Routes.PRAYER) }
+                )
                 HomeWidget(
                     title = Translator.translate("mosque_finder", settings.language),
                     subtitle = Translator.translate("mosque_subtitle", settings.language),
                     icon = Lucide.MapPin,
-                    iconBackground = MintTeal,
-                    iconTint = if (isDark) MintTeal else DarkTealText,
+                    iconBackground = mosqueBg,
+                    iconTint = mosqueTint,
                     onClick = {
                         val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=mosque"))
                         mapIntent.setPackage("com.google.android.apps.maps")

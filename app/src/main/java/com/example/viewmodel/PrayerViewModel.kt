@@ -128,4 +128,11 @@ class PrayerViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateCalculationMethod(method: String) {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(calculationMethod = method))
+        }
+    }
 }

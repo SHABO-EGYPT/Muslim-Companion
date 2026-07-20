@@ -38,12 +38,13 @@ class ProfileViewModel @Inject constructor(private val repository: CompanionRepo
             initialValue = emptyList()
         )
 
-    fun updateProfile(name: String, location: String) {
+    fun updateProfile(name: String, location: String, profileImageUri: String? = null) {
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(progress.copy(
                 username = name.trim().take(50),
-                location = location.trim().take(100)
+                location = location.trim().take(100),
+                profileImageUri = profileImageUri ?: progress.profileImageUri
             ))
         }
     }
