@@ -117,10 +117,10 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 
 You can quickly install and run the app on your physical Android phone without needing to compile code:
 
-1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `muslim-companion-debug.apk`.
+1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `Muslim-Companion-1.5.0.apk`.
 2. **Transfer to Mobile:** Copy this file to your phone's storage via USB, cloud sharing, or messaging app.
 3. **Enable Unknown Sources:** On your Android phone, go to **Settings > Security** and enable **"Install unknown apps"** for your file manager or browser.
-4. **Install and Launch:** Open your phone's File Manager, tap on `muslim-companion-debug.apk`, click **Install**, and once completed, open the app from your launcher!
+4. **Install and Launch:** Open your phone's File Manager, tap on `Muslim-Companion-1.5.0.apk`, click **Install**, and once completed, open the app from your launcher!
 
 ---
 
