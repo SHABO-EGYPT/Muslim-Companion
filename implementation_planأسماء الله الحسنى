@@ -1,0 +1,92 @@
+# Implementation Plan - أسماء الله الحسنى (99 Names of Allah)
+
+Add a new section dedicated to **أسماء الله الحسنى (99 Names of Allah)** displaying all 99 names with detailed meanings, transliterations, explanations, and Quranic references, with interactive detail dialogs upon selection.
+
+---
+
+## 📍 Proposed Section Placement
+
+We recommend placing **أسماء الله الحسنى** in two strategic locations:
+
+1. **Home Screen Quick Action Card** (`HomeScreen.kt`):
+   - Add a featured card in the Home Screen quick access grid alongside *Tasbih*, *Qibla*, *Prayer Times*, and *Azkar*.
+   - Uses an elegant deep green & gold icon with title **أسماء الله الحسنى** for 1-tap access.
+
+2. **Dedicated Full-Screen Route** (`Routes.NAMES_OF_ALLAH`):
+   - Register route `names_of_allah` in `AppNavigation.kt` so users can navigate to the full 99 Names experience anytime.
+
+---
+
+## Proposed Technical Changes
+
+### [Component Name] Data Layer & Asset Storage
+
+#### [NEW] [names_of_allah.json](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/assets/names_of_allah.json)
+- Store all 99 Names of Allah in structured JSON asset format:
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "الله",
+      "transliteration": "Allah",
+      "meaning": "المألوه الواحد المعبود بحق الذي يفزع إليه العباد في الشدائد...",
+      "meaningEn": "The Greatest Name of Allah, The Supreme Deity who is worshipped in truth.",
+      "evidence": "هَلْ تَعْلَمُ لَهُ سَمِيّاً (مريم: 65)"
+    },
+    ...
+  ]
+  ```
+
+#### [MODIFY] [DomainModels.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/domain/model/DomainModels.kt)
+- Add `NameOfAllah` data class:
+  ```kotlin
+  data class NameOfAllah(
+      val id: Int,
+      val name: String,
+      val transliteration: String,
+      val meaning: String,
+      val meaningEn: String,
+      val evidence: String
+  )
+  ```
+
+---
+
+### [Component Name] ViewModel & Navigation
+
+#### [NEW] [NamesOfAllahViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/NamesOfAllahViewModel.kt)
+- Load JSON asset using Moshi/Coroutines.
+- Manage search filter query state and selected name modal state.
+
+#### [MODIFY] [AppNavigation.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/navigation/AppNavigation.kt)
+- Register `Routes.NAMES_OF_ALLAH` route pointing to `NamesOfAllahScreen`.
+
+---
+
+### [Component Name] UI Layer & Screens
+
+#### [NEW] [NamesOfAllahScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/NamesOfAllahScreen.kt)
+- **Top Header**: Screen title "أسماء الله الحسنى", back button, search bar.
+- **99 Names Grid**: Responsive 2-column or list grid with number badge, Arabic calligraphy, and transliteration.
+- **Detail Modal BottomSheet / Dialog**:
+  - Displays large Arabic calligraphy of the selected name.
+  - Complete explanation & meaning from `surahquran.com`.
+  - Quranic evidence & verse citations.
+
+#### [MODIFY] [HomeScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/HomeScreen.kt)
+- Add **أسماء الله الحسنى** card to Home Screen grid navigating to `Routes.NAMES_OF_ALLAH`.
+
+#### [MODIFY] [Translation.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/Translation.kt)
+- Add translation keys for `"names_of_allah" to "أسماء الله الحسنى"` and `"names_of_allah_desc" to "The 99 Beautiful Names of Allah and their meanings"`.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Add `NamesOfAllahTest.kt` unit test verifying JSON asset parses 99 items correctly and search filter works.
+
+### Manual Verification
+- Deploy to emulator and tap the new **أسماء الله الحسنى** card on Home Screen.
+- Tap individual names to verify modal dialog opens with detailed meanings and Quranic evidence.
+- Test searching by name in Arabic & English.

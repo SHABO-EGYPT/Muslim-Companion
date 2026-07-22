@@ -1,0 +1,80 @@
+# Implementation Plan - أدعية من القرآن (Quranic Supplications)
+
+Add a new section dedicated to **أدعية من القرآن الكريم (Supplications from the Holy Quran)** featuring authentic Quranic supplications with Surah & Ayah citations, search filtering, and interactive actions (copy, share, bookmark, repeat counter).
+
+---
+
+## 📌 Proposed Placement
+
+1. **Home Screen (`HomeScreen.kt`)**:
+   - Add an **"أدعية من القرآن"** widget in the *Tools & Features* section with a emerald Quranic icon for 1-tap direct access.
+
+2. **Azkar Section (`AzkarListScreen.kt`)**:
+   - Feature **"أدعية من القرآن الكريم"** at the top of the Azkar categories list.
+
+3. **Dedicated List Screen (`QuranicDuasScreen.kt`)**:
+   - Accessible via route `Routes.QURANIC_DUAS`.
+   - Displays a clean list of Quranic supplications with search, Surah & Ayah reference tags, and interactive action buttons (Copy, Share, Bookmark, Counter).
+
+---
+
+## 🛠️ User Review Required
+
+> [!NOTE]
+> The supplications will be stored in `app/src/main/assets/quranic_duas.json` containing 44 authentic supplications from the Holy Quran with exact Surah and Ayah reference tags.
+
+---
+
+## 🎨 Proposed Changes
+
+### Data Layer
+#### [NEW] [quranic_duas.json](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/assets/quranic_duas.json)
+- JSON asset containing all Quranic supplications with `id`, `text`, `surah`, `ayah`, `transliteration`, and `category`.
+
+#### [NEW] [QuranicDua.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/domain/model/DomainModels.kt)
+- Add `QuranicDua` data model in `DomainModels.kt`.
+
+#### [NEW] [QuranicDuasRepository.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/repository/QuranicDuasRepository.kt)
+- Repository to load and filter Quranic supplications from JSON assets.
+
+---
+
+### ViewModel Layer
+#### [NEW] [QuranicDuasViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/QuranicDuasViewModel.kt)
+- ViewModel to manage state, search query, bookmarking, and repeat count.
+
+---
+
+### UI & Navigation Layer
+#### [NEW] [QuranicDuasScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/QuranicDuasScreen.kt)
+- Screen component with:
+  - Top AppBar with search input.
+  - RTL-aligned cards for each supplication with Quranic typography.
+  - Reference badge (e.g. `[البقرة: 201]`).
+  - Action buttons: Copy to Clipboard, System Share Intent, Bookmark toggle.
+
+#### [MODIFY] [HomeScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/HomeScreen.kt)
+- Add **أدعية من القرآن** HomeWidget card in *Tools & Features*.
+
+#### [MODIFY] [AzkarListScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/AzkarListScreen.kt)
+- Add **أدعية من القرآن الكريم** category card.
+
+#### [MODIFY] [NavigationItem.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/navigation/NavigationItem.kt) & [AppNavigation.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/navigation/AppNavigation.kt)
+- Add `Routes.QURANIC_DUAS` route and register `QuranicDuasScreen`.
+
+#### [MODIFY] [Translation.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/Translation.kt)
+- Add English and Arabic translation keys (`quranic_duas`, `quranic_duas_desc`).
+
+---
+
+## 🧪 Verification Plan
+
+### Automated Tests
+- Create `QuranicDuasTest.kt` to verify that `quranic_duas.json` parses cleanly and all items contain non-empty text, surah name, and ayah number.
+- Run `.\gradlew.bat test`.
+
+### Manual Verification
+- Deploy to emulator using `.\gradlew.bat installDebug`.
+- Verify navigating to **أدعية من القرآن** from Home Screen and Azkar Screen.
+- Verify searching for supplications (e.g. searching "والدين" or "صبر").
+- Test copy and share actions.

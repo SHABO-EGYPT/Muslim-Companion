@@ -1,0 +1,54 @@
+# Implementation Plan - Hero Dashboard Hub Widget (Next Prayer & Weather)
+
+Create a modern Google Material 3 Android Home Screen Widget (**Hero Dashboard Hub - 4x2 Widget**) displaying:
+1. **Live Clock & Dates**: Digital time format, Gregorian date, and Hijri Islamic date.
+2. **Next Prayer Focus**: Big prominent Next Prayer badge (e.g. `الصلوة القادمة: العصر - 03:30 PM`) with remaining time countdown.
+3. **Live Weather Status**: Current temperature (°C), weather icon/condition text, and city location.
+4. **Upcoming Prayer Timeline**: Quick-glance chips for upcoming daily prayer times.
+
+---
+
+## 🛠️ User Review Required
+
+> [!IMPORTANT]
+> The widget will follow Google Material 3 design standards with rounded 24dp corners, high-contrast readable typography, and automatic updates upon app launch and prayer time recalculations.
+
+---
+
+## 🎨 Proposed Changes
+
+### Widget Layout & Configuration
+#### [NEW] [prayer_weather_widget_info.xml](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/res/xml/prayer_weather_widget_info.xml)
+- Defines widget dimensions (4x2 cells: minWidth 250dp, minHeight 110dp), update period (1800000 ms), and layout reference.
+
+#### [NEW] [prayer_weather_widget.xml](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/res/layout/prayer_weather_widget.xml)
+- Material 3 container layout with RTL text direction, header date/clock, weather status badge, Next Prayer highlight box, and prayer timeline row.
+
+---
+
+### Kotlin Widget Provider
+#### [NEW] [PrayerWeatherWidgetProvider.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/notifications/PrayerWeatherWidgetProvider.kt)
+- `AppWidgetProvider` implementation that:
+  - Calculates the current & next prayer times (Fajr, Dhuhr, Asr, Maghrib, Isha).
+  - Retrieves current weather state (temp, condition).
+  - Binds text values to `RemoteViews`.
+  - Attaches `PendingIntent` to open `MainActivity` when tapped.
+
+---
+
+### Manifest Registration
+#### [MODIFY] [AndroidManifest.xml](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/AndroidManifest.xml)
+- Register `PrayerWeatherWidgetProvider` with `android.appwidget.action.APPWIDGET_UPDATE` intent-filter and meta-data pointing to `@xml/prayer_weather_widget_info`.
+
+---
+
+## 🧪 Verification Plan
+
+### Automated Tests
+- Create `WidgetProviderTest.kt` to verify that `PrayerWeatherWidgetProvider` builds valid `RemoteViews` without throwing `NullPointerException` or layout inflate errors.
+- Run `.\gradlew.bat test`.
+
+### Manual Verification
+- Deploy app via `.\gradlew.bat installDebug` to emulator.
+- Add the **Next Prayer & Weather** widget to the Android Emulator home screen.
+- Verify that Next Prayer, time remaining, Islamic date, and weather info display correctly.

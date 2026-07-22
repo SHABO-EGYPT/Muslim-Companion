@@ -37,6 +37,8 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
 
+import com.example.domain.model.WeatherCondition
+
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navController: NavHostController) {
     val context = LocalContext.current
@@ -53,6 +55,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
     val azkarCats by viewModel.azkarCategories.collectAsState()
     val prayerTimes by viewModel.prayerTimes.collectAsState()
     val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsState()
+    val weatherState by viewModel.weatherState.collectAsState()
 
     val today = LocalDate.now()
     val appLocale = remember(settings.language) {
@@ -88,7 +91,7 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                         val greeting = if (hour < 12) Translator.translate("good_morning", settings.language) 
                                       else if (hour < 18) Translator.translate("good_afternoon", settings.language) 
                                       else Translator.translate("good_evening", settings.language)
-                        Text(text = "$greeting,", style = MaterialTheme.typography.bodyMedium, color = contentColor.copy(alpha = 0.8f))
+                        Text(text = greeting, style = MaterialTheme.typography.bodyMedium, color = contentColor.copy(alpha = 0.8f))
                         val displayName = if (progress.username.trim().isEmpty() || progress.username.trim().lowercase() == "a") "Guest" else progress.username
                         Text(text = displayName, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold), color = contentColor)
                         Spacer(modifier = Modifier.height(12.dp))
@@ -127,13 +130,21 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
         }
 
         item {
+            val weatherColors = when(weatherState.condition) {
+                WeatherCondition.SUNNY -> listOf(Color(0xFF00796B), Color(0xFF004D40))
+                WeatherCondition.CLEAR_NIGHT -> listOf(Color(0xFF1B263B), Color(0xFF0D1B2A))
+                WeatherCondition.CLOUDY -> listOf(Color(0xFF37474F), Color(0xFF263238))
+                WeatherCondition.RAINY -> listOf(Color(0xFF2C3E50), Color(0xFF1A252C))
+                WeatherCondition.SNOWY -> listOf(Color(0xFF455A64), Color(0xFF1C313A))
+                WeatherCondition.HOT -> listOf(Color(0xFFD84315), Color(0xFF00695C))
+            }
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navigateToTab(Routes.PRAYER) }.testTag("next_prayer_card"),
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 border = BorderStroke(1.dp, PrimaryTeal.copy(alpha = 0.2f))
             ) {
-                Box(modifier = Modifier.background(Brush.linearGradient(colors = listOf(PrimaryTeal, Secondary))).padding(24.dp)) {
+                Box(modifier = Modifier.background(Brush.linearGradient(colors = weatherColors)).padding(24.dp)) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
                             Column {
@@ -141,16 +152,35 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                                 Spacer(modifier = Modifier.height(4.dp))
                                 val prayerNameKey = nextPrayerInfo.first.name.lowercase()
                                 Text(text = Translator.translate(prayerNameKey, settings.language), style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.ExtraBold, fontSize = 32.sp), color = Color.White)
-                                Text(text = nextPrayerInfo.first.arabicName, style = MaterialTheme.typography.titleLarge.copy(fontFamily = ArabicSerifFamily), color = Color.White.copy(alpha = 0.85f))
                             }
-                            val iconVector = when(nextPrayerInfo.first.iconName) {
-                                "sunrise" -> Lucide.Sunrise
-                                "sunset" -> Lucide.Sunset
-                                "moon" -> Lucide.Moon
-                                else -> Lucide.Sun
+                            val weatherIconVector = when(weatherState.condition) {
+                                WeatherCondition.SUNNY -> Lucide.Sun
+                                WeatherCondition.CLEAR_NIGHT -> Lucide.Moon
+                                WeatherCondition.CLOUDY -> Lucide.Cloud
+                                WeatherCondition.RAINY -> Lucide.CloudRain
+                                WeatherCondition.SNOWY -> Lucide.Snowflake
+                                WeatherCondition.HOT -> Lucide.Sun
                             }
-                            Box(modifier = Modifier.size(56.dp).background(Color.White.copy(alpha = 0.15f), CircleShape), contentAlignment = Alignment.Center) {
-                                Icon(imageVector = iconVector, contentDescription = nextPrayerInfo.first.name, tint = Color.White, modifier = Modifier.size(32.dp))
+                            Box(
+                                modifier = Modifier
+                                    .background(Color.White.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
+                                    .padding(horizontal = 10.dp, vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = weatherIconVector,
+                                        contentDescription = weatherState.conditionText,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "${weatherState.tempC}°C / ${weatherState.tempF}°F",
+                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(24.dp))
@@ -335,7 +365,8 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                             )
                             val translatedOf = Translator.translate("of", settings.language)
                             val translatedCompleted = Translator.translate("completed", settings.language)
-                            Text(text = "${Translator.translate("verse", settings.language)} ${progress.lastReadAyahNumber} $translatedOf 110 · ${(progress.lastReadProgress * 100).toInt()}% $translatedCompleted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            val totalAyahs = com.example.data.quran.SurahMetadata.ALL.find { it.number == progress.lastReadSurahNumber }?.ayahCount ?: 7
+                            Text(text = "${Translator.translate("verse", settings.language)} ${progress.lastReadAyahNumber} $translatedOf $totalAyahs · ${(progress.lastReadProgress * 100).toInt()}% $translatedCompleted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Spacer(modifier = Modifier.height(6.dp))
                             LinearProgressIndicator(
                                 progress = { progress.lastReadProgress },
@@ -481,6 +512,28 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
                 val mosqueBg = Color(0xFF4CAF50)
                 val mosqueTint = if (isDark) Color(0xFF81C784) else Color(0xFF388E3C)
 
+                val namesBg = Color(0xFF9C27B0)
+                val namesTint = if (isDark) Color(0xFFCE93D8) else Color(0xFF7B1FA2)
+
+                val quranicDuasBg = Color(0xFF00897B)
+                val quranicDuasTint = if (isDark) Color(0xFF80CBC4) else Color(0xFF00695C)
+
+                HomeWidget(
+                    title = Translator.translate("quranic_duas", settings.language),
+                    subtitle = Translator.translate("quranic_duas_desc", settings.language),
+                    icon = Lucide.BookOpen,
+                    iconBackground = quranicDuasBg,
+                    iconTint = quranicDuasTint,
+                    onClick = { navController.navigate(Routes.QURANIC_DUAS) }
+                )
+                HomeWidget(
+                    title = Translator.translate("names_of_allah", settings.language),
+                    subtitle = Translator.translate("names_of_allah_desc", settings.language),
+                    icon = Lucide.Sparkles,
+                    iconBackground = namesBg,
+                    iconTint = namesTint,
+                    onClick = { navController.navigate(Routes.NAMES_OF_ALLAH) }
+                )
                 HomeWidget(
                     title = Translator.translate("digital_tasbih", settings.language),
                     subtitle = Translator.translate("digital_tasbih_subtitle", settings.language),

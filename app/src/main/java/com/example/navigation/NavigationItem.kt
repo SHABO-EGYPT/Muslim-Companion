@@ -14,6 +14,8 @@ object Routes {
     const val QURAN_SETTINGS = "quran_settings"
     const val NOTIFICATIONS = "notifications"
     const val QIBLA = "qibla"
+    const val NAMES_OF_ALLAH = "names_of_allah"
+    const val QURANIC_DUAS = "quranic_duas"
 }
 
 data class BottomNavItem(

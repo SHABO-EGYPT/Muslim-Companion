@@ -1,0 +1,893 @@
+[
+  {
+    "id": 1,
+    "name": "الله",
+    "transliteration": "Allah",
+    "meaning": "الرب المعبود بحق الذي له جميع صفات الألوهية والكمال.",
+    "explanation": "المألوه الواحد المعبود بحق الذي يفزع إليه العباد في الشدائد ويلجئون إليه في الحوائج، وتعبده الخلائق محبةً وتعظيماً وخضوعاً، فهو الخالق والمدبر لكل شيء في الكون الذي له صفات الألوهية والكمال والجلال والجمال، وهو عَلَمٌ على ذات الرب سبحانه وتعالى.",
+    "meaningEn": "The Supreme Deity, The Only True God worshipped in truth.",
+    "evidence": "هَلْ تَعْلَمُ لَهُ سَمِيّاً (مريم: 65)"
+  },
+  {
+    "id": 2,
+    "name": "الرحمن",
+    "transliteration": "Ar-Rahman",
+    "meaning": "صاحب الرحمة الواسعة الشاملة لجميع المخلوقات.",
+    "explanation": "صاحب الرحمة الواسعة جل جلاله الذي وسعت رحمته كل مخلوقاته في الدنيا والآخرة، وهذا الاسم خاص بالله تعالى فلا يسمى به غيره سبحانه، وقد سميت به سورة من سور القرآن الكريم.",
+    "meaningEn": "The Most Gracious, The All-Merciful whose mercy encompasses all creation.",
+    "evidence": "الرَّحْمَنِ الرَّحِيمِ (الفاتحة: 3)"
+  },
+  {
+    "id": 3,
+    "name": "الرحيم",
+    "transliteration": "Ar-Raheem",
+    "meaning": "المنعم على عباده المؤمنين بالرحمة الخاصة والتوفيق.",
+    "explanation": "الذي يرحم عباده المؤمنين ويتفضل بإحسانه على أوليائه وعباده الصالحين، ويختصهم برحمته وهدايته ويمن عليهم برضوانه وجنته يوم القيامة.",
+    "meaningEn": "The Especially Merciful to the believers.",
+    "evidence": "وَكَانَ بِالْمُؤْمِنِينَ رَحِيمًا (الأحزاب: 43)"
+  },
+  {
+    "id": 4,
+    "name": "الملك",
+    "transliteration": "Al-Malik",
+    "meaning": "المالك الحقيقي لكل شيء في الكون، ذو السلطان المطلق.",
+    "explanation": "الذي له الملك الحقيقي الكامل التام الأزلي الذي لا ينقضي ولا يزول، يتصرف في ملكه كيف يشاء ويحكم فيه ما يريد، والخلق كلهم عبيد له خاضعون تحت سلطان ملكه.",
+    "meaningEn": "The King, The Sovereign Lord of all existence.",
+    "evidence": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ (طه: 114)"
+  },
+  {
+    "id": 5,
+    "name": "القدوس",
+    "transliteration": "Al-Quddus",
+    "meaning": "المنزه عن كل عيب ونقص، المطهر ذو الكمال المطلق.",
+    "explanation": "المنزه عن كل نقص والمطهر من كل عيب، الذي له كل صفات العظمة والكمال والجلال، الذي تنزه عن كل وصف لا يليق بجلاله وتقدست أسماؤه الحسان.",
+    "meaningEn": "The Most Sacred, The Most Holy, Free from all imperfections.",
+    "evidence": "الْمَلِكِ الْقُدُّوسِ الْعَزِيزِ الْحَكِيمِ (الجمعة: 1)"
+  },
+  {
+    "id": 6,
+    "name": "السلام",
+    "transliteration": "As-Salam",
+    "meaning": "السالم من كل آفة، ومنبع السلام والأمان لعباده.",
+    "explanation": "السالم من كل عيب ونقص وآفة، المستغني عن جميع الخلق، فهو الذي يعطي السلامة ويمنعها، والذي يمن على عباده المؤمنين بالأمن والسلام والدخول إلى دار السلام.",
+    "meaningEn": "The Source of Peace, The Giver of Security.",
+    "evidence": "الْمَلِكُ الْقُدُّوسُ السَّلَامُ (الحشر: 23)"
+  },
+  {
+    "id": 7,
+    "name": "المؤمن",
+    "transliteration": "Al-Mu'min",
+    "meaning": "المصدق لرسله بالمعجزات، والأمان لعباده من الظلم.",
+    "explanation": "هو الذي أمن عبيده فلا يظلم أحداً، وأمن المؤمنين به من عذابه، المصدق لرسله وأنيائه بما أجرى لهم من المعجزات، والمصدق لوعده بالثواب والنعيم.",
+    "meaningEn": "The Infuser of Faith, The Guarantor of Safety.",
+    "evidence": "السَّلَامُ الْمُؤْمِنُ الْمُهَيْمِنُ (الحشر: 23)"
+  },
+  {
+    "id": 8,
+    "name": "المهيمن",
+    "transliteration": "Al-Muhaymin",
+    "meaning": "الرقيب الحافظ الشاهد على كل شيء في ملكه.",
+    "explanation": "المطلع على خفايا الأمور وخبايا الصدور، القائم على خلق كل نفس بما كسبت، الحافظ لجميع مخلوقاته والشاهد عليهم الذي لا يغيب عنه غائب.",
+    "meaningEn": "The Guardian, The Preserver, The Overseer.",
+    "evidence": "الْمُؤْمِنُ الْمُهَيْمِنُ الْعَزِيزُ (الحشر: 23)"
+  },
+  {
+    "id": 9,
+    "name": "العزيز",
+    "transliteration": "Al-Aziz",
+    "meaning": "القوي الغالب الذي لا يغلب، ذو العزة والمنعة.",
+    "explanation": "الشديد القوي الذي يغلب ولا يُغلب، العزيز في انتقامه من أعدائه، العزيز ذو القدر العظيم والجاه والمنعة الذي خضعت لقهره وعزته جميع المخلوقات.",
+    "meaningEn": "The Almighty, The Invincible, The All-Mighty.",
+    "evidence": "وَهُوَ الْعَزِيزُ الْحَكِيمُ (إبراهيم: 4)"
+  },
+  {
+    "id": 10,
+    "name": "الجبار",
+    "transliteration": "Al-Jabbar",
+    "meaning": "الذي يجبر الكسير، والقاهر المنفذ لأمره في خلقه.",
+    "explanation": "الذي يجبر الضعيف والكسير ويغني الفقير ويسهل العسير، وفي الوقت نفسه هو القاهر لجلوابرة الخلق الذي ينفذ أمره وقضاؤه فيهم رغماً عنهم.",
+    "meaningEn": "The Compeller, The Restorer, The Supreme Repairer.",
+    "evidence": "الْعَزِيزُ الْجَبَّارُ الْمُتَكَبِّرُ (الحشر: 23)"
+  },
+  {
+    "id": 11,
+    "name": "المتكبر",
+    "transliteration": "Al-Mutakabbir",
+    "meaning": "التعالي عن كل سوء ونقص، المتعالي بعظمته وجلاله.",
+    "explanation": "المتعالي عن صفات الخلق وعن كل سوء ونقص، العظيم ذو الكبرياء والجلال الذي لا يليق الكبرياء إلا له سبحانه وتعالى.",
+    "meaningEn": "The Supreme, The Majestic, Exalted above all.",
+    "evidence": "الْجَبَّارُ الْمُتَكَبِّرُ سُبْحَانَ اللَّهِ (الحشر: 23)"
+  },
+  {
+    "id": 12,
+    "name": "الخالق",
+    "transliteration": "Al-Khaliq",
+    "meaning": "الموجد للأشياء من العدم على غير مثال سابق.",
+    "explanation": "الذي أوجد جميع المخلوقات وقدرها بعلمه ومشيئته على غير مثال سابق، وصنع كل شيء بحكمة وإتقان.",
+    "meaningEn": "The Creator who brings everything into existence.",
+    "evidence": "هُوَ اللَّهُ الْخَالِقُ الْبَارِئُ (الحشر: 24)"
+  },
+  {
+    "id": 13,
+    "name": "البارئ",
+    "transliteration": "Al-Bari'",
+    "meaning": "المنشئ للمخلوقات والمبرز لها إلى الوجود بتناسب تام.",
+    "explanation": "الذي خلق الكائنات وأبرزها من العدم إلى الوجود مميزة عن بعضها البعض بصورها وأشكالها ومنافعها المتناسبة دون تفاوت أو اختلال.",
+    "meaningEn": "The Evolver, The Maker of Harmony.",
+    "evidence": "الْخَالِقُ الْبَارِئُ الْمُصَوِّرُ (الحشر: 24)"
+  },
+  {
+    "id": 14,
+    "name": "المصور",
+    "transliteration": "Al-Musawwir",
+    "meaning": "الذي يعطي كل مخلوق صورته وشكله المتميز الخاص.",
+    "explanation": "الذي شكل المخلوقات وصورها في الأرحام وفي الأكوان كيف يشاء، وأعطى كل مخلوق صوره وهيئة خاصة تختلف عن غيره.",
+    "meaningEn": "The Fashioner, The Shaper of all forms.",
+    "evidence": "هُوَ الَّذِي يُصَوِّرُكُمْ فِي الْأَرْحَامِ كَيْفَ يَشَاءُ (آل عمران: 6)"
+  },
+  {
+    "id": 15,
+    "name": "الأول",
+    "transliteration": "Al-Awwal",
+    "meaning": "الذي لا شيء قبله، القديم الأزلي بغير بداية.",
+    "explanation": "الذي سبقت أزليته كل المخلوقات، فلا شيء قبله سبحانه، وجب له الوجود الأزلي والدائم.",
+    "meaningEn": "The First, Existing before all creation without beginning.",
+    "evidence": "هُوَ الْأَوَّلُ وَالْآخِرُ (الحديد: 3)"
+  },
+  {
+    "id": 16,
+    "name": "الآخر",
+    "transliteration": "Al-Akhir",
+    "meaning": "الباقي بعد فناء جميع المخلوقات، الأبدي بلا نهاية.",
+    "explanation": "الذي يبقي بعد فناء جميع المخلوقات، فلا شيء بعده سبحانه، الدائم الباقي سرمدياً الأبدي دون زوال.",
+    "meaningEn": "The Last, Remaining after all creation passes away.",
+    "evidence": "هُوَ الْأَوَّلُ وَالْآخِرُ وَالظَّاهِرُ وَالْبَاطِنُ (الحديد: 3)"
+  },
+  {
+    "id": 17,
+    "name": "الظاهر",
+    "transliteration": "Az-Zahir",
+    "meaning": "الظاهر بآياته ودلائل قدرته، العالي فوق كل شيء.",
+    "explanation": "الذي ظهرت دلائل قدرته وآيات rububiyyatihi في كل المخلوقات، العالي القاهر فوق كل شيء بذاته وقدرته.",
+    "meaningEn": "The Manifest, Evident through His creation and signs.",
+    "evidence": "وَالظَّاهِرُ وَالْبَاطِنُ وَهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ (الحديد: 3)"
+  },
+  {
+    "id": 18,
+    "name": "الباطن",
+    "transliteration": "Al-Batin",
+    "meaning": "المتوارث عن الأبصار، المحيط بأسرار المخلوقات.",
+    "explanation": "الذي احتجب عن أبصار المخلوقات في الدنيا فلا تراه العيون، العالم ببواطن الأمور وخفايا السرائر دون غموض.",
+    "meaningEn": "The Hidden, Unseen to physical eyes, All-Knowing of secrets.",
+    "evidence": "وَالظَّاهِرُ وَالْبَاطِنُ (الحديد: 3)"
+  },
+  {
+    "id": 19,
+    "name": "المالك",
+    "transliteration": "Al-Maalik",
+    "meaning": "صاحب الملك والمتصرف المطلق يوم الدين وفي كل حين.",
+    "explanation": "الذي يملك الأمر كله والملك التام في الدنيا والآخرة، والمتصرف المطلق في شؤون العباد والجزاء يوم الدين.",
+    "meaningEn": "The Owner, Master of the Day of Judgment.",
+    "evidence": "مَالِكِ يَوْمِ الدِّينِ (الفاتحة: 4)"
+  },
+  {
+    "id": 20,
+    "name": "المليك",
+    "transliteration": "Al-Maleek",
+    "meaning": "العظيم الملك المقتدر المطلق على كل العوالم.",
+    "explanation": "المليك صيغة مبالغة تفيد كمال الملك وعظمته والاقتدار المطلق الذي يخضع لعظمته وسلطانه جميع الملوك والأكوان.",
+    "meaningEn": "The Sovereign, The Omnipotent Supreme King.",
+    "evidence": "فِي مَقْعَدِ صِدْقٍ عِنْدَ مَلِيكٍ مُقْتَدِرٍ (القمر: 55)"
+  },
+  {
+    "id": 21,
+    "name": "الهادي",
+    "transliteration": "Al-Hadi",
+    "meaning": "المرشد لخلقه إلى مصالحهم والموفق للمؤمنين للحق.",
+    "explanation": "الذي يهدى مخلوقاته لما فيه صلاح معاشهم ومعادهم، ويهدي قلوب المؤمنين إلى الإيمان والحق والوفاق والصراط المستقيم.",
+    "meaningEn": "The Guide who directs to truth and righteousness.",
+    "evidence": "وَكَفَى بِرَبِّكَ هَادِيًا وَنَصِيرًا (الفرقان: 31)"
+  },
+  {
+    "id": 22,
+    "name": "السميع",
+    "transliteration": "As-Sami'",
+    "meaning": "الذي يسمع كل الأصوات والنجوى دون اختلاط.",
+    "explanation": "الذي وسع سمعه جميع الأصوات في الأرض والسماء، لا يختلف عليه صوت ولا يشغله شأن عن شأن، يعلم السر والنجوى.",
+    "meaningEn": "The All-Hearing who hears every word and prayer.",
+    "evidence": "وَهُوَ السَّمِيعُ الْعَلِيمُ (البقرة: 137)"
+  },
+  {
+    "id": 23,
+    "name": "البصير",
+    "transliteration": "Al-Basir",
+    "meaning": "الذي يبصر كل شيء ويشاهد دبيب النملة السمراء في الظلماء.",
+    "explanation": "الذي يبصر جميع المخلوقات والمبصرات دقيقها وجليلها، لا يخفى عليه شيء في الأرض ولا في السماء في ظلمات الليل والنهار.",
+    "meaningEn": "The All-Seeing who beholds all things clearly.",
+    "evidence": "إِنَّ اللَّهَ بَصِيرٌ بِالْعِبَادِ (غافر: 44)"
+  },
+  {
+    "id": 24,
+    "name": "الواسع",
+    "transliteration": "Al-Wasi'",
+    "meaning": "الواسع في صفاته وغناه ورحمته وعلمه وعطائه.",
+    "explanation": "الذي وسع كل شيء علماً ورحمة وفضلاً وغنى، فلا تنفد خزائنه ولا يحد عطاؤه ولا تعجزه مسألة سائل.",
+    "meaningEn": "The All-Encompassing, Boundless in capacity and mercy.",
+    "evidence": "إِنَّ اللَّهَ وَاسِعٌ عَلِيمٌ (البقرة: 115)"
+  },
+  {
+    "id": 25,
+    "name": "المحيط",
+    "transliteration": "Al-Muhit",
+    "meaning": "المحيط بكليات الأشياء وجزئياتها علماً وقدرة وقهراً.",
+    "explanation": "الذي أحاط بكل شيء علماً وقدرة وحفظاً وقهراً، فلا يعزب عنه مثقال ذرة، ولا يهرب من سلطانه هارب.",
+    "meaningEn": "The All-Encompassing who enfolds all creation.",
+    "evidence": "وَاللَّهُ بِمَا تَعْمَلُونَ مُحِيطٌ (آل عمران: 120)"
+  },
+  {
+    "id": 26,
+    "name": "علام الغيوب",
+    "transliteration": "Allam-ul-Ghuyub",
+    "meaning": "العالم بكل الغائبات والدقائق والأسرار المستقبلية.",
+    "explanation": "الذي يعلم ما غاب عن العيون وما استتر في المستقبل وما كان وما سيكون وما لم يكن لو كان كيف يكون.",
+    "meaningEn": "The Knower of Unseen Secrets.",
+    "evidence": "إِنَّكَ أَنْتَ عَلَّامُ الْغُيُوبِ (المائدة: 109)"
+  },
+  {
+    "id": 27,
+    "name": "الشاكر",
+    "transliteration": "Ash-Shakir",
+    "meaning": "الذي يقبل يسير العمل ويثيب عليه الجزيل من الأجر.",
+    "explanation": "الذي يشكر عباده على يسير الطاعات ويضاعف لهم الأجور والحسنات، ويجزي الشاكرين لفضله بنعيم رضوانه.",
+    "meaningEn": "The Appreciative who rewards even the smallest good deeds.",
+    "evidence": "وَكَانَ اللَّهُ شَاكِرًا عَلِيمًا (النساء: 147)"
+  },
+  {
+    "id": 28,
+    "name": "البر",
+    "transliteration": "Al-Barr",
+    "meaning": "العطوف العطوف على عباده بالمبرة والإحسان والخيرات.",
+    "explanation": "الذي يعطف على عباده بالبر والإحسان، الصادق في وعده، الواسع في جوده وعطائه لجميع المخلوقات.",
+    "meaningEn": "The Source of All Goodness, The Beneficent.",
+    "evidence": "إِنَّهُ هُوَ الْبَرُّ الرَّحِيمُ (الطور: 28)"
+  },
+  {
+    "id": 29,
+    "name": "التواب",
+    "transliteration": "At-Tawwab",
+    "meaning": "كثير القبول لتوبة التائبين والمستغفرين مراراً وتكراراً.",
+    "explanation": "الذي يوفق عباده للتوبة ويقبلها منهم كلما تابوا وأنابوا، فيغفر الذنوب ويمحو السيئات ولا يمل من قبول التائبين.",
+    "meaningEn": "The Ever-Pardoning, Accepting of repentances.",
+    "evidence": "إِنَّ اللَّهَ هُوَ التَّوَّابُ الرَّحِيمُ (التوبة: 118)"
+  },
+  {
+    "id": 30,
+    "name": "الرؤوف",
+    "transliteration": "Ar-Ra'uf",
+    "meaning": "الشديد الرحمة والشفقة والدفع للمضار عن عباده.",
+    "explanation": "الذي يملك أعلى درجات الرحمة والشفقة، فيدفع عن عباده الشرور والمشاق، ويرفق بهم في تكانيفه وتكاليف شرعه.",
+    "meaningEn": "The Most Compassionate, Full of tenderness.",
+    "evidence": "إِنَّ اللَّهَ بِالنَّاسِ لَرَؤُوفٌ رَحِيمٌ (البقرة: 143)"
+  },
+  {
+    "id": 31,
+    "name": "الولي",
+    "transliteration": "Al-Wali",
+    "meaning": "المتولي لأمور خلقه بالنصرة والهداية والرعاية.",
+    "explanation": "الناصر والناصر لأوليائه المؤمنين، المتولي لتشريعهم ورعايتهم وهدايتهم، والقيام بتوفير النصر والسلامة لهم.",
+    "meaningEn": "The Protecting Associate, The Patron and Guardian.",
+    "evidence": "اللَّهُ وَلِيُّ الَّذِينَ آمَنُوا (البقرة: 257)"
+  },
+  {
+    "id": 32,
+    "name": "المولى",
+    "transliteration": "Al-Mawla",
+    "meaning": "الناصر والملجأ والسند الذي نعم المولى ونعم النصـير.",
+    "explanation": "الذي يتولى عباده وينصرهم ويدبر أمورهم، ونعم الملجأ والنصير الذي يتوكل عليه المؤمنون في الشدائد.",
+    "meaningEn": "The Master, The Ultimate Helper.",
+    "evidence": "نِعْمَ الْمَوْلَى وَنِعْمَ النَّصِيرُ (الأنفال: 40)"
+  },
+  {
+    "id": 33,
+    "name": "الرب",
+    "transliteration": "Ar-Rabb",
+    "meaning": "المربي والمالك والمدبر والسيد لخلقه أجمعين.",
+    "explanation": "المالك السيد الخالق المدبر الذي يربي جميع المخلوقات بنعمه، ويربي أولياءه بالإيمان والتوفيق والعمل الصالح.",
+    "meaningEn": "The Sustainer, The Lord and Educator of all worlds.",
+    "evidence": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ (الفاتحة: 2)"
+  },
+  {
+    "id": 34,
+    "name": "الخلاق",
+    "transliteration": "Al-Khallaq",
+    "meaning": "الكثير الخلق المتجدد في ابتكار وإيجاد المخلوقات.",
+    "explanation": "صيغة مبالغة تفيد كثرة الخلق وتجدده واستمراره، يخلق ما يشاء وكيف يشاء في كل وقت وحين بلا عجز.",
+    "meaningEn": "The Supreme Creator, Continually creating anew.",
+    "evidence": "إِنَّ رَبَّكَ هُوَ الْخَلَّاقُ الْعَلِيمُ (الحجر: 86)"
+  },
+  {
+    "id": 35,
+    "name": "القدير",
+    "transliteration": "Al-Qadir",
+    "meaning": "الكامل القدرة الذي لا يعجزه شيء في الأرض ولا في السماء.",
+    "explanation": "الذي له القدرة الشاملة المطلقة التي لا يشوبها عجز أو ضعف، القادر على إيجاد ما يشاء وإعدام ما يشاء في أي لحظة.",
+    "meaningEn": "The Capable, The Omnipotent possessor of perfect power.",
+    "evidence": "إِنَّ اللَّهَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ (البقرة: 20)"
+  },
+  {
+    "id": 36,
+    "name": "النصير",
+    "transliteration": "An-Nasir",
+    "meaning": "الناصر لعباده المؤمنين والمؤيد لهم على أعدائهم.",
+    "explanation": "الذي يتكفل بنصر أوليائه وعباده الصالحين، ويكفيهم كيد الأعداء ومكرهم، فلا غالب لمن نصره الله.",
+    "meaningEn": "The Helper, The Giver of victory.",
+    "evidence": "وَكَفَى بِاللَّهِ نَصِيرًا (النساء: 45)"
+  },
+  {
+    "id": 37,
+    "name": "الغني",
+    "transliteration": "Al-Ghani",
+    "meaning": "المستغني عن كل المخلوقات والكل فقير إليه.",
+    "explanation": "الذي له الغنى التام المطلق بذاته، فلا يحتاج إلى أحد من خلقه ولا لطاعتهم، بينما جميع الخلق فقراء محتاجون إليه.",
+    "meaningEn": "The Self-Sufficient, Completely Independent of creation.",
+    "evidence": "وَرَبُّكَ الْغَنِيُّ ذو الرحمة (الأنعام: 133)"
+  },
+  {
+    "id": 38,
+    "name": "الحميد",
+    "transliteration": "Al-Hamid",
+    "meaning": "المحمود في ذاته وأسمائه وصفاته وأفعاله في كل حال.",
+    "explanation": "الذي يحمده كل شيء وتستحق ذاته وأفعاله وأسماؤه وشريعته كل الحمد والثناء التام من المخلوقات.",
+    "meaningEn": "The Praiseworthy, Deserving of all praise.",
+    "evidence": "وَهُوَ الْوَلِيُّ الْحَمِيدُ (الشورى: 28)"
+  },
+  {
+    "id": 39,
+    "name": "المجيد",
+    "transliteration": "Al-Majid",
+    "meaning": "العظيم المجد والشرف، الواسع الكرم والكمال.",
+    "explanation": "الذي له المجد والشرف والعظمة والجلال والكرم الواسع، البالغ غاية الكمال والرفعة في الذات والصفات.",
+    "meaningEn": "The Glorious, Full of honor and majesty.",
+    "evidence": "إِنَّهُ حَمِيدٌ مَجِيدٌ (هود: 73)"
+  },
+  {
+    "id": 40,
+    "name": "الحق",
+    "transliteration": "Al-Haqq",
+    "meaning": "الرب الذي لا شك فيه ولا في وجوده وأسمائه ووعيده.",
+    "explanation": "الذي ثبت وجوده وألوهيته وربوبيته ثبوتاً يقيناً، وهو الصادق في قوله ووعده ووعيده ولقائه وشرعه.",
+    "meaningEn": "The Truth, The Absolute Reality.",
+    "evidence": "فَتَعَالَى اللَّهُ الْمَلِكُ الْحَقُّ (طه: 114)"
+  },
+  {
+    "id": 41,
+    "name": "المبين",
+    "transliteration": "Al-Mubin",
+    "meaning": "الظاهر أمره ووحيه وحكمته، والموضح لسبل الهداية.",
+    "explanation": "الذي بين لعباده طرق الهداية وأوضح لهم الحق من الباطل، والظاهر في ذاته وصفاته الموضح لحكمته.",
+    "meaningEn": "The Evident, The Manifest Clarifier of truth.",
+    "evidence": "وَيَعْلَمُونَ أَنَّ اللَّهَ هُوَ الْحَقُّ الْمُبِينُ (النور: 25)"
+  },
+  {
+    "id": 42,
+    "name": "القوي",
+    "transliteration": "Al-Qawi",
+    "meaning": "الذي لا يلحقه عجز ولا فتر ولا تضعف قدرته.",
+    "explanation": "الذي يملك القوة المطلقة والقدرة الكاملة التامة التي لا يلحقها ضعف ولا لغوب ولا يعجزها أعتى الجبابرة.",
+    "meaningEn": "The All-Strong, Possessing unlimited power.",
+    "evidence": "إِنَّ اللَّهَ قَوِيٌّ شَدِيدُ الْعِقَابِ (الأنفال: 52)"
+  },
+  {
+    "id": 43,
+    "name": "المتين",
+    "transliteration": "Al-Matin",
+    "meaning": "الشديد القوة والقدرة المتين الذي لا يجهده أثر.",
+    "explanation": "الذي يبلغ غاية الشدة والمتانة في قوته، فلا يجهده فعل شيء ولا يتطرق إليه وهن أو تعب.",
+    "meaningEn": "The Steadfast, Firm and Unyielding in Strength.",
+    "evidence": "إِنَّ اللَّهَ هُوَ الرَّزَّاقُ ذُو الْقُوَّةِ الْمَتِينُ (الذاريات: 58)"
+  },
+  {
+    "id": 44,
+    "name": "المنتقم",
+    "transliteration": "Al-Muntaqim",
+    "meaning": "الذي يعاقب العصاة والمجرمين والظلمة بعد الإنذار.",
+    "explanation": "الذي يعاقب الظالمين والمجرمين والعتاد ويأخذهم بذنوبهم بعد إقامة الحجة عليهم وإمهالهم.",
+    "meaningEn": "The Avenger who takes just retribution from oppressors.",
+    "evidence": "إِنَّا مِنَ الْمُجْرِمِينَ مُنْتَقِمُونَ (السجدة: 22)"
+  },
+  {
+    "id": 45,
+    "name": "العفو",
+    "transliteration": "Al-'Afuw",
+    "meaning": "الذي يمحو السيئات والتجاوز عن الذنوب والعقوبات.",
+    "explanation": "الذي يمحو الذنوب ويكفر السيئات ويتجاوز عن عقاب العصاة والتائبين لطفاً منه ورحمة.",
+    "meaningEn": "The Pardoner who erases sins completely.",
+    "evidence": "إِنَّ اللَّهَ كَانَ عَفُوًّا غَفُورًا (النساء: 43)"
+  },
+  {
+    "id": 46,
+    "name": "الغفور",
+    "transliteration": "Al-Ghafur",
+    "meaning": "الذي يستر الذنوب ويتجاوز عنها ويفضل بالمغفرة.",
+    "explanation": "الذي يستر ذنوب عباده في الدنيا ويتجاوز عنها ولا يعاقبهم عليها في الآخرة، كثير المغفرة والرحمة.",
+    "meaningEn": "The Forgiving, The Coverer of faults.",
+    "evidence": "وَهُوَ الْغَفُورُ الرَّحِيمُ (يونس: 107)"
+  },
+  {
+    "id": 47,
+    "name": "الحليم",
+    "transliteration": "Al-Halim",
+    "meaning": "الذي لا يعجل بالعقوبة على العصاة بل يمهلهم للتوبة.",
+    "explanation": "الذي يصفح ويمهل العصاة والظالمين ولا يعاجلهم بالعقوبة، لعلهم يرجعون ويتوبون إلى رشدهم.",
+    "meaningEn": "The Forbearing, Long-Suffering and Patient with sinners.",
+    "evidence": "وَاعْلَمُوا أَنَّ اللَّهَ غَفُورٌ حَلِيمٌ (البقرة: 235)"
+  },
+  {
+    "id": 48,
+    "name": "القريب",
+    "transliteration": "Al-Qarib",
+    "meaning": "القريب من خلقه بعلمه ومن داعيه بإجابته ورحمته.",
+    "explanation": "القريب بعلمه وإحاطته من كل مخلوق، والقريب خاصة من داعيه والمتقربين إليه بإجابة دعائهم وتوفيقهم.",
+    "meaningEn": "The Near, Close to all His creation and servants.",
+    "evidence": "إِنَّ رَبِّي قَرِيبٌ مُجِيبٌ (هود: 61)"
+  },
+  {
+    "id": 49,
+    "name": "المجيب",
+    "transliteration": "Al-Mujib",
+    "meaning": "الذي يجيب دعاء الداعين وسؤال السائلين.",
+    "explanation": "الذي يقبل دعوة الداعين ويقضي حاجات السائلين ويعطي السائل فوق ما يتمناه برحمته وفضله.",
+    "meaningEn": "The Responsive who answers prayers.",
+    "evidence": "إِنَّ رَبِّي قَرِيبٌ مُجِيبٌ (هود: 61)"
+  },
+  {
+    "id": 50,
+    "name": "الحي",
+    "transliteration": "Al-Hayy",
+    "meaning": "الدائم الحياة الكاملة التي لا يلحقها موت ولا زوال.",
+    "explanation": "صاحب الحياة الكاملة الأزلية الأبدية المتصف بجميع صفات الكمال، فلا تأخذه سنة ولا نوم ولا يعتريه فناء.",
+    "meaningEn": "The Ever-Living, Possessing absolute eternal life.",
+    "evidence": "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ (البقرة: 255)"
+  },
+  {
+    "id": 51,
+    "name": "القيوم",
+    "transliteration": "Al-Qayyum",
+    "meaning": "القائم بنفسه والمقيم لغيره والمدبر لجميع المخلوقات.",
+    "explanation": "القائم بذاته المستغني عن غيره، والقائم بحفظ وتدبير وإقامة جميع المخلوقات والموجودات في السماوات والأرض.",
+    "meaningEn": "The Sustainer, Self-Subsisting on whom all depend.",
+    "evidence": "الْحَيُّ الْقَيُّومُ (البقرة: 255)"
+  },
+  {
+    "id": 52,
+    "name": "العلي",
+    "transliteration": "Al-Aliy",
+    "meaning": "العالي بذاته وقهره وقدرته فوق كل شيء.",
+    "explanation": "الذي له العلو المطلق علو الذات وعلو القهر وعلو القدر، العالي على عرشه وفوق جميع مخلوقاته.",
+    "meaningEn": "The Sublime, The Most High in rank and power.",
+    "evidence": "وَهُوَ الْعَلِيُّ الْعَظِيمُ (البقرة: 255)"
+  },
+  {
+    "id": 53,
+    "name": "العظيم",
+    "transliteration": "Al-Azeem",
+    "meaning": "الذي له العظمة والكمال والجلال في الذات والصفات.",
+    "explanation": "الذي تجاوزت عظمته حدود العقول، وله المجد والشرف والكمال المطلق الذي تخضع لعظمته السموات والأرض.",
+    "meaningEn": "The Magnificent, Supreme in glory and dignity.",
+    "evidence": "وَهُوَ الْعَلِيُّ الْعَظِيمُ (البقرة: 255)"
+  },
+  {
+    "id": 54,
+    "name": "الكبير",
+    "transliteration": "Al-Kabir",
+    "meaning": "العظيم القدر والشان الذي كل شيء دونه صغير وصغير.",
+    "explanation": "الذي كبر عن كل نقص وعيب، وله الكبرياء والعظمة في السماوات والأرض وكل شيء يصغر أمام جلاله.",
+    "meaningEn": "The Great, Exalted above all creation.",
+    "evidence": "إِنَّ اللَّهَ كَانَ عَلِيًّا كَبِيرًا (النساء: 34)"
+  },
+  {
+    "id": 55,
+    "name": "المتعال",
+    "transliteration": "Al-Muta'ali",
+    "meaning": "المنزه الشامخ العالي عن الشركاء والنقائص والأنداد.",
+    "explanation": "الذي ارتفع وتعالى بعظمته عن صفات المخلوقين وعن الشركاء والأشباه والنقائص.",
+    "meaningEn": "The Supreme, High above all partners and flaws.",
+    "evidence": "الْكَبِيرُ الْمُتَعَالِ (الرعد: 9)"
+  },
+  {
+    "id": 56,
+    "name": "اللطيف",
+    "transliteration": "Al-Latif",
+    "meaning": "الرفيق بعباده الذي يوصل إليهم منافعهم بلطف ودقة.",
+    "explanation": "الذي يعلم دقائق الأمور وخفايا السرائر، ويرفق بعباده ويوصل إليهم الخيرات والرحمات من حيث لا يحتسبون ولا يشعرون.",
+    "meaningEn": "The Subtle, Gentle and Kind in delivering mercy.",
+    "evidence": "إِنَّ رَبِّي لَطِيفٌ لِمَا يَشَاءُ (يوسف: 100)"
+  },
+  {
+    "id": 57,
+    "name": "الخبير",
+    "transliteration": "Al-Khabir",
+    "meaning": "العالم ببواطن الأمور وخفاياها ولا يخفى عليه خافية.",
+    "explanation": "الذي أحاط علمه بدقائق الأشياء وبواطنها وأسرارها، فلا تغيب عنه غائبة ولا تخفى عليه خافية.",
+    "meaningEn": "The All-Aware who knows hidden secrets.",
+    "evidence": "وَهُوَ الْحَكِيمُ الْخَبِيرُ (الأنعام: 18)"
+  },
+  {
+    "id": 58,
+    "name": "الوهاب",
+    "transliteration": "Al-Wahhab",
+    "meaning": "الكثير الهبات والعطايا بلا عوض ولا مقابل.",
+    "explanation": "الذي يجود بالنعم والعطايا الجسيمة على عباده بلا استحقاق منهم ولا مقابل، يمنح النعم لمن يشاء تفضلاً منه.",
+    "meaningEn": "The Constant Bestower of endless gifts.",
+    "evidence": "إِنَّكَ أَنْتَ الْوَهَّابُ (آل عمران: 8)"
+  },
+  {
+    "id": 59,
+    "name": "الرزاق",
+    "transliteration": "Ar-Razzaq",
+    "meaning": "المتكفل بالرزق لجميع الكائنات الحية في كل مكان.",
+    "explanation": "الذي خلق الأرزاق وتكفل بإيصالها إلى جميع الكائنات والمخلوقات على اختلاف أنواعها وأماكنها.",
+    "meaningEn": "The Provider who sustains all living beings.",
+    "evidence": "إِنَّ اللَّهَ هُوَ الرَّزَّاقُ ذُو الْقُوَّةِ الْمَتِينُ (الذاريات: 58)"
+  },
+  {
+    "id": 60,
+    "name": "الحسيب",
+    "transliteration": "Al-Hasib",
+    "meaning": "الكافي لعباده والمحاسب لأعمالهم بدقة وعدل.",
+    "explanation": "الذي يكفي عباده في شؤونهم، والمحاسب الذي يحصي أعمال المخلوقات ويحاسبهم عليها يوم القيامة بكل عدل.",
+    "meaningEn": "The Reckoner, The Sufficient Provider.",
+    "evidence": "وَكَفَى بِاللَّهِ حَسِيبًا (النساء: 6)"
+  },
+  {
+    "id": 61,
+    "name": "الرقيب",
+    "transliteration": "Ar-Raqib",
+    "meaning": "المطلع الذي لا يغيب عنه عمل ولا لفظ ولا خاطر.",
+    "explanation": "الحافظ الذي لا يغفل، والمطلع على تصرفات عباده وأقوالهم وخواطرهم في كل لحظة وزمان.",
+    "meaningEn": "The Watchful, Ever-Observant over all actions.",
+    "evidence": "إِنَّ اللَّهَ كَانَ عَلَيْكُمْ رَقِيبًا (النساء: 1)"
+  },
+  {
+    "id": 62,
+    "name": "الشهيد",
+    "transliteration": "Ash-Shahid",
+    "meaning": "الحاضر الشاهد الذي يبصر كل شيء ولا يعزب عنه أمر.",
+    "explanation": "الذي شهد على كل شيء وحضر كل نجوى، فلا يخفى عليه معلوم ولا يعزب عن علمه شيء في الكائنات.",
+    "meaningEn": "The Witness who observes everything in creation.",
+    "evidence": "إنَّ اللَّهَ كَانَ عَلَى كُلِّ شَيْءٍ شَهِيدًا (النساء: 33)"
+  },
+  {
+    "id": 63,
+    "name": "المقيت",
+    "transliteration": "Al-Muqit",
+    "meaning": "الخالق للأقوات والموصل لها والمقتدر عليها.",
+    "explanation": "الذي خلق الأقوات للبدن والروح وتكفل بإيصالها وحفظها والمقتدر الحفيظ على كل شيء.",
+    "meaningEn": "The Nourisher, The Sustainer of life and bodies.",
+    "evidence": "وَكَانَ اللَّهُ عَلَى كُلِّ شَيْءٍ مُقِيتًا (النساء: 85)"
+  },
+  {
+    "id": 64,
+    "name": "الفتاح",
+    "transliteration": "Al-Fattah",
+    "meaning": "الذي يفتح أبواب الرحمة والرزق والنصر ويحكم بين عباده.",
+    "explanation": "الذي يفتح لأوليائه مغاليق الرزق والرحمة، ويحكم بين عباده بالحق والعدل وينصر مظلومهم على ظالمهم.",
+    "meaningEn": "The Opener, The Supreme Judge and Giver of victory.",
+    "evidence": "وَهُوَ الْفَتَّاحُ الْعَلِيمُ (سبأ: 26)"
+  },
+  {
+    "id": 65,
+    "name": "العليم",
+    "transliteration": "Al-Alim",
+    "meaning": "الذي أحاط علمه بكل شيء ظاهراً وباطناً.",
+    "explanation": "الذي يعلم ما كان وما يكون وما لم يكن لو كان كيف يكون، أحاط علمه بجميع الكليات والجزئيات فلا يخفى عليه مثقال ذرة.",
+    "meaningEn": "The All-Knowing, Possessing perfect, complete knowledge.",
+    "evidence": "وَهُوَ السَّمِيعُ الْعَلِيمُ (البقرة: 137)"
+  },
+  {
+    "id": 66,
+    "name": "الحكيم",
+    "transliteration": "Al-Hakim",
+    "meaning": "الذي يضع الأشياء في مواضعها الصحيحة بحكمة بالغة.",
+    "explanation": "صاحب الحكمة المطلقة في خلقه وأمره وشرعه، فلا يخلق شيئاً عبثاً، ويضع الأمور في مواضعها اللائقة بحكمة وعدل.",
+    "meaningEn": "The All-Wise, Perfect in judgement and design.",
+    "evidence": "وَهُوَ الْعَزِيزُ الْحَكِيمُ (إبراهيم: 4)"
+  },
+  {
+    "id": 67,
+    "name": "الجامع",
+    "transliteration": "Al-Jami'",
+    "meaning": "الذي يجمع المخلوقات والفضائل ويجمع الناس ليوم لا ريب فيه.",
+    "explanation": "الذي يجمع المتفرقات والمخلوقات ويحشر الخلائق يوم القيامة للحساب والجزاء، ويجمع لصفاته كل فضيلة وكمال.",
+    "meaningEn": "The Gatherer, Who assembles all humanity on judgment day.",
+    "evidence": "إِنَّ اللَّهَ جَامِعُ الْمُنَافِقِينَ وَالْكَافِرِينَ (النساء: 140)"
+  },
+  {
+    "id": 68,
+    "name": "القادر",
+    "transliteration": "Al-Qadir",
+    "meaning": "الذي يملك القدرة الإلهية التامة على ما يشاء.",
+    "explanation": "الذي له القدرة التامة فلا يعجزه طلب ولا يفوته مطلوب، إنما أمره إذا أراد شيئاً أن يقول له كن فيكون.",
+    "meaningEn": "The Able, The Omnipotent possessor of determination.",
+    "evidence": "قُلْ هُوَ الْقَادِرُ عَلَى أَنْ يَبْعَثَ عَلَيْكُمْ عَذَابًا (الأنعام: 65)"
+  },
+  {
+    "id": 69,
+    "name": "المقتدر",
+    "transliteration": "Al-Muqtadir",
+    "meaning": "العظيم الاقتدار النافذ القدرة في خلقه.",
+    "explanation": "المقتدر المبالغ في قدرته واقتداره الذي يظهر قدرته في خلقه وتدبير كونه دون مانع.",
+    "meaningEn": "The All-Powerful Determinant of destiny.",
+    "evidence": "عِنْدَ مَلِيكٍ مُقْتَدِرٍ (القمر: 55)"
+  },
+  {
+    "id": 70,
+    "name": "فاطر السموات والأرض",
+    "transliteration": "Fatir-as-Samawati wal-Ard",
+    "meaning": "مبدع وموجد السماوات والأرض على غير مثال سبق.",
+    "explanation": "خالق السماوات والأرض ومبدعهما ومشقها ومخرجهما من العدم إلى الوجود بغير مثال سابق.",
+    "meaningEn": "The Originator of the Heavens and Earth.",
+    "evidence": "فَاطِرِ السَّمَاوَاتِ وَالْأَرْضِ (إبراهيم: 10)"
+  },
+  {
+    "id": 71,
+    "name": "عالم الغيب والشهادة",
+    "transliteration": "Alim-ul-Ghaybi wash-Shahadah",
+    "meaning": "العالم بكل ما خفي وما ظهر للعيان.",
+    "explanation": "الذي يحيط علمه بما غاب عن الحس وبما ظهر وشوهد، فلا فرق عنده بين السر والعلن.",
+    "meaningEn": "The Knower of the Unseen and Seen.",
+    "evidence": "عَالِمُ الْغَيْبِ وَالشَّهَادَةِ الْكَبِيرُ الْمُتَعَالِ (الرعد: 9)"
+  },
+  {
+    "id": 72,
+    "name": "بديع السموات والأرض",
+    "transliteration": "Badi'-as-Samawati wal-Ard",
+    "meaning": "مبدعهما في غاية الحسن والجمال على غير مثال سابق.",
+    "explanation": "الذي أنشأ السماوات والأرض وصنعهما في غاية الإتقان والجمال والحسن على غير نموذج أو مثال متقدم.",
+    "meaningEn": "The Originator and Wonderful Creator of the cosmos.",
+    "evidence": "بَدِيعُ السَّمَاوَاتِ وَالْأَرْضِ (البقرة: 117)"
+  },
+  {
+    "id": 73,
+    "name": "نور السماوات والأرض",
+    "transliteration": "Nur-as-Samawati wal-Ard",
+    "meaning": "منورهما بالآيات والشمس والقمر والهدى.",
+    "explanation": "الذي أنار السماوات والأرض بالكواكب والأنوار المادية، وأنار قلوب المؤمنين بالهدى والإيمان والقرآن الكريم.",
+    "meaningEn": "The Light of the Heavens and Earth.",
+    "evidence": "اللَّهُ نُورُ السَّمَاوَاتِ وَالْأَرْضِ (النور: 35)"
+  },
+  {
+    "id": 74,
+    "name": "الواحد",
+    "transliteration": "Al-Wahid",
+    "meaning": "المنفرد بألوهيته وربوبيته لا شريك له.",
+    "explanation": "الذي انفرد بالكمال والوحدانية، فلا شريك له في ذاته ولا في صفاته ولا في أفعاله ولا في عبادته.",
+    "meaningEn": "The One, Unique without partner.",
+    "evidence": "وَإِلَهُكُمْ إِلَهٌ وَاحِدٌ (البقرة: 163)"
+  },
+  {
+    "id": 75,
+    "name": "الأحد",
+    "transliteration": "Al-Ahad",
+    "meaning": "المنفرد بالوحدانية المطلقة والكمال الذي لم يلد ولم يولد.",
+    "explanation": "الذي لا ثاني له ولا نظير ولا مثيل، المتفرد بالصمدية والأحدية الذي لم يلد ولم يولد ولم يكن له كفواً أحد.",
+    "meaningEn": "The Indivisible One, The Absolute One.",
+    "evidence": "قُلْ هُوَ اللَّهُ أَحَدٌ (الإخلاص: 1)"
+  },
+  {
+    "id": 76,
+    "name": "الصمد",
+    "transliteration": "As-Samad",
+    "meaning": "الذي تصمد إليه الخلائق في حوائجها المستغني عن غيره.",
+    "explanation": "السيد الذي كمل في سؤدده وعظمته، والذي تقصده وتصمد إليه الخلائق وتلتجئ إليه في حوائجها ورغائبها.",
+    "meaningEn": "The Eternal, The Self-Sufficient Refuge.",
+    "evidence": "اللَّهُ الصَّمَدُ (الإخلاص: 2)"
+  },
+  {
+    "id": 77,
+    "name": "القاهر",
+    "transliteration": "Al-Qahir",
+    "meaning": "الذي قهر جميع خلقه وعلاهم بقوته.",
+    "explanation": "الذي خضعت لقهره وعزته وسلطانه جميع المخلوقات، فلا يقع في ملكه إلا ما أراد وشاء.",
+    "meaningEn": "The Subduer, Sovereign Master over creation.",
+    "evidence": "وَهُوَ الْقَاهِرُ فَوْقَ عِبَادِهِ (الأنعام: 14)"
+  },
+  {
+    "id": 78,
+    "name": "القهار",
+    "transliteration": "Al-Qahhar",
+    "meaning": "الغالب ذو القهر الشديد لجميع المخلوقات.",
+    "explanation": "صيغة مبالغة تفيد كمال القهر والأنفة والغلبة التي لا يمتنع منها مخلوق في الأرض ولا في السماء.",
+    "meaningEn": "The Irresistible Subduer of all foes.",
+    "evidence": "لِلَّهِ الْوَاحِدِ الْقَهَّارِ (الزمر: 4)"
+  },
+  {
+    "id": 79,
+    "name": "العالم",
+    "transliteration": "Al-Aalim",
+    "meaning": "العالم بظواهر الكائنات وبواطنها دقيقها وجليلها.",
+    "explanation": "الذي اتصف بالعلم الشامل المحيط بجميع الأشياء ومقاديرها وأحوالها دون اغتفال.",
+    "meaningEn": "The Knower of everything.",
+    "evidence": "عَالِمِ الْغَيْبِ لَا يَعْزُبُ عَنْهُ مِثْقَالُ ذَرَّةٍ (سبأ: 3)"
+  },
+  {
+    "id": 80,
+    "name": "الحكم",
+    "transliteration": "Al-Hakam",
+    "meaning": "الحاكم العادل الذي ينفذ حكمه ولا يرد قضاؤه.",
+    "explanation": "الذي يرجع إليه الحكم في الدنيا والآخرة، العادل الذي لا يظلم مثقال ذرة ولا يرد قضاؤه وحكمه.",
+    "meaningEn": "The Judge, The Arbitrator of justice.",
+    "evidence": "أَفَغَيْرَ اللَّهِ أَبْتَغِي حَكَمًا (الأنعام: 114)"
+  },
+  {
+    "id": 81,
+    "name": "الإله",
+    "transliteration": "Al-Ilah",
+    "meaning": "المعبود بحق الذي تألهه القلوب محبة وتعظيماً.",
+    "explanation": "الذي تألهه القلوب وتخضع له الكائنات، المستحق وحده للإفراد بالعبادة والطاعة دون سواه.",
+    "meaningEn": "The Deity, The One Worthy of Worship.",
+    "evidence": "وَإِلَهُكُمْ إِلَهٌ وَاحِدٌ (البقرة: 163)"
+  },
+  {
+    "id": 82,
+    "name": "الحفي",
+    "transliteration": "Al-Hafiy",
+    "meaning": "اللطيف الخبير الشديد العناية بعباده المكرِم لهم.",
+    "explanation": "الذي يعتني بعباده ويكرمهم ويتفضل عليهم بإجابة الدعاء واللطف بهم في كل حين.",
+    "meaningEn": "The Gracious, The Most Welcoming and Kind.",
+    "evidence": "إِنَّهُ كَانَ بِي حَفِيًّا (مريم: 47)"
+  },
+  {
+    "id": 83,
+    "name": "الودود",
+    "transliteration": "Al-Wadud",
+    "meaning": "المحب لأوليائه والمحبوب في قلوبهم بالنعم والعطايا.",
+    "explanation": "الذي يحب أنبياءه ورسله وعباده الصالحين، ويتودد إلى خلقه بالنعم والفضائل والنعم الظاهرة والباطنة.",
+    "meaningEn": "The Loving, The Most Affectionate.",
+    "evidence": "وَهُوَ الْغَفُورُ الْوَدُودُ (البروج: 14)"
+  },
+  {
+    "id": 84,
+    "name": "الحافظ",
+    "transliteration": "Al-Hafiz",
+    "meaning": "الحافظ لأعمال العباد والحافظ للسماوات والأرض من الزوال.",
+    "explanation": "الذي يحفظ السماوات والأرض وأعمال العباد، ويحفظ أولياءه من الفتن والشرور برعايته.",
+    "meaningEn": "The Guardian, The Protector.",
+    "evidence": "فَاللَّهُ خَيْرٌ حَافِظًا (يوسف: 64)"
+  },
+  {
+    "id": 85,
+    "name": "الحفيظ",
+    "transliteration": "Al-Hafidh",
+    "meaning": "الشديد الحفظ الذي لا ينسى ولا يغفل عن شيء.",
+    "explanation": "صيغة مبالغة للحافظ، الذي لا يعزب عنه تحفظ ولا يضل عنه شيء، حفيظ على عباده وأعمالهم وأقدارهم.",
+    "meaningEn": "The Preserver, The Vigilant Guardian.",
+    "evidence": "إِنَّ رَبِّي عَلَى كُلِّ شَيْءٍ حَفِيظٌ (هود: 57)"
+  },
+  {
+    "id": 86,
+    "name": "الغالب",
+    "transliteration": "Al-Ghalib",
+    "meaning": "الذي يغلب على أمره ولا يمنع قضاؤه مانع.",
+    "explanation": "الذي ينفذ مشيئته وقضاءه رغماً عن مكر الأعداء وكيد الظالمين، ولا يقدر أحد على غالبته.",
+    "meaningEn": "The Predominant, The Overcoming Conqueror.",
+    "evidence": "وَاللَّهُ غَالِبٌ عَلَى أَمْرِهِ (يوسف: 21)"
+  },
+  {
+    "id": 87,
+    "name": "الكافي",
+    "transliteration": "Al-Kafi",
+    "meaning": "الذي يكفي عباده جميع مهماتهم وينصرهم.",
+    "explanation": "الذي يكفي عباده ما أهمهم من أمر الدنيا والآخرة، فلا يحتاجون معه إلى غيره سبحانه.",
+    "meaningEn": "The All-Sufficient, Who satisfies all needs.",
+    "evidence": "أَلَيْسَ اللَّهُ بِكَافٍ عَبْدَهُ (الزمر: 36)"
+  },
+  {
+    "id": 88,
+    "name": "المنان",
+    "transliteration": "Al-Mannan",
+    "meaning": "العظيم العطاء الذي يمن بالعطايا قبل السؤال.",
+    "explanation": "الذي يبدأ بالنوال قبل السؤال، المنعم بالخيرات العظام على مخلوقاته تفضلاً منه ورحمة.",
+    "meaningEn": "The Munificent, The Bestower of favors.",
+    "evidence": "لَقَدْ مَنَّ اللَّهُ عَلَى الْمُؤْمِنِينَ (آل عمران: 164)"
+  },
+  {
+    "id": 89,
+    "name": "المستعان",
+    "transliteration": "Al-Musta'an",
+    "meaning": "الذي يطلب منه العون في جميع الكربات والشؤون.",
+    "explanation": "الذي يستعان به في النوائب والشدائد، وتطلب منه الهداية والنصرة والقوة دون سواها.",
+    "meaningEn": "The One Whose Help is Sought.",
+    "evidence": "وَاللَّهُ الْمُسْتَعَانُ عَلَى مَا تَصِفُونَ (يوسف: 18)"
+  },
+  {
+    "id": 90,
+    "name": "الوارث",
+    "transliteration": "Al-Warith",
+    "meaning": "الباقي بعد فناء الخلق كلهم والآيل إليه كل شيء.",
+    "explanation": "الذي يرث الأرض ومن عليها بعد فناء الخلائق جميعاً، ليعود الملك بأكمله لله الواحد القهار.",
+    "meaningEn": "The Inheritor of all existence.",
+    "evidence": "وَإِنَّا لَنَحْنُ نُحْيِي وَنُمِيتُ وَنَحْنُ الْوَارِثُونَ (الحجر: 23)"
+  },
+  {
+    "id": 91,
+    "name": "الكفيل",
+    "transliteration": "Al-Kafil",
+    "meaning": "الرقيب والشهيد والحفيظ الضامن لأمور عباده.",
+    "explanation": "الذي تكفل بأرزاق العباد وشؤونهم وكان شهيداً وضامناً على العهود والمواثيق.",
+    "meaningEn": "The Guarantor, The Witness and Trustee.",
+    "evidence": "وَقَدْ جَعَلْتُمُ اللَّهَ عَلَيْكُمْ كَفِيلًا (النحل: 91)"
+  },
+  {
+    "id": 92,
+    "name": "الوكيل",
+    "transliteration": "Al-Wakil",
+    "meaning": "القائم بتدبير شؤون عباده المعتمد عليه في كل شيء.",
+    "explanation": "الذي يتوكل عليه المؤمنون ويرضون بتدبيره، فهو القائم بكفاية من اعتمد عليه وتوكل عليه حق التوكل.",
+    "meaningEn": "The Trustee, The Dependable Administrator.",
+    "evidence": "وَتَوَكَّلْ عَلَى اللَّهِ وَكَفَى بِاللَّهِ وَكِيلًا (النساء: 81)"
+  },
+  {
+    "id": 93,
+    "name": "الغفار",
+    "transliteration": "Al-Ghaffar",
+    "meaning": "الستار لذنوب عباده والستر والصفح المتكرر عنها.",
+    "explanation": "صيغة مبالغة للغفور، يغفر الذنوب العظام ويمحوها كأنه لم تكن، ويسبل ستره على عباده مراراً وتكراراً.",
+    "meaningEn": "The Oft-Forgiving, The Repeated Coverer of Sins.",
+    "evidence": "فَقُلْتُ اسْتَغْفِرُوا رَبَّكُمْ إِنَّهُ كَانَ غَفَّارًا (نوح: 10)"
+  },
+  {
+    "id": 94,
+    "name": "الكريم",
+    "transliteration": "Al-Karim",
+    "meaning": "الكثير الخير العظيم النفع الذي لا ينفد عطاؤه.",
+    "explanation": "الذي يعطي بلا حساب، ويعفو عن الذنوب، ويجزي على القليل بالجزيل من الثواب لكرمه الفياض.",
+    "meaningEn": "The Bountiful, The Most Generous.",
+    "evidence": "يَا أَيُّهَا الْإِنْسَانُ مَا غَرَّكَ بِرَبِّكَ الْكَرِيمِ (الانفطار: 6)"
+  },
+  {
+    "id": 95,
+    "name": "الشكور",
+    "transliteration": "Ash-Shakur",
+    "meaning": "الذي يضاعف الحسنات ويثيب الأجر العظيم على القليل.",
+    "explanation": "الذي يشكر اليسير من الطاعات، ويضاعف الأجور والحسنات إلى أضعاف كثيرة بفضله ورحمته.",
+    "meaningEn": "The Most Appreciative of righteousness.",
+    "evidence": "إِنَّ رَبَّنَا لَغَفُورٌ شَكُورٌ (فاطر: 34)"
+  },
+  {
+    "id": 96,
+    "name": "الأعلى",
+    "transliteration": "Al-A'la",
+    "meaning": "العالي فوق كل شيء الشامخ بقوته وقدرته.",
+    "explanation": "الذي له العلو المطلق والرفعة التامة في ذاته وصفاته وقهره وعرشه، سبحت أسمائه وتقررت ربوبيته.",
+    "meaningEn": "The Most High, Exalted in majesty.",
+    "evidence": "سَبِّحِ اسْمَ رَبِّكَ الْأَعْلَى (الأعلى: 1)"
+  },
+  {
+    "id": 97,
+    "name": "الأكرم",
+    "transliteration": "Al-Akram",
+    "meaning": "الذي لا يوازيه كرم في عطائه وفضله على عباده.",
+    "explanation": "الذي بلغ النهاية في الكرم والعطاء والفضل، فعلمه الإنسان ما لم يعلم وتفضل عليه بالهداية.",
+    "meaningEn": "The Most Bountiful and Noble.",
+    "evidence": "اقْرَأْ وَرَبُّكَ الْأَكْرَمُ (العلق: 3)"
+  },
+  {
+    "id": 98,
+    "name": "مالك الملك",
+    "transliteration": "Malik-ul-Mulk",
+    "meaning": "المتصرف المطلق في الملك يؤتي الملك من يشاء وينزعه ممن يشاء.",
+    "explanation": "الذي ينفذ أمره ومشيئته في الملك كله، يعطي الملك والسلطان والسيادة لمن يشاء، وينزع الملك ممن يشاء بحكمته.",
+    "meaningEn": "The Master of All Sovereignty.",
+    "evidence": "قُلِ اللَّهُمَّ مَالِكَ الْمُلْكِ تُؤْتِي الْمُلْكَ مَنْ تَشَاءُ (آل عمران: 26)"
+  },
+  {
+    "id": 99,
+    "name": "ذو الجلال والإكرام",
+    "transliteration": "Dhul-Jalali wal-Ikram",
+    "meaning": "صاحب العظمة والكبرياء والجود والإحسان.",
+    "explanation": "الذي يستحق أن يجال ويُعظم فلا يُعصى، ويُكرم ألياءه بالنعيم والفضل والرضوان فلا يخيب من رجاه.",
+    "meaningEn": "The Lord of Majesty and Generosity.",
+    "evidence": "وَيَبْقَى وَجْهُ رَبِّكَ ذُو الْجَلَالِ وَالْإِكْرَامِ (الرحمن: 27)"
+  }
+]

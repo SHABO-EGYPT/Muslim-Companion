@@ -33,6 +33,14 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 - **Horizontal Pager Flow:** In the Azkar reading screen, uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
 - **Auto-Advance:** Card automatically scrolls to the next remembrance once the target count is completed.
 
+### ✨ 99 Names of Allah (أسماء الله الحسنى)
+- **Interactive Database:** Beautifully designed catalog of the 99 Names of Allah, rendering original Arabic scripts, phonetic transliterations, and English translations.
+- **Offline Reading:** Fully cached and self-contained database ensuring fast and complete offline loading.
+
+### 📖 Quranic Supplications (Duas)
+- **Authentic Devotionals:** A curated selection of powerful supplications sourced directly from the verses of the Holy Quran.
+- **Rich Typography:** Styled with high-readability Arabic scripts and translations side-by-side.
+
 ### 🏆 Achievement Badges
 - **Dynamic Unlocking:** Badges such as "First Juz", "7-day streak", "Night Owl", and "Early Riser" unlock dynamically on the Profile screen based on your real-time reading progress and checked prayers.
 
@@ -66,9 +74,9 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 |:---:|:---:|:---:|
 | ![Qibla](screenshots/qibla.png) | ![Tasbih](screenshots/tasbih.png) | ![Settings](screenshots/profile.png) |
 
-| 🎵 Home Screen Player Widget |
-|:---:|
-| ![Player Widget](screenshots/widget_screenshot.png) |
+| ✨ 99 Names of Allah | 📖 Quranic Supplications | 🎵 Home Screen Player Widget |
+|:---:|:---:|:---:|
+| ![Names of Allah](screenshots/names_of_allah.png) | ![Quranic Supplications](screenshots/quranic_duas.png) | ![Player Widget](screenshots/widget_screenshot.png) |
 
 ---
 

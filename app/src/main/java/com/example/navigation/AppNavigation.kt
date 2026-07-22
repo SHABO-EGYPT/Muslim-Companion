@@ -147,5 +147,19 @@ fun AppNavHost(navController: NavHostController, repository: CompanionRepository
                 navController = navController
             )
         }
+        composable(Routes.NAMES_OF_ALLAH) {
+            val namesViewModel: com.example.viewmodel.NamesOfAllahViewModel = hiltViewModel()
+            com.example.ui.screens.NamesOfAllahScreen(
+                viewModel = namesViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.QURANIC_DUAS) {
+            val quranicDuasViewModel: com.example.viewmodel.QuranicDuasViewModel = hiltViewModel()
+            com.example.ui.screens.QuranicDuasScreen(
+                viewModel = quranicDuasViewModel,
+                onBack = { navController.popBackStack() }
+            )
+        }
     }
 }

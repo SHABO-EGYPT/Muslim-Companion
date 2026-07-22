@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Muslim Companion</string>
     <string name="widget_description">Controls Quran audio recitation directly from your home screen.</string>
+    <string name="prayer_weather_widget_desc">Hero Dashboard Hub showing Next Prayer countdown, upcoming prayer timeline, and live weather status.</string>
 </resources>

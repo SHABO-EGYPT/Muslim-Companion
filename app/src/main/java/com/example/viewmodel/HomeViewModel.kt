@@ -8,16 +8,28 @@ import com.example.data.local.AppSettingEntity
 import com.example.data.local.UserProgressEntity
 import com.example.data.repository.AzkarRepository
 import com.example.data.repository.CompanionRepository
+import com.example.data.repository.WeatherRepository
 import com.example.domain.model.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 // 1. Home ViewModel
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: CompanionRepository,
     private val azkarRepository: AzkarRepository,
+    private val weatherRepository: WeatherRepository,
     countdownManager: PrayerCountdownManager
 ) : ViewModel() {
+
+    val weatherState: StateFlow<WeatherState> = weatherRepository.weatherState
+
+    init {
+        viewModelScope.launch {
+            weatherRepository.fetchWeather()
+        }
+    }
+
     val userProgress: StateFlow<UserProgressEntity> = repository.getUserProgressFlow()
         .stateIn(
             scope = viewModelScope,
@@ -52,3 +64,4 @@ class HomeViewModel @Inject constructor(
             initialValue = emptyList()
         )
 }
+

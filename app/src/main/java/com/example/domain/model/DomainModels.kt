@@ -61,3 +61,40 @@ data class Reciter(
     val id: String,
     val name: String
 )
+
+enum class WeatherCondition {
+    SUNNY,
+    CLEAR_NIGHT,
+    CLOUDY,
+    RAINY,
+    SNOWY,
+    HOT
+}
+
+data class WeatherState(
+    val tempC: Int = 26,
+    val tempF: Int = 79,
+    val condition: WeatherCondition = WeatherCondition.SUNNY,
+    val conditionText: String = "Clear",
+    val isLoading: Boolean = false
+)
+
+data class NameOfAllah(
+    val id: Int,
+    val name: String,
+    val transliteration: String,
+    val meaning: String,
+    val explanation: String,
+    val meaningEn: String,
+    val evidence: String
+)
+
+data class QuranicDua(
+    val id: Int,
+    val text: String,
+    val surah: String,
+    val ayah: Int,
+    val transliteration: String
+)
+
+

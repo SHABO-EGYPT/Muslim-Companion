@@ -61,6 +61,29 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                 }
             }
 
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.QURANIC_DUAS) }.testTag("promoted_quranic_duas_card"),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F2F1))
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(48.dp).background(PrimaryTeal.copy(alpha = 0.15f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Lucide.BookOpen, contentDescription = "Quranic Duas", tint = PrimaryTeal)
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(text = Translator.translate("quranic_duas", settings.language), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = PrimaryTeal)
+                                Text(text = Translator.translate("quranic_duas_desc", settings.language), style = MaterialTheme.typography.bodySmall, color = PrimaryTeal.copy(alpha = 0.8f))
+                            }
+                        }
+                        val duasChevron = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
+                        Icon(imageVector = duasChevron, contentDescription = "Open", tint = PrimaryTeal)
+                    }
+                }
+            }
+
             items(categories) { cat ->
                 val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
                 val (boxBg, iconTint) = when (cat.iconName) {
