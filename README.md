@@ -88,11 +88,26 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
   - **Data Layer:** Room database caches, Retrofit API endpoints, local asset parsers, and repository implementations.
   - **Domain Layer:** Unified data models, repository abstractions, and core business entities.
   - **Presentation Layer:** State-driven Compose screens, Dialogs, and state-holding view models.
-- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping, seamlessly integrated with **WorkManager** via `@HiltWorker` for background synchronization tasks.
+- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping, featuring decoupled UI architecture via `MainViewModel` and `@HiltWorker` for background synchronization tasks.
 - **Local Caching (Room):** Integrates SQLite database caching supporting schema migrations and destructive fallback protection to preserve offline usability.
-- **Security & Reliability:** Features comprehensive ProGuard rules, explicit connection timeouts, strict network security configurations, and optimized broadcast receivers to prevent ANRs.
+- **Security & ANR Safety:** Upgraded background receivers with `goAsync()` and 9-second timeouts, strict network security configurations, explicit connection timeouts, and comprehensive ProGuard rules.
 - **Network Client:** **Retrofit + Moshi** integrating directly with the official Quran.com API endpoints.
 - **Audio Player:** **AndroidX Media3 (ExoPlayer)** for low-latency network audio streaming.
+
+---
+
+## ⚡ Google MAD Best Practices & Accessibility (a11y)
+
+### 🛡️ Modern Android Development (MAD) Fine-Tunings
+- **Lifecycle-Aware State Collection:** Replaced standard `collectAsState()` with `collectAsStateWithLifecycle()` across `MainActivity` and all 14 screens, ensuring background flow collection halts when the app is minimized to conserve CPU and battery.
+- **Decoupled Hilt Architecture:** Created `MainViewModel` to manage user progress and app-wide preferences, removing direct repository injections from `MainActivity` and `AppNavHost`.
+- **Compose Recomposition Optimization:** Cached dynamic font lookups (`getQuranFontFamily`) using `remember` blocks to eliminate memory allocations during UI recomposition loops.
+
+### ♿ Full Accessibility (a11y) & TalkBack Support
+- **WCAG 2.2 AA Compliance:** Screen titles and section headers registered with `heading()` semantics for structured TalkBack navigation.
+- **48dp Minimum Touch Targets:** Applied `minimumInteractiveComponentSize()` to all custom interactive cards, phrase chips, and prayer row selectors.
+- **Merged Semantic Elements:** Grouped composite cards (`mergeDescendants = true`) for `HomeWidget`, `RubElHizbIcon` verse badges, and Prayer Time cards so TalkBack reads them as single cohesive units.
+- **Dynamic Component Roles & States:** Provided explicit accessibility roles (`Role.Tab`, `Role.Checkbox`, `Role.Button`) and state descriptions (e.g., *"Completed"* / *"Not completed"*, *"Selected"* / *"Not selected"*).
 
 ---
 

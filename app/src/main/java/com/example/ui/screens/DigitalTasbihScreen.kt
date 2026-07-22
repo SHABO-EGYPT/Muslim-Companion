@@ -25,16 +25,23 @@ import com.composables.icons.lucide.*
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.TasbihViewModel
+
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 
 @Composable
 fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostController) {
-    val count by viewModel.count.collectAsState()
-    val target by viewModel.target.collectAsState()
-    val dhikr by viewModel.currentDhikr.collectAsState()
-    val settings by viewModel.settings.collectAsState()
-    val phrases by viewModel.phrases.collectAsState()
-    val activeIndex by viewModel.activeIndex.collectAsState()
+    val count by viewModel.count.collectAsStateWithLifecycle()
+    val target by viewModel.target.collectAsStateWithLifecycle()
+    val dhikr by viewModel.currentDhikr.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val phrases by viewModel.phrases.collectAsStateWithLifecycle()
+    val activeIndex by viewModel.activeIndex.collectAsStateWithLifecycle()
 
     val progressFraction = (if (target > 0) count.toFloat() / target.toFloat() else 0f).coerceIn(0f, 1f)
 
@@ -58,6 +65,11 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
 
                 Card(
                     modifier = Modifier
+                        .minimumInteractiveComponentSize()
+                        .semantics(mergeDescendants = true) {
+                            role = Role.Tab
+                            stateDescription = if (isSelected) "Selected" else "Not selected"
+                        }
                         .clickable { viewModel.selectPhrase(index) }
                         .testTag("tasbih_phrase_item_$index"),
                     colors = CardDefaults.cardColors(containerColor = containerColor),
@@ -82,7 +94,17 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
             Spacer(modifier = Modifier.height(40.dp))
 
             Box(
-                modifier = Modifier.size(220.dp).clip(CircleShape).background(MintTeal).clickable { viewModel.increment() }.border(8.dp, MaterialTheme.colorScheme.background, CircleShape).testTag("tasbih_tap_target"),
+                modifier = Modifier
+                    .size(220.dp)
+                    .clip(CircleShape)
+                    .background(MintTeal)
+                    .semantics {
+                        role = Role.Button
+                        contentDescription = "$dhikr. Count $count of $target. Tap to increment."
+                    }
+                    .clickable { viewModel.increment() }
+                    .border(8.dp, MaterialTheme.colorScheme.background, CircleShape)
+                    .testTag("tasbih_tap_target"),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(progress = { progressFraction }, modifier = Modifier.fillMaxSize().padding(4.dp), color = MaterialTheme.colorScheme.primary, strokeWidth = 8.dp, trackColor = Color.Transparent)

@@ -21,12 +21,13 @@ import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.AzkarViewModel
 
 @Composable
 fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController) {
-    val categories by viewModel.azkarCategories.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val categories by viewModel.azkarCategories.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier.fillMaxSize().testTag("azkar_list_screen")

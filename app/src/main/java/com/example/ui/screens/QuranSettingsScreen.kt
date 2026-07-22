@@ -32,14 +32,15 @@ import com.composables.icons.lucide.*
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.SurahReaderViewModel
 import com.example.domain.model.Reciter
 import com.example.data.local.AppSettingEntity
 
 @Composable
 fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostController) {
-    val quranSettings by viewModel.quranSettings.collectAsState()
-    val settings by viewModel.quranSettings.collectAsState() // settings variable for translation
+    val quranSettings by viewModel.quranSettings.collectAsStateWithLifecycle()
+    val settings by viewModel.quranSettings.collectAsStateWithLifecycle() // settings variable for translation
     val context = LocalContext.current
     val activity = context as? Activity
 
@@ -133,6 +134,7 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                 Spacer(modifier = Modifier.height(12.dp))
 
                 val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
+                val fontFamilies = remember { fonts.associateWith { getQuranFontFamily(it) } }
                 var expanded by remember { mutableStateOf(false) }
 
                 Box(modifier = Modifier.fillMaxWidth()) {
@@ -157,7 +159,7 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                                 text = {
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                         Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (quranSettings.quranFont == fontName) FontWeight.Bold else FontWeight.Normal), color = if (quranSettings.quranFont == fontName) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                        Text(text = "القرآن", style = TextStyle(fontFamily = getQuranFontFamily(fontName), fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (quranSettings.quranFont == fontName) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName] ?: androidx.compose.ui.text.font.FontFamily.Default, fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (quranSettings.quranFont == fontName) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 },
                                 onClick = { viewModel.updateQuranFont(fontName); expanded = false },

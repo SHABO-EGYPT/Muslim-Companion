@@ -45,15 +45,16 @@ import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.ReaderLoadState
 import com.example.viewmodel.SurahReaderViewModel
 
 @Composable
 fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostController) {
-    val surah by viewModel.currentSurah.collectAsState()
-    val progress by viewModel.userProgress.collectAsState()
-    val quranSettings by viewModel.quranSettings.collectAsState()
-    val settings by viewModel.quranSettings.collectAsState() // for translator
+    val surah by viewModel.currentSurah.collectAsStateWithLifecycle()
+    val progress by viewModel.userProgress.collectAsStateWithLifecycle()
+    val quranSettings by viewModel.quranSettings.collectAsStateWithLifecycle()
+    val settings by viewModel.quranSettings.collectAsStateWithLifecycle() // for translator
     
     val activeSurah = surah ?: Surah(
         number = progress.lastReadSurahNumber.takeIf { it > 0 } ?: 1,

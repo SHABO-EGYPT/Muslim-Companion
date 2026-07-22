@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
@@ -40,10 +41,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController) {
-    val progress by viewModel.userProgress.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val progress by viewModel.userProgress.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
-    val badges by viewModel.badges.collectAsState()
+    val badges by viewModel.badges.collectAsStateWithLifecycle()
 
     var showEditDialog by remember { mutableStateOf(false) }
     var editName by remember(progress.username) { mutableStateOf(progress.username) }

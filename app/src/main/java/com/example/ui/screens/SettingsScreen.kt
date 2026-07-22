@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
@@ -20,7 +21,7 @@ import com.example.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostController) {
-    val settings by viewModel.settings.collectAsState()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showSoundTypeDialog by remember { mutableStateOf(false) }

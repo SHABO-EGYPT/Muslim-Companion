@@ -22,6 +22,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
@@ -38,13 +43,14 @@ import java.time.chrono.HijrahDate
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostController) {
-    val times by viewModel.prayerTimes.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val times by viewModel.prayerTimes.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val progress by viewModel.userProgress.collectAsStateWithLifecycle()
     val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
-    val locationName by viewModel.locationName.collectAsState()
-    val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsState()
-    val checkablePrayers by viewModel.checkablePrayers.collectAsState()
-    val prayerLoadError by viewModel.prayerLoadError.collectAsState()
+    val locationName by viewModel.locationName.collectAsStateWithLifecycle()
+    val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsStateWithLifecycle()
+    val checkablePrayers by viewModel.checkablePrayers.collectAsStateWithLifecycle()
+    val prayerLoadError by viewModel.prayerLoadError.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     var showCalculationDialog by remember { mutableStateOf(false) }
@@ -200,12 +206,18 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
 
             itemsIndexed(times) { index, item ->
                 val isNext = item.name == nextPrayerInfo.third
-                val progress by viewModel.userProgress.collectAsState()
                 val isCompleted = progress.completedPrayersToday.split(",").filter { it.isNotBlank() }.contains(item.name)
                 val isCheckable = checkablePrayers.contains(item.name)
 
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .minimumInteractiveComponentSize()
+                        .semantics(mergeDescendants = true) {
+                            role = Role.Checkbox
+                            stateDescription = if (isCompleted) "Completed" else "Not completed"
+                        }
                         .clickable(enabled = isCheckable) { viewModel.togglePrayerCompletion(item.name) }
                         .testTag("prayer_row_${item.name.lowercase()}"),
                     colors = CardDefaults.cardColors(containerColor = if (isNext) MintTeal else Color.Transparent),
@@ -223,7 +235,7 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                 contentAlignment = Alignment.Center
                             ) {
                                 val icon = when (item.iconName) { "sunrise" -> Lucide.Sunrise; "sunset" -> Lucide.Sunset; "moon" -> Lucide.CloudMoon; else -> Lucide.Sun }
-                                Icon(imageVector = icon, contentDescription = item.name, tint = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(imageVector = icon, contentDescription = null, tint = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {

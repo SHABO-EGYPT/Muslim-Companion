@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
@@ -42,7 +43,7 @@ import com.example.domain.model.WeatherCondition
 @Composable
 fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navController: NavHostController) {
     val context = LocalContext.current
-    val progress by viewModel.userProgress.collectAsState()
+    val progress by viewModel.userProgress.collectAsStateWithLifecycle()
     
     val navigateToTab = { route: String ->
         navController.navigate(route) {
@@ -51,11 +52,11 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
             restoreState = true
         }
     }
-    val settings by viewModel.settings.collectAsState()
-    val azkarCats by viewModel.azkarCategories.collectAsState()
-    val prayerTimes by viewModel.prayerTimes.collectAsState()
-    val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsState()
-    val weatherState by viewModel.weatherState.collectAsState()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val azkarCats by viewModel.azkarCategories.collectAsStateWithLifecycle()
+    val prayerTimes by viewModel.prayerTimes.collectAsStateWithLifecycle()
+    val nextPrayerInfo by viewModel.nextPrayerInfo.collectAsStateWithLifecycle()
+    val weatherState by viewModel.weatherState.collectAsStateWithLifecycle()
 
     val today = LocalDate.now()
     val appLocale = remember(settings.language) {

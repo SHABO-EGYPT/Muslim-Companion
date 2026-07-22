@@ -42,18 +42,19 @@ import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.QuranViewModel
 import com.example.viewmodel.SurahReaderViewModel
 import com.example.viewmodel.SurahsLoadState
 
 @Composable
 fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewModel, navController: NavHostController) {
-    val query by viewModel.searchQuery.collectAsState()
-    val surahs by viewModel.filteredSurahs.collectAsState()
-    val quranSettings by readerViewModel.quranSettings.collectAsState()
-    val progress by readerViewModel.userProgress.collectAsState()
-    val settings by readerViewModel.quranSettings.collectAsState() // Using quranSettings as settings
-    val loadState by viewModel.surahsLoadState.collectAsState()
+    val query by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val surahs by viewModel.filteredSurahs.collectAsStateWithLifecycle()
+    val quranSettings by readerViewModel.quranSettings.collectAsStateWithLifecycle()
+    val progress by readerViewModel.userProgress.collectAsStateWithLifecycle()
+    val settings by readerViewModel.quranSettings.collectAsStateWithLifecycle() // Using quranSettings as settings
+    val loadState by viewModel.surahsLoadState.collectAsStateWithLifecycle()
     var showQuranSettings by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
@@ -147,6 +148,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
                         Text(text = Translator.translate("quran_font_style", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                         Spacer(modifier = Modifier.height(6.dp))
                         val fonts = listOf("Uthmanic Hafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic")
+                        val fontFamilies = remember { fonts.associateWith { getQuranFontFamily(it) } }
                         var fontExpanded by remember { mutableStateOf(false) }
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Row(
@@ -169,7 +171,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
                                         text = {
                                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                                                 Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (quranSettings.quranFont == fontName) FontWeight.Bold else FontWeight.Normal))
-                                                Text(text = "القرآن", style = TextStyle(fontFamily = getQuranFontFamily(fontName), fontSize = 14.sp, textDirection = TextDirection.Rtl))
+                                                Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName] ?: androidx.compose.ui.text.font.FontFamily.Default, fontSize = 14.sp, textDirection = TextDirection.Rtl))
                                             }
                                         },
                                         onClick = { readerViewModel.updateQuranFont(fontName); fontExpanded = false }

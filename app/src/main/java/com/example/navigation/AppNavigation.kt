@@ -13,18 +13,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.data.repository.AzkarRepository
-import com.example.data.repository.CompanionRepository
-import com.example.data.repository.QuranRepository
-import com.example.ui.screens.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.viewmodel.MainViewModel
 import com.example.viewmodel.*
+import com.example.ui.screens.*
 import com.example.ui.QiblaCompassScreen
 
 @Composable
-fun AppNavHost(navController: NavHostController, repository: CompanionRepository) {
+fun AppNavHost(navController: NavHostController, mainViewModel: MainViewModel) {
     // Scoped to the Activity's ViewModelStoreOwner so it remains shared across HomeScreen and Azkar screens.
     val azkarViewModel: AzkarViewModel = hiltViewModel()
 
-    val userProgress by repository.getUserProgressFlow().collectAsState(initial = null)
+    val userProgress by mainViewModel.userProgress.collectAsStateWithLifecycle()
     val startDestination = if (userProgress?.onboardingCompleted == true) Routes.HOME else Routes.ONBOARDING
 
     if (userProgress == null) {

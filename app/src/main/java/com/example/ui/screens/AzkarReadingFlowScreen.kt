@@ -24,16 +24,17 @@ import com.example.domain.model.AzkarCategory
 import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.AzkarViewModel
 
 @Composable
 fun AzkarReadingFlowScreen(viewModel: AzkarViewModel, navController: NavHostController) {
-    val category by viewModel.selectedCategory.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val category by viewModel.selectedCategory.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
     val activeCat = category ?: AzkarCategory("morning", "Morning Azkar", "أذكار الصباح", 18, 12, "sunrise", 0xFFFFDEA0)
 
-    val stepIndex by viewModel.flowIndex.collectAsState()
-    val dhikrs by viewModel.currentAzkarList.collectAsState()
+    val stepIndex by viewModel.flowIndex.collectAsStateWithLifecycle()
+    val dhikrs by viewModel.currentAzkarList.collectAsStateWithLifecycle()
 
     if (dhikrs.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

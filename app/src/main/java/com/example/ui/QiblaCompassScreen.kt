@@ -23,6 +23,7 @@ import com.composables.icons.lucide.Lucide
 import com.composables.icons.lucide.ChevronLeft
 import com.composables.icons.lucide.Compass
 import com.composables.icons.lucide.MapPin
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.QiblaViewModel
 import kotlin.math.PI
 import kotlin.math.cos
@@ -37,8 +38,8 @@ import java.util.Locale
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun QiblaCompassScreen(viewModel: QiblaViewModel, navController: NavHostController) {
-    val azimuth by viewModel.azimuth.collectAsState()
-    val qiblaBearing by viewModel.qiblaBearing.collectAsState()
+    val azimuth by viewModel.azimuth.collectAsStateWithLifecycle()
+    val qiblaBearing by viewModel.qiblaBearing.collectAsStateWithLifecycle()
     
     val context = LocalContext.current
     var locationName by remember { mutableStateOf("Unknown Location") }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.QuranicDua
 import com.example.ui.theme.*
 import com.example.viewmodel.QuranicDuasViewModel
@@ -37,9 +38,9 @@ fun QuranicDuasScreen(
     viewModel: QuranicDuasViewModel,
     onBack: () -> Unit
 ) {
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val duasList by viewModel.filteredDuas.collectAsState()
-    val bookmarkedIds by viewModel.bookmarkedIds.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val duasList by viewModel.filteredDuas.collectAsStateWithLifecycle()
+    val bookmarkedIds by viewModel.bookmarkedIds.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     Scaffold(

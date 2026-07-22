@@ -17,12 +17,13 @@ import com.composables.icons.lucide.*
 import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.ui.Translator
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.NotificationsViewModel
 
 @Composable
 fun NotificationsScreen(viewModel: NotificationsViewModel, navController: NavHostController) {
-    val list by viewModel.notifications.collectAsState()
-    val settings by viewModel.settings.collectAsState()
+    val list by viewModel.notifications.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     Column(modifier = Modifier.fillMaxSize().testTag("notifications_screen").padding(bottom = 16.dp)) {
         AppHeader(

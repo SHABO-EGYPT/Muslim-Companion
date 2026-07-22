@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.icons.lucide.*
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.NameOfAllah
 import com.example.ui.theme.*
 import com.example.viewmodel.NamesOfAllahViewModel
@@ -36,9 +37,9 @@ fun NamesOfAllahScreen(
     viewModel: NamesOfAllahViewModel,
     onBack: () -> Unit
 ) {
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val namesList by viewModel.filteredNames.collectAsState()
-    val selectedName by viewModel.selectedName.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val namesList by viewModel.filteredNames.collectAsStateWithLifecycle()
+    val selectedName by viewModel.selectedName.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {

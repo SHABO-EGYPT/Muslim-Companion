@@ -40,14 +40,15 @@ import com.example.notifications.PrayerNotificationScheduler
 import com.example.viewmodel.PrayerViewModel
 import java.util.concurrent.TimeUnit
 
+import androidx.activity.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var repository: CompanionRepository
+    private val mainViewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -67,15 +68,8 @@ class MainActivity : ComponentActivity() {
                 .setConstraints(syncConstraints).build()
         )
 
-        // Repositories are injected by Hilt
-                setContent {
-            val scope = rememberCoroutineScope()
-            LaunchedEffect(Unit) {
-                if (repository.getUserProgressDirect() == null) repository.saveUserProgress(com.example.data.local.UserProgressEntity())
-                if (repository.getSettingsDirect() == null) repository.saveSettings(com.example.data.local.AppSettingEntity())
-            }
-
-            val settingsState = repository.getSettingsFlow().collectAsState(initial = com.example.data.local.AppSettingEntity())
+        setContent {
+            val settingsState = mainViewModel.settings.collectAsStateWithLifecycle()
             val isDarkTheme = settingsState.value.darkTheme
 
             MyApplicationTheme(darkTheme = isDarkTheme) {
@@ -92,7 +86,7 @@ class MainActivity : ComponentActivity() {
                         color = Color.Transparent,
                         contentColor = if (isDarkTheme) OnBackgroundDark else OnBackgroundLight
                     ) {
-                        CompanionApp(repository)
+                        CompanionApp(mainViewModel)
                     }
                 }
             }
@@ -102,7 +96,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompanionApp(repository: CompanionRepository) {
+fun CompanionApp(mainViewModel: MainViewModel) {
     val navController = rememberNavController()
     val activityContext = androidx.compose.ui.platform.LocalContext.current
     val context = activityContext.applicationContext
@@ -110,14 +104,14 @@ fun CompanionApp(repository: CompanionRepository) {
     RequestNotificationPermission(activityContext)
 
     val prayerViewModel: PrayerViewModel = androidx.hilt.navigation.compose.hiltViewModel()
-    val prayerTimes by prayerViewModel.prayerTimes.collectAsState()
+    val prayerTimes by prayerViewModel.prayerTimes.collectAsStateWithLifecycle()
     LaunchedEffect(prayerTimes) {
         if (prayerTimes.isNotEmpty()) {
             PrayerNotificationScheduler(context).scheduleNotifications(prayerTimes)
         }
     }
 
-    val settings by repository.getSettingsFlow().collectAsState(initial = com.example.data.local.AppSettingEntity())
+    val settings by mainViewModel.settings.collectAsStateWithLifecycle()
     val isArabic = settings.language == "Arabic"
     val layoutDirection = if (isArabic) LayoutDirection.Rtl else LayoutDirection.Ltr
 
@@ -182,9 +176,10 @@ fun CompanionApp(repository: CompanionRepository) {
             ) {
                 AppNavHost(
                     navController = navController,
-                    repository = repository
+                    mainViewModel = mainViewModel
                 )
             }
         }
     }
 }
+

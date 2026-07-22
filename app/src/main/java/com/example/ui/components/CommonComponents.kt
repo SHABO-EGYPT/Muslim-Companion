@@ -31,6 +31,12 @@ import com.composables.icons.lucide.ChevronLeft
 import com.example.ui.theme.MintTeal
 import com.example.ui.theme.DarkTealText
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+
 @Composable
 fun SectionHeader(title: String, actionText: String? = null, onActionClick: () -> Unit = {}) {
     Row(
@@ -38,13 +44,21 @@ fun SectionHeader(title: String, actionText: String? = null, onActionClick: () -
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.semantics { heading() }
+        )
         if (actionText != null) {
             Text(
                 text = actionText,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable { onActionClick() }.testTag("section_action_$title")
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .clickable { onActionClick() }
+                    .testTag("section_action_$title")
             )
         }
     }
@@ -56,7 +70,14 @@ fun HomeWidget(
     iconBackground: Color, iconTint: Color, onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }.testTag("home_widget_${title.lowercase().replace(" ", "_")}"),
+        modifier = Modifier
+            .fillMaxWidth()
+            .minimumInteractiveComponentSize()
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+            }
+            .clickable { onClick() }
+            .testTag("home_widget_${title.lowercase().replace(" ", "_")}"),
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -67,7 +88,7 @@ fun HomeWidget(
                 val isDark = isSystemInDarkTheme()
                 val boxBg = if (isDark) iconBackground.copy(alpha = 0.2f) else iconBackground.copy(alpha = 0.15f)
                 Box(modifier = Modifier.size(44.dp).background(boxBg, RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
-                    Icon(imageVector = icon, contentDescription = title, tint = iconTint, modifier = Modifier.size(20.dp))
+                    Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
                 }
                 Spacer(modifier = Modifier.width(14.dp))
                 Column {
@@ -76,7 +97,7 @@ fun HomeWidget(
                 }
             }
             val chevron = if (LocalLayoutDirection.current == LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
-            Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
+            Icon(imageVector = chevron, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(18.dp))
         }
     }
 }
@@ -96,7 +117,13 @@ fun AppHeader(title: String, subtitle: String? = null, onBack: (() -> Unit)? = n
                 Spacer(modifier = Modifier.width(12.dp))
             }
             Column {
-                Text(text = title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, fontWeight = FontWeight.Bold)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.semantics { heading() }
+                )
                 if (subtitle != null) Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
@@ -118,7 +145,14 @@ fun RubElHizbIcon(
     color: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
     textColor: Color = MaterialTheme.colorScheme.primary
 ) {
-    Box(modifier = modifier.size(40.dp), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .semantics(mergeDescendants = true) {
+                contentDescription = "Verse $number"
+            },
+        contentAlignment = Alignment.Center
+    ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val w = size.width; val h = size.height
             val path = Path().apply {
