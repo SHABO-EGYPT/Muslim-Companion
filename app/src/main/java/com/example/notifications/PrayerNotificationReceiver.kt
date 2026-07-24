@@ -111,6 +111,18 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                     }
 
                     notificationManager.notify(prayerName.hashCode(), builder.build())
+
+                    val timeString = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(java.util.Date())
+                    repository.insertNotification(
+                        com.example.data.local.NotificationEntity(
+                            title = title,
+                            description = contentText,
+                            time = timeString,
+                            iconId = 1,
+                            isRead = false,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
                 }
             } finally {
                 pendingResult.finish()

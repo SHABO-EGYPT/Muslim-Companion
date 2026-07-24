@@ -108,6 +108,7 @@ fun CompanionApp(mainViewModel: MainViewModel) {
     LaunchedEffect(prayerTimes) {
         if (prayerTimes.isNotEmpty()) {
             PrayerNotificationScheduler(context).scheduleNotifications(prayerTimes)
+            com.example.notifications.AzkarNotificationScheduler(context).scheduleAzkarNotifications(prayerTimes)
         }
     }
 

@@ -51,6 +51,13 @@ Muslim Companion is a feature-rich, high-performance, and beautifully designed A
 - **Qibla Alignment:** Real-time Qibla compass pointing directly to the Kaaba using device sensors.
 - **Mosque Finder:** Map-linked widget querying nearby mosques using location coordinates and Google Maps (with browser fallback).
 
+### 🔔 Notification Hub & Azkar Reminders
+- **Morning Azkar Reminders (أذكار الصباح 🌅):** Scheduled daily morning notifications encouraging users to start their day with remembrance. Deep-linked to open the Morning Azkar reading flow directly when tapped.
+- **Evening Azkar Reminders (أذكار المساء 🌆):** Scheduled daily evening notifications for evening supplications with one-tap navigation to Evening Azkar.
+- **After Prayer Azkar Reminders (أذكار بعد الصلاة 🕌):** Timed reminders triggering after prayer times to encourage remembrance and tasbih after prayers.
+- **Interactive Notification Center:** Full notification history log saved locally to Room database, featuring unread dot indicators, individual item deletion, clear all actions, and instant test notification triggers for Prayer and Azkar categories.
+- **Granular Settings & Controls:** Dedicated toggles in Settings for each Azkar notification type along with configurable Adhan sound styles (Vibration only, Subtle tone, First Adhan, or Full Adhan).
+
 ### 🎵 Quran Audio Player Widget & Media Session
 - **Background Playback Service:** Custom implementation of AndroidX **MediaSessionService** managing a global `ExoPlayer` instance, enabling uninterrupted audio recitation even when the app is closed or the screen is locked.
 - **System Media Notification:** Automatically displays a standard **MediaStyle Notification** in the system notification panel with Surah title, reciter name, seeking progress bar, and play/pause/skip controls.
@@ -77,6 +84,10 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 | ✨ 99 Names of Allah | 📖 Quranic Supplications | 🎵 Home Screen Player Widget |
 |:---:|:---:|:---:|
 | ![Names of Allah](screenshots/names_of_allah.png) | ![Quranic Supplications](screenshots/quranic_duas.png) | ![Player Widget](screenshots/widget_screenshot.png) |
+
+| 🔔 Notification Center | ⚙️ Notification Settings |
+|:---:|:---:|
+| ![Notification Center](screenshots/notifications.png) | ![Notification Settings](screenshots/settings.png) |
 
 ---
 
@@ -117,10 +128,10 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 
 You can quickly install and run the app on your physical Android phone without needing to compile code:
 
-1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `Muslim-Companion-1.5.0.apk`.
+1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `Muslim-Companion-1.6.0.apk`.
 2. **Transfer to Mobile:** Copy this file to your phone's storage via USB, cloud sharing, or messaging app.
 3. **Enable Unknown Sources:** On your Android phone, go to **Settings > Security** and enable **"Install unknown apps"** for your file manager or browser.
-4. **Install and Launch:** Open your phone's File Manager, tap on `Muslim-Companion-1.5.0.apk`, click **Install**, and once completed, open the app from your launcher!
+4. **Install and Launch:** Open your phone's File Manager, tap on `Muslim-Companion-1.6.0.apk`, click **Install**, and once completed, open the app from your launcher!
 
 ---
 

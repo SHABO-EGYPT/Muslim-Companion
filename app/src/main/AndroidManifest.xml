@@ -42,6 +42,10 @@
             android:exported="false" />
 
         <receiver
+            android:name="com.example.notifications.AzkarNotificationReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name="com.example.notifications.BootReceiver"
             android:exported="true">
             <intent-filter>

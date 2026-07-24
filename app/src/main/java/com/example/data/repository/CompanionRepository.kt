@@ -104,6 +104,8 @@ open class CompanionRepository(
     open suspend fun insertNotification(notification: NotificationEntity) = dao.insertNotification(notification)
     open suspend fun markNotificationAsRead(id: Int) = dao.markNotificationAsRead(id)
     open suspend fun markAllNotificationsAsRead() = dao.markAllNotificationsAsRead()
+    open suspend fun deleteNotification(id: Int) = dao.deleteNotification(id)
+    open suspend fun clearAllNotifications() = dao.clearAllNotifications()
 
     open fun getBadges(progress: UserProgressEntity): List<AchievementBadge> = listOf(
         AchievementBadge("7-day streak", "Completed 7 days in a row", earned = progress.streak >= 7, "award"),

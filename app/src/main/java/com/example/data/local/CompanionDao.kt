@@ -90,4 +90,10 @@ interface CompanionDao {
 
     @Query("UPDATE notifications SET isRead = 1")
     suspend fun markAllNotificationsAsRead()
+
+    @Query("DELETE FROM notifications WHERE id = :id")
+    suspend fun deleteNotification(id: Int)
+
+    @Query("DELETE FROM notifications")
+    suspend fun clearAllNotifications()
 }

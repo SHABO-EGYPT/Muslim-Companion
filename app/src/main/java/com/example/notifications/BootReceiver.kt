@@ -27,7 +27,8 @@ class BootReceiver : BroadcastReceiver() {
                     val prayerTimes = repository.getPrayerTimesFlow().first()
                     if (prayerTimes.isNotEmpty()) {
                         PrayerNotificationScheduler(context).scheduleNotifications(prayerTimes)
-                        Log.d("BootReceiver", "Successfully rescheduled ${prayerTimes.size} prayer notifications")
+                        AzkarNotificationScheduler(context).scheduleAzkarNotifications(prayerTimes)
+                        Log.d("BootReceiver", "Successfully rescheduled prayer and azkar notifications")
                     }
                 } catch (e: Exception) {
                     Log.e("BootReceiver", "Failed to reschedule prayer notifications", e)

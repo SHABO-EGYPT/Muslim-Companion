@@ -88,5 +88,8 @@ data class AppSettingEntity(
     val quranFont: String = "Uthmanic Hafs",
     val quranKeepScreenOn: Boolean = true,
     val notificationSoundType: String = "Subtle",
-    val quranShowTranslation: Boolean = true
+    val quranShowTranslation: Boolean = true,
+    val morningAzkarNotification: Boolean = true,
+    val eveningAzkarNotification: Boolean = true,
+    val afterPrayerAzkarNotification: Boolean = true
 )

@@ -202,6 +202,24 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                         }
                     }
                 }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = Translator.translate("morning_azkar_notification", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Switch(checked = settings.morningAzkarNotification, onCheckedChange = { viewModel.toggleMorningAzkarNotification() }, modifier = Modifier.testTag("morning_azkar_toggle"))
+                }
+
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = Translator.translate("evening_azkar_notification", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Switch(checked = settings.eveningAzkarNotification, onCheckedChange = { viewModel.toggleEveningAzkarNotification() }, modifier = Modifier.testTag("evening_azkar_toggle"))
+                }
+
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = Translator.translate("after_prayer_azkar_notification", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Switch(checked = settings.afterPrayerAzkarNotification, onCheckedChange = { viewModel.toggleAfterPrayerAzkarNotification() }, modifier = Modifier.testTag("after_prayer_azkar_toggle"))
+                }
+
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
             }
 

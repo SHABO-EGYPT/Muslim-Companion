@@ -26,6 +26,27 @@ class SettingsViewModel @Inject constructor(private val repository: CompanionRep
         }
     }
 
+    fun toggleMorningAzkarNotification() {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(morningAzkarNotification = !s.morningAzkarNotification))
+        }
+    }
+
+    fun toggleEveningAzkarNotification() {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(eveningAzkarNotification = !s.eveningAzkarNotification))
+        }
+    }
+
+    fun toggleAfterPrayerAzkarNotification() {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(afterPrayerAzkarNotification = !s.afterPrayerAzkarNotification))
+        }
+    }
+
     fun toggleDarkTheme() {
         viewModelScope.launch {
             val s = repository.getSettingsDirect() ?: AppSettingEntity()
