@@ -63,12 +63,13 @@ class AzkarViewModel @Inject constructor(
 
     fun updateAzkarProgress(categoryId: String, itemId: Int, count: Int) {
         viewModelScope.launch {
+            val activeDate = repository.getActiveTrackingDate()
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             val newProgress = when {
-                categoryId.contains("الصباح") -> progress.copy(morningDone = count)
-                categoryId.contains("المساء") -> progress.copy(eveningDone = count)
-                categoryId.contains("النوم") -> progress.copy(sleepDone = count)
-                categoryId.contains("الصلاة") -> progress.copy(afterPrayerDone = count)
+                categoryId.contains("الصباح") -> progress.copy(morningDone = count, lastAzkarDate = activeDate)
+                categoryId.contains("المساء") -> progress.copy(eveningDone = count, lastAzkarDate = activeDate)
+                categoryId.contains("النوم") -> progress.copy(sleepDone = count, lastAzkarDate = activeDate)
+                categoryId.contains("الصلاة") -> progress.copy(afterPrayerDone = count, lastAzkarDate = activeDate)
                 else -> progress
             }
             repository.saveUserProgress(newProgress)

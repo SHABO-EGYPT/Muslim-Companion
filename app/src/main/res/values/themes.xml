@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MuslimCompanion" parent="android:Theme.DeviceDefault.NoActionBar" />
+    <style name="Theme.MuslimCompanion" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#0B1220</item>
+        <item name="android:windowSplashScreenBackground">#0B1220</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/loading_logo</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#0B1220</item>
+    </style>
 </resources>

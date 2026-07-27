@@ -15,22 +15,44 @@ import androidx.navigation.compose.navigation
 import com.example.data.repository.AzkarRepository
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.viewmodel.MainViewModel
-import com.example.viewmodel.*
-import com.example.ui.screens.*
+import com.example.viewmodel.AzkarViewModel
+import com.example.viewmodel.HomeViewModel
+import com.example.viewmodel.QuranViewModel
+import com.example.viewmodel.SurahReaderViewModel
+import com.example.viewmodel.TasbihViewModel
+import com.example.viewmodel.PrayerViewModel
+import com.example.viewmodel.ProfileViewModel
+import com.example.viewmodel.SettingsViewModel
+import com.example.viewmodel.NotificationsViewModel
+import com.example.viewmodel.QiblaViewModel
+import com.example.viewmodel.NamesOfAllahViewModel
+import com.example.viewmodel.QuranicDuasViewModel
+
+import com.example.ui.screens.LoadingScreen
+import com.example.ui.screens.HomeScreen
+import com.example.ui.screens.OnboardingScreen
+import com.example.ui.screens.QuranListScreen
+import com.example.ui.screens.SurahReaderScreen
+import com.example.ui.screens.QuranSettingsScreen
+import com.example.ui.screens.AzkarListScreen
+import com.example.ui.screens.AzkarReadingFlowScreen
+import com.example.ui.screens.DigitalTasbihScreen
+import com.example.ui.screens.PrayerTimesScreen
+import com.example.ui.screens.ProfileScreen
+import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.NotificationsScreen
+import com.example.ui.screens.NamesOfAllahScreen
+import com.example.ui.screens.QuranicDuasScreen
 import com.example.ui.QiblaCompassScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController, mainViewModel: MainViewModel) {
-    // Scoped to the Activity's ViewModelStoreOwner so it remains shared across HomeScreen and Azkar screens.
+    // Scoped to the Activity's ViewModelStoreOwner so it remains shared across HomeScreen and Quran screens.
     val azkarViewModel: AzkarViewModel = hiltViewModel()
+    val surahReaderViewModel: SurahReaderViewModel = hiltViewModel()
 
     val userProgress by mainViewModel.userProgress.collectAsStateWithLifecycle()
     val startDestination = if (userProgress?.onboardingCompleted == true) Routes.HOME else Routes.ONBOARDING
-
-    if (userProgress == null) {
-        // Show loading or empty screen until we know if onboarding is needed
-        return
-    }
 
     NavHost(
         navController = navController,
@@ -48,46 +70,34 @@ fun AppNavHost(navController: NavHostController, mainViewModel: MainViewModel) {
             HomeScreen(
                 viewModel = homeViewModel,
                 azkarViewModel = azkarViewModel,
+                readerViewModel = surahReaderViewModel,
                 navController = navController
             )
         }
 
-        // Nested graph for Quran reading flow. This allows shared scoping of SurahReaderViewModel,
-        // ensuring ExoPlayer and associated audio assets are properly released when leaving the flow.
+        // Nested graph for Quran reading flow.
         navigation(
             startDestination = Routes.QURAN,
             route = "quran_flow_graph"
         ) {
-            composable(Routes.QURAN) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("quran_flow_graph")
-                }
-                val sharedReaderViewModel: SurahReaderViewModel = hiltViewModel(parentEntry)
+            composable(Routes.QURAN) {
                 val quranViewModel: QuranViewModel = hiltViewModel()
                 
                 QuranListScreen(
                     viewModel = quranViewModel,
-                    readerViewModel = sharedReaderViewModel,
+                    readerViewModel = surahReaderViewModel,
                     navController = navController
                 )
             }
-            composable(Routes.SURAH_READER) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("quran_flow_graph")
-                }
-                val sharedReaderViewModel: SurahReaderViewModel = hiltViewModel(parentEntry)
+            composable(Routes.SURAH_READER) {
                 SurahReaderScreen(
-                    viewModel = sharedReaderViewModel,
+                    viewModel = surahReaderViewModel,
                     navController = navController
                 )
             }
-            composable(Routes.QURAN_SETTINGS) { backStackEntry ->
-                val parentEntry = remember(backStackEntry) {
-                    navController.getBackStackEntry("quran_flow_graph")
-                }
-                val sharedReaderViewModel: SurahReaderViewModel = hiltViewModel(parentEntry)
+            composable(Routes.QURAN_SETTINGS) {
                 QuranSettingsScreen(
-                    viewModel = sharedReaderViewModel,
+                    viewModel = surahReaderViewModel,
                     navController = navController
                 )
             }

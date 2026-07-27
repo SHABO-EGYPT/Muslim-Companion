@@ -1,0 +1,191 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Muslim Companion - Loading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#c6c6cd",
+                        "surface-variant": "#323537",
+                        "error-container": "#93000a",
+                        "on-primary-container": "#798098",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-tertiary-container": "#768197",
+                        "surface-tint": "#bec6e0",
+                        "on-secondary-fixed": "#241a00",
+                        "primary-container": "#0f172a",
+                        "on-primary-fixed": "#131b2e",
+                        "secondary-fixed": "#ffe088",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary": "#283044",
+                        "secondary-container": "#af8d11",
+                        "on-tertiary": "#263143",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#272a2c",
+                        "background": "#101415",
+                        "on-surface": "#e0e3e5",
+                        "tertiary-container": "#0c1829",
+                        "on-secondary-container": "#342800",
+                        "inverse-surface": "#e0e3e5",
+                        "on-background": "#e0e3e5",
+                        "surface-dim": "#101415",
+                        "surface": "#101415",
+                        "outline": "#909097",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "on-secondary": "#3c2f00",
+                        "surface-container-lowest": "#0b0f10",
+                        "tertiary-fixed": "#d8e3fb",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-highest": "#323537",
+                        "on-secondary-fixed-variant": "#574500",
+                        "inverse-on-surface": "#2d3133",
+                        "inverse-primary": "#565e74",
+                        "surface-bright": "#363a3b",
+                        "outline-variant": "#45464d",
+                        "secondary": "#e9c349",
+                        "secondary-fixed-dim": "#e9c349",
+                        "primary": "#bec6e0",
+                        "surface-container": "#1d2022",
+                        "surface-container-low": "#191c1e",
+                        "tertiary": "#bcc7de",
+                        "on-tertiary-fixed": "#111c2d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-padding-mobile": "20px",
+                        "section-gap": "64px",
+                        "gutter": "16px",
+                        "base": "8px",
+                        "container-padding-desktop": "40px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Libre Caslon Text"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.85; filter: drop-shadow(0 0 10px rgba(233, 195, 73, 0.2)); }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(233, 195, 73, 0.4)); }
+        }
+
+        .animate-breathe {
+            animation: breathe 5s ease-in-out infinite;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(1vh); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pattern-overlay {
+            background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLtrow22yFP-QbhCrdpPXpTxKrctRP8fD4emW3uxi-yIpkw5uwQo9n0G_F6vI5WpY_X-Tv5-anYaycdImgLcxPx1bF6CubQ49-5hgcUWogxE7HJNhZC6oI_DTjXb8rLRBMDzjSS7VEn7Z8aIQwOD0jrQhjEvePBG3_WAtWrWCt6KIN7NlW0go6pyRbNsPLB6rOX_038x0Hs8pOYYVJ3ta2gaQGgvt64hBQMW19C4CDXNrY0k8BR-1FUcq7jt');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.12;
+            mix-blend-mode: overlay;
+        }
+
+        /* Fluid sizing for branding elements - Updated to be 2x larger */
+        .responsive-logo {
+            width: clamp(320px, 80vw, 560px);
+            height: auto;
+            max-height: 50vh;
+        }
+
+        .responsive-title {
+            font-size: clamp(24px, 6vw, 40px);
+            line-height: 1.2;
+        }
+
+        .responsive-arabic {
+            font-size: clamp(28px, 7vw, 48px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background overflow-hidden h-screen flex items-center justify-center m-0 p-0">
+<!-- Ambient Background -->
+<div class="fixed inset-0 z-0 bg-gradient-to-b from-[#101415] via-[#161a1d] to-[#0b0f10]"></div>
+<div class="fixed inset-0 z-10 pattern-overlay pointer-events-none transition-transform duration-700 ease-out" id="dynamic-pattern" style="transform: translate(1.89px, 0.61px) scale(1.05);"></div>
+<!-- Main Content Canvas -->
+<main class="relative z-20 flex flex-col items-center justify-center w-full px-container-padding-mobile md:px-container-padding-desktop text-center max-w-screen-xl mx-auto">
+<!-- Logo Section with Fluid Container -->
+<div class="relative mb-[6vh] animate-breathe flex items-center justify-center">
+<div class="absolute inset-0 blur-[8vw] bg-secondary/15 rounded-full scale-150"></div>
+<img alt="Muslim Companion Logo" class="responsive-logo object-contain relative z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-UDtvwTDNPDVjPKcCZE_v8GkXWvKIM4fC-HVy5e4PlgKDOlDTFBq3_BeVgNtghaWL85o6Hi6S-j0egGfMUz5GPlONksNuuXx3bSMFN-41Chhp5mVwV2Zk8c5cSO0tZ74bu1iUbmDDyYMhgp8eQ4WAjTkJ1JhDfItaEdrz8lAXcOQn8sBADBw3KxB3sIxXJdtrTI0_ko8B9GC1g6cASjgY5oyhtagbk2p4xAXLZaMKBRMCS1_bIHNQfpWc_1T4SrMmL2MSeB1PMQZp">
+</div>
+<!-- Typography Branding with Fluid Scales -->
+<div class="fade-in space-y-4 md:space-y-6">
+<h1 class="font-headline-lg-mobile text-secondary tracking-wide responsive-title leading-tight">
+            Muslim Companion <br>
+<span class="responsive-arabic block mt-2" dir="rtl" style="font-family: Amiri, serif;">رفيق المسلم</span>
+</h1>
+<div class="h-px w-12 md:w-16 bg-secondary/30 mx-auto opacity-60"></div>
+<p class="text-label-md text-on-surface-variant tracking-[0.25em] uppercase opacity-70 font-label-md text-[10px] sm:text-[12px]"><br></p>
+</div>
+</main>
+<!-- Micro-interaction Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const pattern = document.getElementById('dynamic-pattern');
+        
+        // Subtle parallax move on mouse
+        window.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) / 100;
+            const moveY = (e.clientY - window.innerHeight / 2) / 100;
+            pattern.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.05)`;
+        });
+
+        // Handle mobile orientation for the same effect
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                if (e.gamma && e.beta) {
+                    const moveX = e.gamma / 10;
+                    const moveY = e.beta / 10;
+                    pattern.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.05)`;
+                }
+            });
+        }
+    });
+</script>
+
+
+</body></html>

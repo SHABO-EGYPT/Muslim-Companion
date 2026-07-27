@@ -1,6 +1,7 @@
 package com.example.navigation
 
 object Routes {
+    const val LOADING = "loading"
     const val ONBOARDING = "onboarding"
     const val HOME = "home"
     const val QURAN = "quran"

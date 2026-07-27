@@ -18,9 +18,15 @@ android {
     versionName = "1.6.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    multiDexEnabled = true
+    multiDexKeepProguard = file("multidex-keep.pro")
   }
 
   buildTypes {
+    debug {
+      isMinifyEnabled = false
+      proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "multidex-keep.pro")
+    }
     release {
       isMinifyEnabled = true
       isShrinkResources = true
@@ -104,4 +110,8 @@ dependencies {
   "ksp"(libs.moshi.kotlin.codegen)
   "ksp"(libs.hilt.compiler)
   "ksp"(libs.androidx.hilt.compiler)
+}
+
+hilt {
+  enableAggregatingTask = true
 }

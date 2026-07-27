@@ -28,19 +28,41 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
         mutex.withLock {
             if (azkarData.isNotEmpty()) return@withContext
             try {
-                // 1. Load and parse new azkar.json (which is a JSON Object of categories)
-                val jsonString = context.assets.open("azkar.json").bufferedReader().use { it.readText() }
-                val categoriesObj = JSONObject(jsonString)
-                val keys = categoriesObj.keys()
-                while (keys.hasNext()) {
-                    val categoryName = keys.next()
-                    val itemsArray = categoriesObj.getJSONArray(categoryName)
-                    val dhikrItems = mutableListOf<DhikrItem>()
-                    var itemId = 1
-                    for (j in 0 until itemsArray.length()) {
-                        dhikrItems.add(itemsArray.getJSONObject(j).toDhikrItem(itemId++))
+                // 1. Load and parse individual JSON files from assets/azkar/ directory
+                val azkarFiles = context.assets.list("azkar") ?: emptyArray()
+                if (azkarFiles.isNotEmpty()) {
+                    for (file in azkarFiles) {
+                        if (file.endsWith(".json")) {
+                            val jsonString = context.assets.open("azkar/$file").bufferedReader().use { it.readText() }
+                            val categoryObj = JSONObject(jsonString)
+                            val categoryName = categoryObj.optString("category", "")
+                            val itemsArray = categoryObj.optJSONArray("items") ?: JSONArray()
+                            val dhikrItems = mutableListOf<DhikrItem>()
+                            var itemId = 1
+                            for (j in 0 until itemsArray.length()) {
+                                dhikrItems.add(itemsArray.getJSONObject(j).toDhikrItem(itemId++))
+                            }
+                            if (categoryName.isNotEmpty()) {
+                                azkarData[categoryName] = dhikrItems
+                            }
+                        }
                     }
-                    azkarData[categoryName] = dhikrItems
+                }
+                // Fallback for legacy monolithic azkar.json if folder was empty or missing
+                if (azkarData.isEmpty()) {
+                    val jsonString = context.assets.open("azkar.json").bufferedReader().use { it.readText() }
+                    val categoriesObj = JSONObject(jsonString)
+                    val keys = categoriesObj.keys()
+                    while (keys.hasNext()) {
+                        val categoryName = keys.next()
+                        val itemsArray = categoriesObj.getJSONArray(categoryName)
+                        val dhikrItems = mutableListOf<DhikrItem>()
+                        var itemId = 1
+                        for (j in 0 until itemsArray.length()) {
+                            dhikrItems.add(itemsArray.getJSONObject(j).toDhikrItem(itemId++))
+                        }
+                        azkarData[categoryName] = dhikrItems
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -62,10 +84,25 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
         }
     }
 
+    private val categoryPriority = listOf(
+        "أذكار الصباح",
+        "أذكار المساء",
+        "أذكار بعد السلام من الصلاة المفروضة",
+        "أذكار بعد الصلاة",
+        "أذكار الاستيقاظ",
+        "أذكار النوم",
+        "دعاء الاستخارة",
+        "دعاء للمريض"
+    )
+
     override fun getAzkarCategoriesFlow(progress: UserProgressEntity): Flow<List<AzkarCategory>> = flow {
         ensureLoaded()
+        val sortedKeys = azkarData.keys.filter { it != "تسابيح" }.sortedBy { name ->
+            val index = categoryPriority.indexOf(name)
+            if (index != -1) index else Int.MAX_VALUE
+        }
         emit(
-            azkarData.keys.filter { it != "تسابيح" }.mapIndexed { index, name ->
+            sortedKeys.map { name ->
                 val iconName = when {
                     name.contains("الصباح") -> "sunrise"
                     name.contains("المساء") -> "sunset"
@@ -90,7 +127,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     "أذكار الصباح" -> "Morning Azkar"
                     "أذكار المساء" -> "Evening Azkar"
                     "أذكار النوم" -> "Sleep Azkar"
-                    "أذكار بعد الصلاة" -> "Post-Prayer Azkar"
+                    "أذكار بعد الصلاة", "أذكار بعد السلام من الصلاة المفروضة" -> "Post-Prayer Azkar"
                     "أذكار الاستيقاظ" -> "Wakeup Azkar"
                     "دعاء الاستخارة" -> "Dua Al-Istikhara"
                     "دعاء للمريض" -> "Dua for the Sick"

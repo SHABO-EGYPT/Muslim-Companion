@@ -76,11 +76,22 @@ open class CompanionRepository(
         val dateStr = parts.getOrNull(0) ?: ""
         val prayersStr = parts.getOrNull(1) ?: ""
         
-        return if (dateStr != activeDate) {
+        var updated = if (dateStr != activeDate) {
             progress.copy(completedPrayersToday = "")
         } else {
             progress.copy(completedPrayersToday = prayersStr)
         }
+
+        if (updated.lastAzkarDate != activeDate) {
+            updated = updated.copy(
+                lastAzkarDate = activeDate,
+                morningDone = 0,
+                eveningDone = 0,
+                sleepDone = 0,
+                afterPrayerDone = 0
+            )
+        }
+        return updated
     }
 
     open fun getUserProgressFlow(): Flow<UserProgressEntity> = dao.getUserProgressFlow().map { 
@@ -97,7 +108,11 @@ open class CompanionRepository(
         } else {
             "$activeDate:${progress.completedPrayersToday}"
         }
-        dao.saveUserProgress(progress.copy(completedPrayersToday = newCompleted))
+        val azkarDate = if (progress.lastAzkarDate.isEmpty()) activeDate else progress.lastAzkarDate
+        dao.saveUserProgress(progress.copy(
+            completedPrayersToday = newCompleted,
+            lastAzkarDate = azkarDate
+        ))
     }
 
     open fun getNotificationsFlow(): Flow<List<NotificationEntity>> = dao.getNotificationsFlow()

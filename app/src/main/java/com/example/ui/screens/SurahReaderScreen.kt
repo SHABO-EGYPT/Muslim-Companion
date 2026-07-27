@@ -46,6 +46,7 @@ import com.example.ui.Translator
 import com.example.ui.components.*
 import com.example.ui.theme.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.distinctUntilChanged
 import com.example.viewmodel.ReaderLoadState
 import com.example.viewmodel.SurahReaderViewModel
 
@@ -99,10 +100,11 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
         onDispose { activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
 
-    LaunchedEffect(surah) {
+    LaunchedEffect(Unit) {
         if (surah == null) {
-            val startAyah = progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
-            viewModel.loadSurah(activeSurah.number, startAyah = startAyah)
+            val targetSurah = progress.lastReadSurahNumber.takeIf { it > 0 } ?: 1
+            val targetAyah = progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+            viewModel.loadSurah(targetSurah, startAyah = targetAyah)
         }
     }
 
@@ -137,35 +139,58 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                 is ReaderLoadState.Success -> {
                     val ayahs by viewModel.ayahs.collectAsState()
                     val listState = rememberLazyListState()
-                    val density = androidx.compose.ui.platform.LocalDensity.current
-                    val topPadding = with(density) { 16.dp.toPx().toInt() }
                     val quranFontFamily = remember(quranSettings.quranFont) { getQuranFontFamily(quranSettings.quranFont) }
 
-                    var hasScrolledToInitial by remember { mutableStateOf(false) }
-                    LaunchedEffect(ayahs) {
-                        if (ayahs.isNotEmpty() && !hasScrolledToInitial) {
-                            val startAyah = currentAyahNumber ?: progress.lastReadAyahNumber
-                            val index = ayahs.indexOfFirst { it.number == startAyah }
-                            if (index != -1) {
-                                listState.scrollToItem(index + 1, -topPadding)
-                                hasScrolledToInitial = true
+                    var initialScrolledKey by remember { mutableStateOf<String?>(null) }
+                    val scrollTargetAyah = currentAyahNumber ?: progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+                    val scrollKey = "${activeSurah.number}_$scrollTargetAyah"
+
+                    LaunchedEffect(ayahs, activeSurah.number) {
+                        if (ayahs.isNotEmpty() && initialScrolledKey != scrollKey) {
+                            val index = ayahs.indexOfFirst { it.number == scrollTargetAyah }
+                            if (index > 0) {
+                                listState.scrollToItem(index + 1, 0)
+                            } else {
+                                listState.scrollToItem(0, 0)
                             }
+                            initialScrolledKey = scrollKey
                         }
+                    }
+
+                    LaunchedEffect(listState, ayahs) {
+                        snapshotFlow { listState.firstVisibleItemIndex }
+                            .distinctUntilChanged()
+                            .collect { firstVisible ->
+                                if (ayahs.isNotEmpty() && firstVisible > 0) {
+                                    val ayahIndex = (firstVisible - 1).coerceIn(0, ayahs.size - 1)
+                                    val visibleAyah = ayahs[ayahIndex]
+                                    viewModel.updateProgress(
+                                        surahNumber = activeSurah.number,
+                                        surahName = activeSurah.name,
+                                        surahArabicName = activeSurah.arabicName,
+                                        ayahNumber = visibleAyah.number,
+                                        progress = visibleAyah.number.toFloat() / activeSurah.ayahsCount
+                                    )
+                                }
+                            }
                     }
 
                     LaunchedEffect(currentAyahNumber, isPlaying) {
                         if (isPlaying && currentAyahNumber != null) {
                             val index = ayahs.indexOfFirst { it.number == currentAyahNumber }
                             if (index != -1) {
-                                // Scroll to item and use negative offset to move it to the top of the viewport
-                                listState.animateScrollToItem(index + 1, -topPadding)
+                                if (index == 0) {
+                                    listState.animateScrollToItem(0, 0)
+                                } else {
+                                    listState.animateScrollToItem(index + 1, 0)
+                                }
                             }
                         }
                     }
 
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth().weight(1f).testTag("ayahs_scroller"),
-                        contentPadding = PaddingValues(start = 20.dp, top = 12.dp, end = 20.dp, bottom = 300.dp),
+                        contentPadding = PaddingValues(start = 20.dp, top = 4.dp, end = 20.dp, bottom = 300.dp),
                         state = listState,
                         userScrollEnabled = !isPlaying
                     ) {

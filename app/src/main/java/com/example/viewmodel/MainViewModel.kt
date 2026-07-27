@@ -39,6 +39,6 @@ class MainViewModel @Inject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = null
+            initialValue = UserProgressEntity(onboardingCompleted = true)
         )
 }

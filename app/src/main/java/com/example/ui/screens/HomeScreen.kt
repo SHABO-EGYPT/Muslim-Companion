@@ -14,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -29,6 +31,7 @@ import com.example.ui.components.*
 import com.example.ui.theme.*
 import com.example.viewmodel.AzkarViewModel
 import com.example.viewmodel.HomeViewModel
+import com.example.viewmodel.SurahReaderViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -37,11 +40,17 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.domain.model.WeatherCondition
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navController: NavHostController) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    azkarViewModel: AzkarViewModel,
+    readerViewModel: SurahReaderViewModel = hiltViewModel(),
+    navController: NavHostController
+) {
     val context = LocalContext.current
     val progress by viewModel.userProgress.collectAsStateWithLifecycle()
     
@@ -346,39 +355,87 @@ fun HomeScreen(viewModel: HomeViewModel, azkarViewModel: AzkarViewModel, navCont
             Spacer(modifier = Modifier.height(10.dp))
             SectionHeader(title = Translator.translate("read_quran", settings.language), actionText = Translator.translate("see_all", settings.language), onActionClick = { navigateToTab(Routes.QURAN) })
             Card(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).clickable { navController.navigate(Routes.SURAH_READER) }.testTag("continue_reading_card"),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 4.dp)
+                    .clickable {
+                        val surahNum = progress.lastReadSurahNumber.takeIf { it > 0 } ?: 1
+                        val surahName = progress.lastReadSurahName.ifBlank { "Al-Fatiha" }
+                        val surahArabic = progress.lastReadSurahArabicName
+                        val lastAyah = progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+                        val lastSurah = com.example.domain.model.Surah(
+                            number = surahNum,
+                            name = surahName,
+                            meaning = "",
+                            ayahsCount = 0,
+                            arabicName = surahArabic,
+                            isMakki = true
+                        )
+                        readerViewModel.setSurah(lastSurah, startAyah = lastAyah)
+                        navController.navigate(Routes.SURAH_READER)
+                    }
+                    .drawBehind {
+                        val center = Offset(this.size.width * 0.88f, this.size.height * 0.5f)
+                        drawCircle(color = Color.White.copy(alpha = 0.08f), radius = this.size.width * 0.35f, center = center)
+                        drawCircle(color = Color.White.copy(alpha = 0.04f), radius = this.size.width * 0.5f, center = center)
+                        drawCircle(color = Color.White.copy(alpha = 0.2f), radius = 8f, center = Offset(this.size.width * 0.78f, this.size.height * 0.22f))
+                        drawCircle(color = Color.White.copy(alpha = 0.15f), radius = 6f, center = Offset(this.size.width * 0.92f, this.size.height * 0.18f))
+                    }
+                    .testTag("continue_reading_card"),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                shape = RoundedCornerShape(24.dp)
             ) {
-                Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                        Box(modifier = Modifier.size(48.dp).background(MintTeal, RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
-                            Text(text = "${progress.lastReadSurahNumber}", style = MaterialTheme.typography.headlineMedium.copy(fontSize = 20.sp, fontFamily = ArabicSerifFamily), color = DarkTealText)
+                Box(modifier = Modifier.fillMaxWidth().background(Brush.linearGradient(colors = listOf(PrimaryTeal, Secondary))).padding(20.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                            Box(modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.15f), RoundedCornerShape(12.dp)), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Lucide.BookOpen, contentDescription = Translator.translate("last_read", settings.language), tint = MintTeal, modifier = Modifier.size(20.dp))
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(
+                                    text = Translator.translate("last_read", settings.language).uppercase(),
+                                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
+                                    color = MintTeal
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = progress.lastReadSurahArabicName.ifBlank { Translator.translate("fatiha_arabic", settings.language) },
+                                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold, fontFamily = ArabicSerifFamily),
+                                    color = Color.White
+                                )
+                                Text(
+                                    text = "${Translator.translate("verse", settings.language)}: ${progress.lastReadAyahNumber}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.8f)
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.width(14.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = progress.lastReadSurahArabicName.ifBlank { Translator.translate("fatiha_arabic", settings.language) }, 
-                                style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp, fontFamily = ArabicSerifFamily), 
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            val translatedOf = Translator.translate("of", settings.language)
-                            val translatedCompleted = Translator.translate("completed", settings.language)
-                            val totalAyahs = com.example.data.quran.SurahMetadata.ALL.find { it.number == progress.lastReadSurahNumber }?.ayahCount ?: 7
-                            Text(text = "${Translator.translate("verse", settings.language)} ${progress.lastReadAyahNumber} $translatedOf $totalAyahs · ${(progress.lastReadProgress * 100).toInt()}% $translatedCompleted", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Spacer(modifier = Modifier.height(6.dp))
-                            LinearProgressIndicator(
-                                progress = { progress.lastReadProgress },
-                                modifier = Modifier.fillMaxWidth(0.9f).height(4.dp).clip(CircleShape),
-                                color = PrimaryTeal,
-                                trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-                            )
+                        Button(
+                            onClick = {
+                                val surahNum = progress.lastReadSurahNumber.takeIf { it > 0 } ?: 1
+                                val surahName = progress.lastReadSurahName.ifBlank { "Al-Fatiha" }
+                                val surahArabic = progress.lastReadSurahArabicName
+                                val lastAyah = progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+                                val lastSurah = com.example.domain.model.Surah(
+                                    number = surahNum,
+                                    name = surahName,
+                                    meaning = "",
+                                    ayahsCount = 0,
+                                    arabicName = surahArabic,
+                                    isMakki = true
+                                )
+                                readerViewModel.setSurah(lastSurah, startAyah = lastAyah)
+                                navController.navigate(Routes.SURAH_READER)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MintTeal, contentColor = DarkTealText),
+                            shape = RoundedCornerShape(100.dp),
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.testTag("resume_button")
+                        ) {
+                            Text(text = Translator.translate("resume", settings.language), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold))
                         }
                     }
-                    val quranChevron = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
-                    Icon(imageVector = quranChevron, contentDescription = Translator.translate("resume", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

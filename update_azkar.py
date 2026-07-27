@@ -630,5 +630,29 @@ data = {
    ]
 }
 
-with open('app/src/main/assets/azkar.json', 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=False, indent=3)
+import os
+
+category_filename_map = {
+    "أذكار الصباح": "morning_azkar.json",
+    "أذكار المساء": "evening_azkar.json",
+    "أذكار بعد السلام من الصلاة المفروضة": "after_prayer_azkar.json",
+    "أذكار النوم": "sleep_azkar.json",
+    "أذكار الاستيقاظ": "wakeup_azkar.json",
+    "دعاء الاستخارة": "istikhara_dua.json",
+    "دعاء للمريض": "sick_dua.json"
+}
+
+output_dir = os.path.join('app', 'src', 'main', 'assets', 'azkar')
+os.makedirs(output_dir, exist_ok=True)
+
+for cat_name, items in data.items():
+    filename = category_filename_map.get(cat_name, f"{cat_name.replace(' ', '_')}.json")
+    file_path = os.path.join(output_dir, filename)
+    content = {
+        "category": cat_name,
+        "items": items
+    }
+    with open(file_path, 'w', encoding='utf-8') as f:
+        json.dump(content, f, ensure_ascii=False, indent=3)
+    print(f"Wrote {len(items)} items to {file_path}")
+

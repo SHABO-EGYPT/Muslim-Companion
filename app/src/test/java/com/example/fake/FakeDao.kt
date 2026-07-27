@@ -58,6 +58,14 @@ class FakeDao : CompanionDao {
         }
     }
 
+    override suspend fun deleteNotification(id: Int) {
+        _notifications.value = _notifications.value.filter { it.id != id }
+    }
+
+    override suspend fun clearAllNotifications() {
+        _notifications.value = emptyList()
+    }
+
     override suspend fun getAyahsForSura(sura: Int): List<QuranAyahEntity> {
         return _quranAyahs.value.filter { it.sura == sura }
     }

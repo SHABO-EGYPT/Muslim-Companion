@@ -28,7 +28,8 @@ data class UserProgressEntity(
     val fajrOnTimeCount: Int = 0,
     val ishaOnTimeCount: Int = 0,
     val onboardingCompleted: Boolean = false,
-    val profileImageUri: String? = null
+    val profileImageUri: String? = null,
+    val lastAzkarDate: String = ""
 )
 
 @Entity(tableName = "bookmarks")

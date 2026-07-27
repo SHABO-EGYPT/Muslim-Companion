@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import com.example.data.local.CompanionDatabase
 import com.example.data.quran.QuranAssetLoader
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -34,11 +33,6 @@ class MuslimCompanionApp : Application(), Configuration.Provider {
         seedQuranDatabaseIfNeeded()
     }
 
-    /**
-     * On first install (or DB wipe), reads quran_uthmani.json from assets
-     * and populates the quran_ayahs Room table (6236 rows).
-     * This runs once in the background; all subsequent launches skip it instantly.
-     */
     private fun seedQuranDatabaseIfNeeded() {
         appScope.launch {
             try {

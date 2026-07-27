@@ -1,0 +1,5 @@
+-keep class com.example.MuslimCompanionApp** { *; }
+-keep class com.example.Hilt_MuslimCompanionApp** { *; }
+-keep class com.example.MainActivity** { *; }
+-keep class com.example.Hilt_MainActivity** { *; }
+-keep class dagger.hilt.** { *; }
