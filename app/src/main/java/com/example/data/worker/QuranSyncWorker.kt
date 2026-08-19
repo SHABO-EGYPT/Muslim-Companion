@@ -1,6 +1,7 @@
 package com.example.data.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -20,6 +21,10 @@ class QuranSyncWorker @AssistedInject constructor(
     private val database: CompanionDatabase,
     private val quranRepository: QuranRepository
 ) : CoroutineWorker(appContext, workerParams) {
+
+    companion object {
+        private const val TAG = "QuranSyncWorker"
+    }
 
     override suspend fun doWork(): Result {
         return try {
@@ -46,7 +51,7 @@ class QuranSyncWorker @AssistedInject constructor(
 
             Result.success()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "QuranSyncWorker execution failed, requesting retry", e)
             Result.retry()
         }
     }
@@ -66,7 +71,9 @@ class QuranSyncWorker @AssistedInject constructor(
             }
             file.toURI().toString()
         } catch (e: Exception) {
-            e.printStackTrace(); null
+            Log.e(TAG, "Failed caching audio file: $fileName from $urlString", e)
+            null
         }
     }
 }
+

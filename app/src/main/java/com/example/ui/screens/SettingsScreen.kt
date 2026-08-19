@@ -17,6 +17,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.navigation.Routes
 import com.example.ui.Translator
 import com.example.ui.components.*
+import androidx.compose.ui.text.font.FontWeight
+import com.example.ui.theme.MintTeal
+import com.example.ui.theme.DarkTealText
 import com.example.viewmodel.SettingsViewModel
 
 @Composable
@@ -28,6 +31,8 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
     var showReciterDialog by remember { mutableStateOf(false) }
     var showCalculationDialog by remember { mutableStateOf(false) }
     var showTextSizeDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
 
 
     if (showSoundTypeDialog) {
@@ -172,6 +177,82 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
         )
     }
 
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = {
+                Text(
+                    text = Translator.translate("about_app", settings.language),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Muslim Companion - رفيق المسلم",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = Translator.translate("app_version", settings.language),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MintTeal.copy(alpha = 0.35f)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(
+                                text = Translator.translate("app_dedication_title", settings.language),
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                color = DarkTealText
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = Translator.translate("app_dedication_text", settings.language),
+                                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+                                color = DarkTealText
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text(Translator.translate("close", settings.language))
+                }
+            }
+        )
+    }
+
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDialog = false },
+            title = {
+                Text(
+                    text = Translator.translate("privacy_policy", settings.language),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = Translator.translate("privacy_policy_summary", settings.language),
+                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyDialog = false }) {
+                    Text(Translator.translate("close", settings.language))
+                }
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize().testTag("settings_screen").padding(bottom = 0.dp)) {
         AppHeader(title = Translator.translate("settings", settings.language), onBack = { navController.popBackStack() })
 
@@ -306,6 +387,32 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                         Spacer(modifier = Modifier.width(6.dp))
                         Icon(imageVector = chevron, contentDescription = "Navigate", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                     }
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable { showAboutDialog = true }.padding(vertical = 16.dp).testTag("about_app_menu_item"),
+                    horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = Translator.translate("about_app", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "v1.6.0", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                    }
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable { showPrivacyDialog = true }.padding(vertical = 16.dp).testTag("privacy_policy_menu_item"),
+                    horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = Translator.translate("privacy_policy", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                    Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
                 }
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
             }

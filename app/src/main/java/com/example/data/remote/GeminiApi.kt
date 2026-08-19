@@ -1,61 +1,55 @@
 package com.example.data.remote
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
-import retrofit2.http.POST
-import retrofit2.http.Query
 import retrofit2.http.Header
-import java.util.concurrent.TimeUnit
+import retrofit2.http.POST
 
 @JsonClass(generateAdapter = true)
 data class GenerateContentRequest(
-    val contents: List<Content>,
-    val systemInstruction: Content? = null,
-    val generationConfig: GenerationConfig? = null
+    @Json(name = "contents") val contents: List<Content>,
+    @Json(name = "systemInstruction") val systemInstruction: Content? = null,
+    @Json(name = "generationConfig") val generationConfig: GenerationConfig? = null
 )
 
 @JsonClass(generateAdapter = true)
 data class Content(
-    val role: String? = null,
-    val parts: List<Part>
+    @Json(name = "role") val role: String? = null,
+    @Json(name = "parts") val parts: List<Part>
 )
 
 @JsonClass(generateAdapter = true)
 data class Part(
-    val text: String
+    @Json(name = "text") val text: String
 )
 
 @JsonClass(generateAdapter = true)
 data class GenerationConfig(
-    val responseMimeType: String? = null
+    @Json(name = "responseMimeType") val responseMimeType: String? = null
 )
 
 @JsonClass(generateAdapter = true)
 data class GenerateContentResponse(
-    val candidates: List<Candidate>? = null
+    @Json(name = "candidates") val candidates: List<Candidate>? = null
 )
 
 @JsonClass(generateAdapter = true)
 data class Candidate(
-    val content: Content? = null
+    @Json(name = "content") val content: Content? = null
 )
 
 @JsonClass(generateAdapter = true)
 data class AzkarAssistantResponse(
-    val azkar: List<AssistantDhikrItem>
+    @Json(name = "azkar") val azkar: List<AssistantDhikrItem>
 )
 
 @JsonClass(generateAdapter = true)
 data class AssistantDhikrItem(
-    val arabicText: String,
-    val repetitionCount: Int,
-    val virtue: String? = null,
-    val category: String? = null
+    @Json(name = "arabicText") val arabicText: String,
+    @Json(name = "repetitionCount") val repetitionCount: Int,
+    @Json(name = "virtue") val virtue: String? = null,
+    @Json(name = "category") val category: String? = null
 )
 
 interface GeminiApiService {
@@ -64,27 +58,5 @@ interface GeminiApiService {
         @Header("x-goog-api-key") apiKey: String,
         @Body request: GenerateContentRequest
     ): GenerateContentResponse
-
-    companion object {
-        private const val BASE_URL = "https://generativelanguage.googleapis.com/"
-
-        private val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .build()
-
-        private val moshi = Moshi.Builder()
-            .addLast(KotlinJsonAdapterFactory())
-            .build()
-
-        val instance: GeminiApiService by lazy {
-            Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(GeminiApiService::class.java)
-        }
-    }
 }
+

@@ -1,0 +1,110 @@
+# Codebase Audit, Security Hardening & Clean Code Refactoring Plan
+
+This plan details the systematic audit, security remediation, and architecture refactoring for the Muslim Companion Android application following Google Engineering Practices and Android clean architecture standards.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Key Architecture & Security Improvements**:
+> 1. **Dagger/Hilt Remote API Injection**: Migrate manual `Api.instance` companion object singletons (`PrayerApi`, `WeatherApi`, `QuranApi`, `GeminiApi`) into centralized Hilt `@Module` provision (`NetworkModule` / `AppModule`) with structured timeouts, shared `OkHttpClient`, and proper logging interceptor configuration.
+> 2. **ProGuard / R8 & Moshi JSON Hardening**: Standardize all API response DTOs (`QuranApi.kt`) to Google Kotlin camelCase conventions with explicit `@Json(name = "...")` tags, preventing serialization failure during code shrinking.
+> 3. **Eliminate Resource & Battery Leaks**:
+>    - Fix `PrayerCountdownManager` infinite coroutine loop.
+>    - Optimize `QiblaViewModel` sensor event processing by eliminating allocations in the 60Hz loop and guaranteeing unregistration in `onCleared()`.
+>    - Fix uncancelled flow collection jobs in `AzkarViewModel.selectCategory()`.
+> 4. **Resilience & Structured Error Handling**: Replace silent exception swallowing and `e.printStackTrace()` with structured `Log.e` tags and typed error states.
+
+---
+
+## Proposed Changes
+
+### 1. Network & Dependency Injection Layer
+
+#### [MODIFY] [AppModule.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/di/AppModule.kt)
+- Provide shared `OkHttpClient` with configured connect/read/write timeouts (30s) and `HttpLoggingInterceptor` (in debug mode).
+- Provide shared `Moshi` instance with `KotlinJsonAdapterFactory`.
+- Provide `@Singleton` Retrofit API interfaces for `PrayerApi`, `WeatherApi`, `QuranApi`, and `GeminiApiService`.
+- Inject APIs into repositories (`CompanionRepository`, `WeatherRepository`, `OfflineQuranRepository`).
+
+#### [MODIFY] [QuranApi.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/remote/QuranApi.kt)
+- Refactor DTOs to standard Kotlin camelCase naming with `@Json(name = "...")` annotations (`nameSimple`, `nameArabic`, `versesCount`, `revelationPlace`, `translatedName`, `verseNumber`, `verseKey`, `textUthmani`, `audioFiles`).
+- Remove obsolete companion object singleton instantiation (delegated to Hilt).
+
+#### [MODIFY] [PrayerApi.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/remote/PrayerApi.kt)
+- Standardize annotations and remove redundant companion object.
+
+#### [MODIFY] [WeatherApi.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/remote/WeatherApi.kt)
+- Standardize annotations and remove redundant companion object.
+
+#### [MODIFY] [GeminiApi.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/remote/GeminiApi.kt)
+- Clean up unused or un-injected companion object.
+
+---
+
+### 2. Repositories Layer
+
+#### [MODIFY] [CompanionRepository.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/repository/CompanionRepository.kt)
+- Inject `PrayerApi` via constructor.
+- Replace manual date parsing with robust locale-aware formatting.
+- Add structured error logging.
+
+#### [MODIFY] [QuranRepository.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/repository/QuranRepository.kt)
+- Inject `QuranApi` via constructor in `OfflineQuranRepository`.
+- Update DTO property accesses to reflect standardized camelCase names (`verseNumber`, `textUthmani`, `audioFiles`).
+- Enforce strict HTML sanitization with safe fallback.
+
+#### [MODIFY] [WeatherRepository.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/repository/WeatherRepository.kt)
+- Inject `WeatherApi` via constructor.
+- Add structured error logging and robust exception reporting.
+
+#### [MODIFY] [AzkarRepository.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/repository/AzkarRepository.kt)
+- Replace generic `e.printStackTrace()` with structured Android logging.
+- Ensure thread-safe initialization with `Mutex`.
+
+---
+
+### 3. ViewModels & Performance Optimizations
+
+#### [MODIFY] [PrayerCountdown.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/PrayerCountdown.kt)
+- Replace unmanaged background infinite `while(true)` loop with lifecycle-aware ticking flow that only ticks while subscribed (`SharingStarted.WhileSubscribed(5000)`).
+
+#### [MODIFY] [QiblaViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/QiblaViewModel.kt)
+- Pre-allocate sensor calculation buffers (`rMatrix`, `iMatrix`, `orientation`, `gravity`, `geomagnetic`) to eliminate high-frequency object allocations during 60Hz sensor callbacks.
+- Add safety cleanup in `onCleared()` to prevent sensor listener leaks.
+
+#### [MODIFY] [AzkarViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/AzkarViewModel.kt)
+- Manage active `Job` in `selectCategory()` to cancel preceding collection coroutines.
+
+#### [MODIFY] [SurahReaderViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/SurahReaderViewModel.kt)
+- Ensure safe lifecycle handling when connecting to `MediaController`.
+
+---
+
+### 4. Background Workers & Notification Receivers
+
+#### [MODIFY] [PrayerSyncWorker.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/worker/PrayerSyncWorker.kt)
+- Replace `e.printStackTrace()` with `Log.e`.
+
+#### [MODIFY] [QuranSyncWorker.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/worker/QuranSyncWorker.kt)
+- Replace `e.printStackTrace()` with `Log.e` and enforce safe stream closing.
+
+#### [MODIFY] [NotificationSchedulerTest.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/test/java/com/example/NotificationSchedulerTest.kt)
+- Update test to use modern Robolectric shadow API and eliminate deprecation warnings.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Run Gradle unit tests to ensure zero regressions:
+  ```powershell
+  .\gradlew.bat testDebugUnitTest --continue
+  ```
+- Run compilation verification:
+  ```powershell
+  .\gradlew.bat assembleDebug
+  ```
+
+### Manual / Integration Verification
+- Verify DI graph resolution across all ViewModels and Workers.
+- Verify prayer countdown accuracy, audio playback state, and sensor orientation logic.

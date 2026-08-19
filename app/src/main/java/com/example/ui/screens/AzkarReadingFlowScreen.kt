@@ -70,12 +70,25 @@ fun AzkarReadingFlowScreen(viewModel: AzkarViewModel, navController: NavHostCont
             onBack = { navController.popBackStack() }
         )
 
-        LinearProgressIndicator(
-            progress = { progressFraction },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).height(6.dp).clip(CircleShape).testTag("azkar_flow_progress_bar"),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .height(6.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                .testTag("azkar_flow_progress_bar")
+        ) {
+            if (progressFraction > 0f) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(progressFraction.coerceIn(0f, 1f))
+                        .fillMaxHeight()
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(28.dp))
 
@@ -100,6 +113,7 @@ fun AzkarReadingFlowScreen(viewModel: AzkarViewModel, navController: NavHostCont
                                     viewModel.completeAzkarFlow(activeCat.id, dhikrs.size)
                                     navController.popBackStack()
                                 } else {
+                                    viewModel.updateAzkarProgress(activeCat.id, 0, stepIndex + 1)
                                     viewModel.nextStep()
                                 }
                             }

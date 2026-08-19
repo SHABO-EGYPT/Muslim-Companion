@@ -40,19 +40,17 @@ class QiblaViewModel @Inject constructor(
     private val _locationName = MutableStateFlow("Unknown Location")
     val locationName = _locationName.asStateFlow()
 
-    private var gravity: FloatArray? = null
-    private var geomagnetic: FloatArray? = null
+    private val gravity = FloatArray(3)
+    private val geomagnetic = FloatArray(3)
+    private var hasGravity = false
+    private var hasGeomagnetic = false
+    private val rotationMatrix = FloatArray(9)
+    private val inclinationMatrix = FloatArray(9)
+    private val orientation = FloatArray(3)
 
     // Kaaba coordinates
     private val kaabaLat = 21.422487
     private val kaabaLng = 39.826206
-
-    init {
-        viewModelScope.launch {
-            // Setup or check things if needed
-            // Location handled explicitly by startSensors or UI later
-        }
-    }
 
     fun startSensors() {
         accelerometer?.also {
@@ -83,21 +81,18 @@ class QiblaViewModel @Inject constructor(
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null) return
         if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-            gravity = event.values.clone()
+            System.arraycopy(event.values, 0, gravity, 0, 3)
+            hasGravity = true
         }
         if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
-            geomagnetic = event.values.clone()
+            System.arraycopy(event.values, 0, geomagnetic, 0, 3)
+            hasGeomagnetic = true
         }
 
-        val g = gravity
-        val m = geomagnetic
-        if (g != null && m != null) {
-            val R = FloatArray(9)
-            val I = FloatArray(9)
-            val success = SensorManager.getRotationMatrix(R, I, g, m)
+        if (hasGravity && hasGeomagnetic) {
+            val success = SensorManager.getRotationMatrix(rotationMatrix, inclinationMatrix, gravity, geomagnetic)
             if (success) {
-                val orientation = FloatArray(3)
-                SensorManager.getOrientation(R, orientation)
+                SensorManager.getOrientation(rotationMatrix, orientation)
                 val azimuthDeg = Math.toDegrees(orientation[0].toDouble()).toFloat()
                 _azimuth.value = (azimuthDeg + 360f) % 360f
             }
@@ -105,4 +100,10 @@ class QiblaViewModel @Inject constructor(
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    override fun onCleared() {
+        super.onCleared()
+        stopSensors()
+    }
 }
+

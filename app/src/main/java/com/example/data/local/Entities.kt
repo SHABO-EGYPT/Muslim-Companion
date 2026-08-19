@@ -20,6 +20,8 @@ data class UserProgressEntity(
     val eveningDone: Int = 0,
     val sleepDone: Int = 0,
     val afterPrayerDone: Int = 0,
+    val wakeupDone: Int = 0,
+    val customAzkarProgress: String = "",
     val prayerHistoryCsv: String = "",
     val completedPrayersToday: String = "",
     val location: String = "",

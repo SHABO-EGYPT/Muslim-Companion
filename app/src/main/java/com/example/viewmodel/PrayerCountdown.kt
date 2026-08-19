@@ -17,11 +17,17 @@ import javax.inject.Singleton
 class PrayerCountdownManager @Inject constructor(
     repository: CompanionRepository
 ) {
-    private val _currentTime = MutableStateFlow(LocalTime.now())
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
+    private val tickerFlow: Flow<LocalTime> = flow {
+        while (true) {
+            emit(LocalTime.now())
+            delay(1000)
+        }
+    }
+
     val nextPrayerInfo: StateFlow<Triple<PrayerTime, String, String>> =
-        calculateNextPrayerInfo(repository.getPrayerTimesFlow(), _currentTime)
+        calculateNextPrayerInfo(repository.getPrayerTimesFlow(), tickerFlow)
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -29,23 +35,15 @@ class PrayerCountdownManager @Inject constructor(
             )
 
     val checkablePrayers: StateFlow<Set<String>> =
-        calculateCheckablePrayers(repository.getPrayerTimesFlow(), _currentTime)
+        calculateCheckablePrayers(repository.getPrayerTimesFlow(), tickerFlow)
             .distinctUntilChanged()
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = emptySet()
             )
-
-    init {
-        scope.launch {
-            while (true) {
-                _currentTime.value = LocalTime.now()
-                delay(1000)
-            }
-        }
-    }
 }
+
 
 fun calculateNextPrayerInfo(
     prayerTimesFlow: Flow<List<PrayerTime>>,

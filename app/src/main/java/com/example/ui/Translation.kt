@@ -147,7 +147,13 @@ object Translator {
             "download" to "Download",
             "downloading" to "Downloading",
             "downloaded" to "Downloaded",
-            "active" to "Active"
+            "active" to "Active",
+            "about_app" to "About App",
+            "privacy_policy" to "Privacy Policy",
+            "app_dedication_title" to "Sadaqah Jariyah & Dedication",
+            "app_dedication_text" to "Muslim Companion is 100% free and completely ad-free. Dedicated as ongoing charity (Sadaqah Jariyah) for the sake of Allah, in loving memory of my mother and all deceased Muslims. Please remember them in your sincere prayers.",
+            "app_version" to "Version 1.6.0",
+            "privacy_policy_summary" to "Data Safety & Privacy: We respect your privacy completely. This app contains NO ads, NO trackers, and NEVER sells personal data. Location access is used strictly on-device to compute precise prayer timings and Qibla direction. All your bookmarks, reading progress, and preferences are stored securely on your local device."
         ),
         "Arabic" to mapOf(
             "home" to "الرئيسية",
@@ -294,7 +300,13 @@ object Translator {
             "download" to "تنزيل",
             "downloading" to "جاري التنزيل",
             "downloaded" to "تم التنزيل",
-            "active" to "نشط"
+            "active" to "نشط",
+            "about_app" to "حول التطبيق",
+            "privacy_policy" to "سياسة الخصوصية",
+            "app_dedication_title" to "صدقة جارية وإهداء",
+            "app_dedication_text" to "هذا التطبيق مجاني 100% بدون أي إعلانات، صُنع لوجه الله تعالى وصدقة جارية رحمةً على روح والدتي وعلى جميع أموات المسلمين. نسألكم الدعاء لهم بالرحمة والمغفرة.",
+            "app_version" to "الإصدار 1.6.0",
+            "privacy_policy_summary" to "أمان البيانات والخصوصية: نحن نحترم خصوصيتك تماماً. التطبيق خالٍ تماماً من الإعلانات ومن أدوات التتبع، ولا يشارك أي بيانات شخصية. يتم استخدام الموقع الجغرافي محلياً فقط لحساب مواقيت الصلاة والقبلة بدقة. تُحفظ جميع علاماتك وتقدمك وسجلاتك محلياً بأمان على جهازك."
         )
     )
 

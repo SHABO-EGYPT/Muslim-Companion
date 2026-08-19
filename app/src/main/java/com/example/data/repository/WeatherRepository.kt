@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import android.util.Log
 import com.example.data.remote.WeatherApi
 import com.example.domain.model.WeatherCondition
 import com.example.domain.model.WeatherState
@@ -10,13 +11,19 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WeatherRepository @Inject constructor() {
+class WeatherRepository @Inject constructor(
+    private val weatherApi: WeatherApi
+) {
+    companion object {
+        private const val TAG = "WeatherRepository"
+    }
+
     private val _weatherState = MutableStateFlow(getDefaultWeatherState())
     val weatherState: StateFlow<WeatherState> = _weatherState
 
     suspend fun fetchWeather(latitude: Double = 21.422487, longitude: Double = 39.826206) {
         try {
-            val response = WeatherApi.instance.getCurrentWeather(latitude, longitude)
+            val response = weatherApi.getCurrentWeather(latitude, longitude)
             val curr = response.currentWeather
             if (curr != null) {
                 val tempC = curr.temperature.toInt()
@@ -36,6 +43,7 @@ class WeatherRepository @Inject constructor() {
                 _weatherState.value = getDefaultWeatherState()
             }
         } catch (e: Exception) {
+            Log.w(TAG, "Failed to fetch weather data for ($latitude, $longitude): ${e.message}")
             _weatherState.value = getDefaultWeatherState()
         }
     }
@@ -69,3 +77,4 @@ class WeatherRepository @Inject constructor() {
         )
     }
 }
+

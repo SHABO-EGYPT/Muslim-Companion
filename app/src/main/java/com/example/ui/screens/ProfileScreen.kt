@@ -47,6 +47,8 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
     val badges by viewModel.badges.collectAsStateWithLifecycle()
 
     var showEditDialog by remember { mutableStateOf(false) }
+    var showAboutDialog by remember { mutableStateOf(false) }
+    var showPrivacyDialog by remember { mutableStateOf(false) }
     var editName by remember(progress.username) { mutableStateOf(progress.username) }
     var editImageUri by remember(progress.profileImageUri) { mutableStateOf(progress.profileImageUri) }
     var editLocation by remember(progress.location) { mutableStateOf(progress.location) }
@@ -268,9 +270,111 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
                         }
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                     }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().clickable { showAboutDialog = true }.padding(vertical = 14.dp).testTag("profile_menu_about"),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Lucide.Info, contentDescription = Translator.translate("about_app", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Text(text = Translator.translate("about_app", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                        Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().clickable { showPrivacyDialog = true }.padding(vertical = 14.dp).testTag("profile_menu_privacy"),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Lucide.Shield, contentDescription = Translator.translate("privacy_policy", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Text(text = Translator.translate("privacy_policy", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                        Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
                 }
             }
         }
+    }
+
+    if (showAboutDialog) {
+        AlertDialog(
+            onDismissRequest = { showAboutDialog = false },
+            title = {
+                Text(
+                    text = Translator.translate("about_app", settings.language),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Muslim Companion - رفيق المسلم",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = Translator.translate("app_version", settings.language),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MintTeal.copy(alpha = 0.35f)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(14.dp)) {
+                            Text(
+                                text = Translator.translate("app_dedication_title", settings.language),
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                color = DarkTealText
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = Translator.translate("app_dedication_text", settings.language),
+                                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+                                color = DarkTealText
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showAboutDialog = false }) {
+                    Text(Translator.translate("close", settings.language))
+                }
+            }
+        )
+    }
+
+    if (showPrivacyDialog) {
+        AlertDialog(
+            onDismissRequest = { showPrivacyDialog = false },
+            title = {
+                Text(
+                    text = Translator.translate("privacy_policy", settings.language),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = Translator.translate("privacy_policy_summary", settings.language),
+                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showPrivacyDialog = false }) {
+                    Text(Translator.translate("close", settings.language))
+                }
+            }
+        )
     }
 
     if (showEditDialog) {

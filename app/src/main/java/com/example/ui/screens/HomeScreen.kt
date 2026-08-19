@@ -533,16 +533,29 @@ fun HomeScreen(
                                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                                     )
                                     Spacer(modifier = Modifier.height(8.dp))
-                                    val progressFraction = if (cat.totalCount > 0) cat.doneCount.toFloat() / cat.totalCount.toFloat() else 0f
-                                    LinearProgressIndicator(
-                                        progress = { progressFraction },
-                                        modifier = Modifier
-                                            .width(40.dp)
-                                            .height(4.dp)
-                                            .clip(RoundedCornerShape(2.dp)),
-                                        color = iconTint,
-                                        trackColor = iconTint.copy(alpha = 0.2f)
+                                    val progressFraction = if (cat.totalCount > 0) (cat.doneCount.toFloat() / cat.totalCount.toFloat()).coerceIn(0f, 1f) else 0f
+                                    val animatedProgress by androidx.compose.animation.core.animateFloatAsState(
+                                        targetValue = progressFraction,
+                                        animationSpec = androidx.compose.animation.core.tween(durationMillis = 400),
+                                        label = "azkar_progress"
                                     )
+                                    Box(
+                                        modifier = Modifier
+                                            .width(48.dp)
+                                            .height(4.dp)
+                                            .clip(CircleShape)
+                                            .background(iconTint.copy(alpha = 0.2f))
+                                    ) {
+                                        if (animatedProgress > 0f) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth(animatedProgress)
+                                                    .fillMaxHeight()
+                                                    .clip(CircleShape)
+                                                    .background(iconTint)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

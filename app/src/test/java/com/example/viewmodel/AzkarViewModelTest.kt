@@ -96,4 +96,26 @@ class AzkarViewModelTest {
         val progress = fakeRepo.getUserProgressDirect()
         assertEquals(15, progress?.morningDone)
     }
+
+    @Test
+    fun `completeAzkarFlow updates wakeupDone`() = runTest {
+        fakeRepo.setProgress(UserProgressEntity(wakeupDone = 0))
+
+        viewModel.completeAzkarFlow("أذكار الاستيقاظ", 5)
+        advanceUntilIdle()
+
+        val progress = fakeRepo.getUserProgressDirect()
+        assertEquals(5, progress?.wakeupDone)
+    }
+
+    @Test
+    fun `completeAzkarFlow updates custom category progress`() = runTest {
+        fakeRepo.setProgress(UserProgressEntity(customAzkarProgress = ""))
+
+        viewModel.completeAzkarFlow("دعاء الاستخارة", 1)
+        advanceUntilIdle()
+
+        val progress = fakeRepo.getUserProgressDirect()
+        assertTrue(progress?.customAzkarProgress?.contains("دعاء الاستخارة:1") == true)
+    }
 }

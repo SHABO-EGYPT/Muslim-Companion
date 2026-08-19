@@ -42,8 +42,10 @@ class NotificationSchedulerTest {
         assertNotNull(alarm)
 
         // Check that the alarm is set to exactly 15:30
+        @Suppress("DEPRECATION")
+        val triggerTime = alarm.triggerAtTime
         val calendar = Calendar.getInstance().apply {
-            timeInMillis = alarm.triggerAtTime
+            timeInMillis = triggerTime
         }
         
         assertEquals(15, calendar.get(Calendar.HOUR_OF_DAY))

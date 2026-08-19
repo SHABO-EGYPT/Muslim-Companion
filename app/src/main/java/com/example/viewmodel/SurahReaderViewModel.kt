@@ -37,6 +37,7 @@ class SurahReaderViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) : ViewModel() {
     private var player: Player? = null
+    private var isCleared = false
 
     init {
         val sessionToken = SessionToken(context, ComponentName(context, QuranAudioService::class.java))
@@ -44,6 +45,10 @@ class SurahReaderViewModel @Inject constructor(
         controllerFuture.addListener({
             try {
                 val controller = controllerFuture.get()
+                if (isCleared) {
+                    controller.release()
+                    return@addListener
+                }
                 player = controller
                 controller.addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
@@ -88,6 +93,7 @@ class SurahReaderViewModel @Inject constructor(
             }
         }, { runnable -> android.os.Handler(android.os.Looper.getMainLooper()).post(runnable) })
     }
+
 
     private val _currentSurah = MutableStateFlow<Surah?>(null)
     val currentSurah = _currentSurah.asStateFlow()
@@ -328,6 +334,8 @@ class SurahReaderViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
+        isCleared = true
         (player as? MediaController)?.release()
+        player = null
     }
 }

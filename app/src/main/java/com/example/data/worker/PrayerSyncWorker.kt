@@ -1,6 +1,7 @@
 package com.example.data.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -17,6 +18,10 @@ class PrayerSyncWorker @AssistedInject constructor(
     private val quranRepository: QuranRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
+    companion object {
+        private const val TAG = "PrayerSyncWorker"
+    }
+
     override suspend fun doWork(): Result {
         return try {
             quranRepository.refreshSurahs()
@@ -24,8 +29,9 @@ class PrayerSyncWorker @AssistedInject constructor(
 
             Result.success()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "PrayerSyncWorker execution failed, requesting retry", e)
             Result.retry()
         }
     }
 }
+

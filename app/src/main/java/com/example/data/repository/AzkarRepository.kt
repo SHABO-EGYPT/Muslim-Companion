@@ -65,7 +65,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("AzkarRepository", "Failed to load azkar asset files", e)
             }
 
             // 2. Load and parse legacy tasbih.json and merge it under "تسابيح"
@@ -79,7 +79,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                 }
                 azkarData["تسابيح"] = tasbihItems
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("AzkarRepository", "Failed to load tasbih.json asset", e)
             }
         }
     }
@@ -119,9 +119,16 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                 val progressCount = when {
                     name.contains("الصباح") -> progress.morningDone
                     name.contains("المساء") -> progress.eveningDone
+                    name.contains("الاستيقاظ") -> progress.wakeupDone
                     name.contains("النوم") -> progress.sleepDone
                     name.contains("الصلاة") -> progress.afterPrayerDone
-                    else -> 0
+                    else -> {
+                        progress.customAzkarProgress.split(",")
+                            .filter { it.contains(":") }
+                            .firstOrNull { it.startsWith("$name:") }
+                            ?.substringAfter(":")
+                            ?.toIntOrNull() ?: 0
+                    }
                 }
                 val title = when (name) {
                     "أذكار الصباح" -> "Morning Azkar"

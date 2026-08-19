@@ -16,7 +16,7 @@ import androidx.room.RoomDatabase
         NotificationEntity::class,
         QuranAyahEntity::class
     ],
-    version = 27,
+    version = 28,
     exportSchema = true
 )
 abstract class CompanionDatabase : RoomDatabase() {
@@ -90,13 +90,20 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_27_28 = object : androidx.room.migration.Migration(27, 28) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE user_progress ADD COLUMN wakeupDone INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE user_progress ADD COLUMN customAzkarProgress TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
         fun buildDatabase(context: Context): CompanionDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 CompanionDatabase::class.java,
                 "companion-db"
             )
-            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27)
+            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28)
             .build()
         }
     }

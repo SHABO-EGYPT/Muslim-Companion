@@ -16,11 +16,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class FakeCompanionRepository(
     val quranRepository: FakeQuranRepository = FakeQuranRepository(),
     val azkarRepository: FakeAzkarRepository = FakeAzkarRepository(),
-    val dao: FakeDao = FakeDao()
+    val dao: FakeDao = FakeDao(),
+    prayerApi: com.example.data.remote.PrayerApi = object : com.example.data.remote.PrayerApi {
+        override suspend fun getTimingsByCity(city: String, country: String, method: Int?): com.example.data.remote.PrayerTimingsResponse {
+            return com.example.data.remote.PrayerTimingsResponse(200, "OK", com.example.data.remote.PrayerTimingsData(emptyMap()))
+        }
+        override suspend fun getTimings(date: String, latitude: Double, longitude: Double, method: Int?): com.example.data.remote.PrayerTimingsResponse {
+            return com.example.data.remote.PrayerTimingsResponse(200, "OK", com.example.data.remote.PrayerTimingsData(emptyMap()))
+        }
+    }
 ) : CompanionRepository(
     dao = dao,
     quranRepository = quranRepository,
-    azkarRepository = azkarRepository
+    azkarRepository = azkarRepository,
+    prayerApi = prayerApi
 ) {
     private val _userProgress = MutableStateFlow(UserProgressEntity())
     private val _settings = MutableStateFlow(AppSettingEntity())

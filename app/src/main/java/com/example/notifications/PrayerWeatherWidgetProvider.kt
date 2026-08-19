@@ -9,8 +9,11 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.example.MainActivity
 import com.example.R
+import com.example.data.local.CompanionDatabase
 import com.example.domain.model.PrayerTime
 import com.example.utils.TimeUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
@@ -54,7 +57,7 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
         ) {
             val views = RemoteViews(context.packageName, R.layout.prayer_weather_widget)
 
-            // 1. Gregorian Date Format
+            // 1. Gregorian Date Format in Arabic
             val arabicLocale = Locale.forLanguageTag("ar")
             val dateStr = try {
                 val formatter = DateTimeFormatter.ofPattern("EEEE ، d MMMM", arabicLocale)
@@ -65,9 +68,9 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_date, dateStr)
 
             // 2. Weather Status
-            views.setTextViewText(R.id.widget_weather, "26°C مشمس")
+            views.setTextViewText(R.id.widget_weather, "مشمس · 26°C")
 
-            // 3. Default Prayer Times list
+            // 3. Prayer Times List (Load cached if available, fallback to defaults)
             val defaultPrayers = listOf(
                 PrayerTime("Fajr", "الفجر", "04:12", "sunrise"),
                 PrayerTime("Dhuhr", "الظهر", "12:31", "sun"),
@@ -76,15 +79,32 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
                 PrayerTime("Isha", "العشاء", "20:52", "moon")
             )
 
+            val prayers = try {
+                val cached = runBlocking(Dispatchers.IO) {
+                    try {
+                        CompanionDatabase.buildDatabase(context).companionDao().getCachedPrayerTimesDirect()
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                }
+                if (cached.isNotEmpty()) {
+                    cached.map { PrayerTime(it.name, it.arabicName, it.timeString, it.iconName) }
+                } else {
+                    defaultPrayers
+                }
+            } catch (e: Exception) {
+                defaultPrayers
+            }
+
             val now = LocalTime.now()
-            var nextPrayer: PrayerTime = defaultPrayers[0]
-            var nextPrayerTime: LocalTime = TimeUtils.parsePrayerTime(defaultPrayers[0].timeString) ?: LocalTime.of(4, 12)
+            var nextIndex = 0
+            var nextPrayerTime: LocalTime = TimeUtils.parsePrayerTime(prayers[0].timeString) ?: LocalTime.of(4, 12)
             var found = false
 
-            for (prayer in defaultPrayers) {
-                val parsed = TimeUtils.parsePrayerTime(prayer.timeString) ?: continue
+            for (i in prayers.indices) {
+                val parsed = TimeUtils.parsePrayerTime(prayers[i].timeString) ?: continue
                 if (parsed.isAfter(now)) {
-                    nextPrayer = prayer
+                    nextIndex = i
                     nextPrayerTime = parsed
                     found = true
                     break
@@ -92,9 +112,11 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
             }
 
             if (!found) {
-                nextPrayer = defaultPrayers[0]
-                nextPrayerTime = TimeUtils.parsePrayerTime(defaultPrayers[0].timeString) ?: LocalTime.of(4, 12)
+                nextIndex = 0
+                nextPrayerTime = TimeUtils.parsePrayerTime(prayers[0].timeString) ?: LocalTime.of(4, 12)
             }
+
+            val nextPrayer = prayers[nextIndex]
 
             // Calculate countdown
             val duration = if (found) {
@@ -111,19 +133,42 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
                 "متبقي $minutes دقيقة"
             }
 
-            val formattedTime = try {
-                nextPrayerTime.format(DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH))
-            } catch (e: Exception) {
-                nextPrayer.timeString
+            // 12-hour formatted time in Arabic to prevent BiDi glitches
+            fun format12Hour(timeStr: String, withSuffix: Boolean = true): String {
+                return try {
+                    val parsed = TimeUtils.parsePrayerTime(timeStr) ?: return timeStr
+                    val hour = parsed.hour
+                    val minute = parsed.minute
+                    val isPm = hour >= 12
+                    val h12 = if (hour % 12 == 0) 12 else hour % 12
+                    val suffix = if (isPm) "م" else "ص"
+                    if (withSuffix) {
+                        String.format(Locale.US, "%02d:%02d %s", h12, minute, suffix)
+                    } else {
+                        String.format(Locale.US, "%02d:%02d", h12, minute)
+                    }
+                } catch (e: Exception) {
+                    timeStr
+                }
             }
 
+            val formattedTime = format12Hour(nextPrayer.timeString, withSuffix = true)
             views.setTextViewText(R.id.widget_next_prayer, "الصلاة القادمة: ${nextPrayer.arabicName} ($formattedTime)")
             views.setTextViewText(R.id.widget_countdown, countdownStr)
 
-            // Timeline Chips (3 upcoming prayers)
-            views.setTextViewText(R.id.widget_prayer_1, "${defaultPrayers[1].arabicName} ${defaultPrayers[1].timeString}")
-            views.setTextViewText(R.id.widget_prayer_2, "${defaultPrayers[2].arabicName} ${defaultPrayers[2].timeString}")
-            views.setTextViewText(R.id.widget_prayer_3, "${defaultPrayers[3].arabicName} ${defaultPrayers[3].timeString}")
+            // Timeline Chips: 3 upcoming prayers starting from next prayer
+            val upcomingChips = listOf(
+                prayers[nextIndex % prayers.size],
+                prayers[(nextIndex + 1) % prayers.size],
+                prayers[(nextIndex + 2) % prayers.size]
+            )
+
+            val chipIds = listOf(R.id.widget_prayer_1, R.id.widget_prayer_2, R.id.widget_prayer_3)
+            for (i in 0 until 3) {
+                val p = upcomingChips[i]
+                val chipTime = format12Hour(p.timeString, withSuffix = false)
+                views.setTextViewText(chipIds[i], "${p.arabicName} $chipTime")
+            }
 
             // Click Intent to open MainActivity
             val appIntent = Intent(context, MainActivity::class.java).apply {
@@ -141,3 +186,4 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
         }
     }
 }
+

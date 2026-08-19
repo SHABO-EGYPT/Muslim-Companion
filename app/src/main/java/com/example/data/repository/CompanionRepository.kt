@@ -1,41 +1,62 @@
 package com.example.data.repository
 
+import android.util.Log
 import com.example.data.local.AppSettingEntity
 import com.example.data.local.CachedPrayerTimeEntity
 import com.example.data.local.CompanionDao
 import com.example.data.local.NotificationEntity
 import com.example.data.local.UserProgressEntity
-import com.example.domain.CalculationMethodMapper
 import com.example.data.remote.PrayerApi
+import com.example.domain.CalculationMethodMapper
 import com.example.domain.model.AchievementBadge
-import com.example.domain.model.NotificationItem
 import com.example.domain.model.PrayerTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.Date
+import java.util.Locale
 
 open class CompanionRepository(
     private val dao: CompanionDao,
     private val quranRepository: QuranRepository,
-    private val azkarRepository: AzkarRepository
+    private val azkarRepository: AzkarRepository,
+    private val prayerApi: PrayerApi
 ) {
+    companion object {
+        private const val TAG = "CompanionRepository"
+    }
+
     open fun getPrayerTimesFlow(): Flow<List<PrayerTime>> = dao.getCachedPrayerTimesFlow().map { entities ->
         if (entities.isEmpty()) defaultPrayerTimes()
         else entities.map { it.toDomain() }
     }
 
     open suspend fun refreshPrayerTimesByLocation(latitude: Double, longitude: Double) {
-        val settings = dao.getSettingsDirect() ?: AppSettingEntity()
-        val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
-        val formatter = java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.US)
-        val response = PrayerApi.instance.getTimings(formatter.format(java.util.Date()), latitude, longitude, methodId)
-        savePrayerTimes(response.data.timings)
+        try {
+            val settings = dao.getSettingsDirect() ?: AppSettingEntity()
+            val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
+            val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
+            val response = prayerApi.getTimings(formatter.format(Date()), latitude, longitude, methodId)
+            savePrayerTimes(response.data.timings)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to refresh prayer times by location ($latitude, $longitude)", e)
+            throw e
+        }
     }
 
     open suspend fun refreshPrayerTimes(city: String = "Cairo", country: String = "Egypt") {
-        val settings = dao.getSettingsDirect() ?: AppSettingEntity()
-        val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
-        val response = PrayerApi.instance.getTimingsByCity(city, country, methodId)
-        savePrayerTimes(response.data.timings)
+        try {
+            val settings = dao.getSettingsDirect() ?: AppSettingEntity()
+            val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
+            val response = prayerApi.getTimingsByCity(city, country, methodId)
+            savePrayerTimes(response.data.timings)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to refresh prayer times for $city, $country", e)
+            throw e
+        }
     }
 
     private suspend fun savePrayerTimes(timings: Map<String, String>) {
@@ -54,13 +75,13 @@ open class CompanionRepository(
     open suspend fun saveSettings(settings: AppSettingEntity) = dao.saveSettings(settings)
 
     open suspend fun getActiveTrackingDate(): String {
-        val now = java.time.LocalDateTime.now()
+        val now = LocalDateTime.now()
         val cachedTimes = dao.getCachedPrayerTimesDirect()
         val fajrTimeStr = cachedTimes.find { it.name == "Fajr" }?.timeString ?: "04:12"
-        val fajrTime = com.example.utils.TimeUtils.parsePrayerTime(fajrTimeStr) ?: java.time.LocalTime.of(4, 12)
+        val fajrTime = com.example.utils.TimeUtils.parsePrayerTime(fajrTimeStr) ?: LocalTime.of(4, 12)
         
         // Reset time is 5 minutes before Fajr
-        val resetTimeToday = java.time.LocalDateTime.of(now.toLocalDate(), fajrTime).minusMinutes(5)
+        val resetTimeToday = LocalDateTime.of(now.toLocalDate(), fajrTime).minusMinutes(5)
         
         val trackingDate = if (now.isBefore(resetTimeToday)) {
             now.toLocalDate().minusDays(1)
@@ -88,7 +109,9 @@ open class CompanionRepository(
                 morningDone = 0,
                 eveningDone = 0,
                 sleepDone = 0,
-                afterPrayerDone = 0
+                afterPrayerDone = 0,
+                wakeupDone = 0,
+                customAzkarProgress = ""
             )
         }
         return updated
@@ -139,3 +162,4 @@ open class CompanionRepository(
 
     private fun CachedPrayerTimeEntity.toDomain() = PrayerTime(name, arabicName, timeString, iconName)
 }
+

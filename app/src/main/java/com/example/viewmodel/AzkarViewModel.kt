@@ -39,15 +39,19 @@ class AzkarViewModel @Inject constructor(
     private val _flowIndex = MutableStateFlow(0)
     val flowIndex = _flowIndex.asStateFlow()
 
+    private var categoryCollectionJob: kotlinx.coroutines.Job? = null
+
     fun selectCategory(category: AzkarCategory) {
         _selectedCategory.value = category
         _flowIndex.value = 0
-        viewModelScope.launch {
+        categoryCollectionJob?.cancel()
+        categoryCollectionJob = viewModelScope.launch {
             azkarRepository.getDhikrItemsFlow(category.id).collect {
                 _currentAzkarList.value = it
             }
         }
     }
+
 
     fun nextStep() {
         _flowIndex.value++
@@ -68,9 +72,20 @@ class AzkarViewModel @Inject constructor(
             val newProgress = when {
                 categoryId.contains("الصباح") -> progress.copy(morningDone = count, lastAzkarDate = activeDate)
                 categoryId.contains("المساء") -> progress.copy(eveningDone = count, lastAzkarDate = activeDate)
+                categoryId.contains("الاستيقاظ") -> progress.copy(wakeupDone = count, lastAzkarDate = activeDate)
                 categoryId.contains("النوم") -> progress.copy(sleepDone = count, lastAzkarDate = activeDate)
                 categoryId.contains("الصلاة") -> progress.copy(afterPrayerDone = count, lastAzkarDate = activeDate)
-                else -> progress
+                else -> {
+                    val map = progress.customAzkarProgress.split(",")
+                        .filter { it.contains(":") }
+                        .associate {
+                            val parts = it.split(":")
+                            parts[0] to (parts.getOrNull(1)?.toIntOrNull() ?: 0)
+                        }.toMutableMap()
+                    map[categoryId] = count
+                    val updatedCustom = map.entries.joinToString(",") { "${it.key}:${it.value}" }
+                    progress.copy(customAzkarProgress = updatedCustom, lastAzkarDate = activeDate)
+                }
             }
             repository.saveUserProgress(newProgress)
         }

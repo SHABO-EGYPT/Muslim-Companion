@@ -1,5 +1,7 @@
 package com.example.data.repository
 
+import android.os.Build
+import android.text.Html
 import android.util.Log
 import com.example.data.local.BookmarkEntity
 import com.example.data.local.CachedAyahEntity
@@ -10,11 +12,10 @@ import com.example.data.quran.SurahMetadata
 import com.example.data.remote.QuranApi
 import com.example.domain.model.Ayah
 import com.example.domain.model.Surah
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -44,8 +45,13 @@ interface QuranRepository {
 class OfflineQuranRepository(
     private val dao: CompanionDao,
     private val assetLoader: QuranAssetLoader,
-    private val audioManager: QuranAudioManager
+    private val audioManager: QuranAudioManager,
+    private val quranApi: QuranApi
 ) : QuranRepository {
+
+    companion object {
+        private const val TAG = "QuranRepo"
+    }
 
     // ── Surahs ───────────────────────────────────────────────────────────────
 
@@ -59,9 +65,9 @@ class OfflineQuranRepository(
     /** Seeds the DB from assets if needed; surah list itself is hardcoded. */
     override suspend fun refreshSurahs() {
         if (!assetLoader.isSeeded()) {
-            Log.i("QuranRepo", "Seeding quran_ayahs from bundled asset…")
+            Log.i(TAG, "Seeding quran_ayahs from bundled asset…")
             assetLoader.seedDatabase()
-            Log.i("QuranRepo", "Seeding complete (6236 ayahs).")
+            Log.i(TAG, "Seeding complete (6236 ayahs).")
         }
     }
 
@@ -94,7 +100,7 @@ class OfflineQuranRepository(
     override suspend fun refreshAyahs(surahNumber: Int, reciter: String) {
         // Step 1: ensure Arabic text is seeded (blocks until done)
         if (!assetLoader.isSeeded()) {
-            Log.i("QuranRepo", "Seeding Arabic text before loading ayahs…")
+            Log.i(TAG, "Seeding Arabic text before loading ayahs…")
             assetLoader.seedDatabase()
         }
 
@@ -107,7 +113,7 @@ class OfflineQuranRepository(
 
         if (existing.size < arabicAyahs.size || existing.any { it.audioUrl.isBlank() }) {
             try {
-                val versesResponse = QuranApi.instance.getChapterVerses(surahNumber)
+                val versesResponse = quranApi.getChapterVerses(surahNumber)
                 val arabicMap = arabicAyahs.associateBy { it.ayah }
 
                 // Fetch verse audio URLs
@@ -119,28 +125,29 @@ class OfflineQuranRepository(
                     else -> if (reciter.all { it.isDigit() }) reciter.toInt() else 7
                 }
                 val audioResponse = try {
-                    QuranApi.instance.getChapterAudio(numericReciterId, surahNumber)
+                    quranApi.getChapterAudio(numericReciterId, surahNumber)
                 } catch (e: Exception) {
+                    Log.w(TAG, "Failed to get chapter audio for reciter $numericReciterId", e)
                     null
                 }
-                val audioByKey = audioResponse?.audio_files?.mapNotNull { it.verse_key?.let { k -> k to it } }?.toMap() ?: emptyMap()
-                val audioByNum = audioResponse?.audio_files?.mapNotNull { it.verse_number?.let { n -> n to it } }?.toMap() ?: emptyMap()
+                val audioByKey = audioResponse?.audioFiles?.mapNotNull { it.verseKey?.let { k -> k to it } }?.toMap() ?: emptyMap()
+                val audioByNum = audioResponse?.audioFiles?.mapNotNull { it.verseNumber?.let { n -> n to it } }?.toMap() ?: emptyMap()
 
                 val entities = versesResponse.verses.mapIndexed { index, verse ->
-                    val vNum = verse.verse_number ?: (index + 1)
-                    val arabicText = arabicMap[vNum]?.arabicText ?: verse.text_uthmani
+                    val vNum = verse.verseNumber ?: (index + 1)
+                    val arabicText = arabicMap[vNum]?.arabicText ?: verse.textUthmani
 
                     val rawTranslation = verse.translations?.firstOrNull()?.text ?: ""
                     val cleanTranslation = if (rawTranslation.isNotBlank()) {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                            android.text.Html.fromHtml(rawTranslation, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            Html.fromHtml(rawTranslation, Html.FROM_HTML_MODE_LEGACY).toString().trim()
                         } else {
                             @Suppress("DEPRECATION")
-                            android.text.Html.fromHtml(rawTranslation).toString().trim()
+                            Html.fromHtml(rawTranslation).toString().trim()
                         }
                     } else ""
 
-                    val vKey = "${surahNumber}:${vNum}"
+                    val vKey = "$surahNumber:$vNum"
                     val rawUrl = audioByKey[vKey]?.url ?: audioByNum[vNum]?.url ?: ""
                     val audioUrl = when {
                         rawUrl.isBlank() -> ""
@@ -163,14 +170,18 @@ class OfflineQuranRepository(
                 }
                 dao.insertCachedAyahs(entities)
             } catch (e: Exception) {
-                Log.w("QuranRepo", "Translation/Audio fetch failed (offline?): ${e.message}")
+                Log.w(TAG, "Translation/Audio fetch failed (offline?): ${e.message}")
             }
         }
 
         // Step 3: trigger background audio download asynchronously (fire-and-forget)
         val audioReciter = if (isLegacyReciterId) "ar.alafasy" else reciter
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-            audioManager.downloadSura(audioReciter, surahNumber)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                audioManager.downloadSura(audioReciter, surahNumber)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed background sura download for $audioReciter sura $surahNumber", e)
+            }
         }
     }
 
@@ -192,16 +203,14 @@ class OfflineQuranRepository(
         dao.isBookmarkedFlow(surahNumber)
 }
 
-
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension mappers (private)
 // ─────────────────────────────────────────────────────────────────────────────
 
 private fun com.example.data.remote.Chapter.toEntity() = com.example.data.local.CachedSurahEntity(
-    number = id, name = name_simple ?: "Unknown", meaning = translated_name?.name ?: "Unknown",
-    ayahsCount = verses_count ?: 0, arabicName = name_arabic ?: "",
-    isMakki = revelation_place?.equals("makkah", ignoreCase = true) ?: true
+    number = id, name = nameSimple ?: "Unknown", meaning = translatedName?.name ?: "Unknown",
+    ayahsCount = versesCount ?: 0, arabicName = nameArabic ?: "",
+    isMakki = revelationPlace?.equals("makkah", ignoreCase = true) ?: true
 )
 
 private fun com.example.data.local.CachedSurahEntity.toDomain() = Surah(
@@ -212,3 +221,4 @@ private fun com.example.data.local.CachedSurahEntity.toDomain() = Surah(
 private fun CachedAyahEntity.toDomain() = Ayah(
     number = numberInSurah, arabicText = arabicText, translation = translation, audioUrl = audioUrl
 )
+
