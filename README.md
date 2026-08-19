@@ -1,73 +1,72 @@
 ![Muslim Companion Banner](assets/muslim_companion_Baner.png)
 
-# Muslim Companion (Android Application)
+# Muslim Companion (رفيق المسلم)
 
-Muslim Companion is a feature-rich, high-performance, and beautifully designed Android companion app built using modern Android development best practices. It helps users manage their daily prayers, read the Holy Quran, count dhikr, and keep track of daily remembrance routines (Azkar).
+[![Release](https://img.shields.io/badge/Release-v1.6.0-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
+[![License](https://img.shields.io/badge/License-100%25%20Free%20%26%20Ad--Free-blue.svg)](PRIVACY_POLICY.md)
+[![Target SDK](https://img.shields.io/badge/Target%20SDK-37%20(Android%2015+)-orange.svg)](https://developer.android.com)
+[![Package](https://img.shields.io/badge/Package-com.companion.muslim.app-teal.svg)](https://play.google.com/store)
+
+**Muslim Companion (رفيق المسلم)** is a comprehensive, feature-rich, high-performance, and beautifully designed Android Islamic application built using Modern Android Development (MAD) best practices. It helps Muslims worldwide manage daily prayers, read and listen to the Holy Quran, track authentic Azkar & Duas, count dhikr, and determine the Qibla direction.
+
+---
+
+## 🕊️ Noble Dedication & 100% Ad-Free Commitment
+> **هذا البرنامج لوجه الله تعالى ومجاني 100% بدون أي إعلانات أو اشتراكات، صُنع كصدقة جارية رحمةً على روح والدتي وعلى جميع أموات المسلمين. نسألكم الدعاء لهم بالرحمة والمغفرة.**
+> 
+> *Muslim Companion is 100% free and completely ad-free. Dedicated as an ongoing charity (Sadaqah Jariyah) for the sake of Allah in loving memory of the developer's mother and all deceased Muslims. Please remember them in your prayers.*
+
+---
+
+## 🔒 Privacy & Google Play Compliance
+- **Zero Ads & Zero Trackers:** Contains no third-party advertisements, analytics trackers, or user data selling.
+- **Offline First:** All reading bookmarks, Khatmah progress, and Azkar counters are stored securely on the local device.
+- **Official Privacy Policy:** [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
+- **Publishing & Release Guide:** [PLAY_STORE_PUBLISHING_GUIDE.md](PLAY_STORE_PUBLISHING_GUIDE.md)
 
 ---
 
 ## Key Features
 
-### 📖 Quran Surah Reader
-- **Offline-First Storage:** Integrated Room database with asset-based seeding to load the full Uthmani Arabic scripture text offline, caching English translations from Quran.com for seamless offline access.
-- **Dual Script Rendering:** Parallel rendering of Arabic text (Uthmani script) and English translations.
-- **Customizable Layout:** Centered divider format, aligning Arabic text to the right and English translation to the left for natural reading flow.
-- **Verse Indicators:** Every verse features an authentic **Rub El Hizb** icon header showing the verse number.
-- **Translation Toggle:** Quickly show/hide translations to focus purely on the Arabic scripture.
-- **Offline & Streaming Audio:** Gapless verse-by-verse audio playback using AndroidX **Media3 (ExoPlayer)**, supporting multiple reciters and offline downloaded audio paths.
-- **Customization Settings:** Custom preferences to scale Arabic text size, change fonts, and keep screen awake.
+### 📖 Quran Surah Reader & Recitation
+- **Offline-First Storage:** Integrated Room SQLite database loaded with authentic Uthmani Arabic scripture.
+- **Dual Script & Translations:** Parallel rendering of Arabic text and English translations from Quran.com.
+- **Offline & Gapless Audio Recitation:** Integrated with AndroidX **Media3 (ExoPlayer)** and `MediaSessionService` supporting major reciters:
+  - Sheikh Mishary Rashid Alafasy (مشاري العفاسي)
+  - Sheikh Abdul Basit Abdul Samad (عبد الباسط عبد الصمد)
+  - Sheikh Mahmoud Khalil Al-Husary (محمود خليل الحصري)
+  - Sheikh Muhammad Siddiq Al-Minshawi (محمد صديق المنشاوي)
+- **Full Offline Audio Downloader:** Download entire Surahs for seamless playback with screen locked or app backgrounded.
+- **Reading Progress & Khatmah:** Bookmarks, reading history tracking, and Khatmah completion counter.
+
+### ⏰ Accurate Prayer Times, Adhan & Qibla
+- **Precise Location-Based Times:** Calculates Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, and Isha.
+- **Major Calculation Methods:** Egyptian General Authority, Muslim World League, ISNA, and University of Karachi.
+- **Adhan Notifications:** Accurate background prayer reminders via `SCHEDULE_EXACT_ALARM` with configurable sounds (Full Adhan, First Adhan, Subtle tone, or Silent).
+- **Qibla Compass:** Real-time, sensor-driven Qibla compass pointing directly to the Kaaba in Makkah.
+- **Nearby Mosque Finder:** One-tap navigation to nearby mosques via Google Maps.
+
+### 🤲 Fortress of the Muslim (Hisn Al-Muslim) & Azkar
+- **Daily Remembrance:** Complete morning, evening, post-prayer, wakeup, and sleep supplications.
+- **Dynamic Category Progress:** Real-time increment tracking per dhikr persisted in Room database (supporting custom and wakeup Azkar).
+- **Horizontal Pager Flow:** Interactive swipe cards with auto-advance and haptic feedback upon completion.
+- **AI-Powered Azkar Assistant:** Search authentic prophetic supplications for travel, distress, forgiveness, and daily situations.
 
 ### 📿 Digital Tasbih Counter
-- **Phrase Selector:** Chip selectors at the top to switch between popular remembrance phrases (e.g., *Subhan Allah*, *Alhamdulillah*, *Allahu Akbar*) loaded dynamically.
-- **Target Tracking:** Set custom targets per phrase and track counts with interactive tap-to-increment circle controls.
-- **Auto-Advance Flow:** Auto-advances to the next phrase in the list upon completing a phrase cycle (reaching target count).
-- **Count Lock and Reset:** The last phrase locks its count upon completion and does not reset to 0 until the user taps Reset or the next prayer time comes.
-- **Tactile Feedback:** Built-in vibration haptic feedback on increments.
+- **Customizable Phrases:** Select between *SubhanAllah*, *Alhamdulillah*, *Allahu Akbar*, *Astaghfirullah*, and custom phrases.
+- **Target Tracking & Auto-Advance:** Set custom targets with tactile vibration feedback on each increment.
 
-### 🌟 Daily Azkar & Supplications
-- **3x2 Grid Widget:** The Home screen features a responsive 3x2 grid natively displaying daily remembrance categories.
-- **Expanded Supplications:** Includes newly added sections for **Dua Al-Istikhara (دعاء الاستخارة)** and **Dua for the Sick (دعاء للمريض)**.
-- **Dark Mode Optimization:** Custom tinted icons adapting gracefully with elevated brightness on Dark Mode.
-- **Progress Trackers:** Features inline category-themed `LinearProgressIndicator`s to dynamically track dhikr progress.
-- **Completion Badges:** Displays solid checkmark icons once categories reach 100% completion.
-- **Horizontal Pager Flow:** In the Azkar reading screen, uses a `HorizontalPager` allowing users to swipe forward or backward to navigate through daily remembrance cards.
-- **Auto-Advance:** Card automatically scrolls to the next remembrance once the target count is completed.
+### ✨ 99 Names of Allah (أسماء الله الحسنى) & Quranic Duas
+- **Asma Ul-Husna:** Interactive catalog with Arabic calligraphy, transliterations, and spiritual meanings.
+- **Quranic Duas:** Curated selection of authentic supplications directly from the Holy Quran.
 
-### ✨ 99 Names of Allah (أسماء الله الحسنى)
-- **Interactive Database:** Beautifully designed catalog of the 99 Names of Allah, rendering original Arabic scripts, phonetic transliterations, and English translations.
-- **Offline Reading:** Fully cached and self-contained database ensuring fast and complete offline loading.
-
-### 📖 Quranic Supplications (Duas)
-- **Authentic Devotionals:** A curated selection of powerful supplications sourced directly from the verses of the Holy Quran.
-- **Rich Typography:** Styled with high-readability Arabic scripts and translations side-by-side.
-
-### 🏆 Achievement Badges
-- **Dynamic Unlocking:** Badges such as "First Juz", "7-day streak", "Night Owl", and "Early Riser" unlock dynamically on the Profile screen based on your real-time reading progress and checked prayers.
-
-### 🕋 Prayer Times, Qibla Compass & Notifications
-- **Accurate Schedules:** Displays local prayer times (Fajr, Sunrise, Dhuhr, Asr, Sunset, Maghrib, Isha).
-- **Azan Notification Scheduler:** Background alarms via `AlarmManager` triggering authentic Adhan playback (`first_adhan.mp3` or `full_adhan.mp3`) at exact prayer times, respecting notification states.
-- **Calculation Settings:** Support for major calculation methods (Egyptian General Authority, MWL, ISNA, Karachi).
-- **Qibla Alignment:** Real-time Qibla compass pointing directly to the Kaaba using device sensors.
-- **Mosque Finder:** Map-linked widget querying nearby mosques using location coordinates and Google Maps (with browser fallback).
-
-### 🔔 Notification Hub & Azkar Reminders
-- **Morning Azkar Reminders (أذكار الصباح 🌅):** Scheduled daily morning notifications encouraging users to start their day with remembrance. Deep-linked to open the Morning Azkar reading flow directly when tapped.
-- **Evening Azkar Reminders (أذكار المساء 🌆):** Scheduled daily evening notifications for evening supplications with one-tap navigation to Evening Azkar.
-- **After Prayer Azkar Reminders (أذكار بعد الصلاة 🕌):** Timed reminders triggering after prayer times to encourage remembrance and tasbih after prayers.
-- **Interactive Notification Center:** Full notification history log saved locally to Room database, featuring unread dot indicators, individual item deletion, clear all actions, and instant test notification triggers for Prayer and Azkar categories.
-- **Granular Settings & Controls:** Dedicated toggles in Settings for each Azkar notification type along with configurable Adhan sound styles (Vibration only, Subtle tone, First Adhan, or Full Adhan).
-
-### 🎵 Quran Audio Player Widget & Media Session
-- **Background Playback Service:** Custom implementation of AndroidX **MediaSessionService** managing a global `ExoPlayer` instance, enabling uninterrupted audio recitation even when the app is closed or the screen is locked.
-- **System Media Notification:** Automatically displays a standard **MediaStyle Notification** in the system notification panel with Surah title, reciter name, seeking progress bar, and play/pause/skip controls.
-- **Material 3 Home Widget:** Responsive Home screen widget styled with a premium deep-green Material shape. Displays current Surah name, reciter name, and Ayah number, with buttons to control playback (play/pause, next, previous) and tap-to-open shortcuts.
+### 📱 Modern Home Screen Widgets
+- **Next Prayer & Weather Widget:** Live prayer countdown and current weather status right on the Android home screen.
+- **Quran Audio Player Widget:** Quick playback controls (play/pause/skip) for Quran recitation.
 
 ---
 
 ## Screenshots
-
-Here is a visual showcase of the main menus and features of the **Muslim Companion** app:
 
 | 🏠 Home Screen | 📖 Quran Surah List | 📖 Quran Reader |
 |:---:|:---:|:---:|
@@ -93,45 +92,24 @@ Here is a visual showcase of the main menus and features of the **Muslim Compani
 
 ## Technical Stack & Architecture
 
-- **UI Framework:** 100% **Jetpack Compose** with Material Design 3 guidelines for a clean, premium, and responsive user experience.
-- **Language:** **Kotlin** utilizing Coroutines and Kotlin Flow for reactive, thread-safe asynchronous operations.
-- **Architecture:** Clean Architecture pattern splitting the codebase into:
-  - **Data Layer:** Room database caches, Retrofit API endpoints, local asset parsers, and repository implementations.
-  - **Domain Layer:** Unified data models, repository abstractions, and core business entities.
-  - **Presentation Layer:** State-driven Compose screens, Dialogs, and state-holding view models.
-- **Dependency Injection:** Powered by **Hilt** (Dagger) for scalable dependency scoping, featuring decoupled UI architecture via `MainViewModel` and `@HiltWorker` for background synchronization tasks.
-- **Local Caching (Room):** Integrates SQLite database caching supporting schema migrations and destructive fallback protection to preserve offline usability.
-- **Security & ANR Safety:** Upgraded background receivers with `goAsync()` and 9-second timeouts, strict network security configurations, explicit connection timeouts, and comprehensive ProGuard rules.
-- **Network Client:** **Retrofit + Moshi** integrating directly with the official Quran.com API endpoints.
-- **Audio Player:** **AndroidX Media3 (ExoPlayer)** for low-latency network audio streaming.
+- **UI Framework:** 100% **Jetpack Compose** with Material Design 3 guidelines.
+- **Language:** **Kotlin** utilizing Coroutines and Kotlin Flow for thread-safe asynchronous operations.
+- **Architecture:** Clean Architecture pattern:
+  - **Data Layer:** Room SQLite database (v28), Retrofit API endpoints, and repository implementations.
+  - **Domain Layer:** Business models, use cases, and repository abstractions.
+  - **Presentation Layer:** Unidirectional Data Flow (UDF) with Compose and ViewModels.
+- **Dependency Injection:** **Hilt** (Dagger) with `@HiltWorker` for WorkManager background syncing.
+- **Audio Engine:** **AndroidX Media3 (ExoPlayer)** + `MediaSessionService`.
+- **Target SDK:** Android 15 (`targetSdk = 37`), `compileSdk = 37`, `minSdk = 26`.
+- **Release Optimization:** R8 minification and resource shrinking with hardened ProGuard rules.
 
 ---
 
-## ⚡ Google MAD Best Practices & Accessibility (a11y)
-
-### 🛡️ Modern Android Development (MAD) Fine-Tunings
-- **Lifecycle-Aware State Collection:** Replaced standard `collectAsState()` with `collectAsStateWithLifecycle()` across `MainActivity` and all 14 screens, ensuring background flow collection halts when the app is minimized to conserve CPU and battery.
-- **Decoupled Hilt Architecture:** Created `MainViewModel` to manage user progress and app-wide preferences, removing direct repository injections from `MainActivity` and `AppNavHost`.
-- **Compose Recomposition Optimization:** Cached dynamic font lookups (`getQuranFontFamily`) using `remember` blocks to eliminate memory allocations during UI recomposition loops.
-
-### ♿ Full Accessibility (a11y) & TalkBack Support
-- **WCAG 2.2 AA Compliance:** Screen titles and section headers registered with `heading()` semantics for structured TalkBack navigation.
-- **48dp Minimum Touch Targets:** Applied `minimumInteractiveComponentSize()` to all custom interactive cards, phrase chips, and prayer row selectors.
-- **Merged Semantic Elements:** Grouped composite cards (`mergeDescendants = true`) for `HomeWidget`, `RubElHizbIcon` verse badges, and Prayer Time cards so TalkBack reads them as single cohesive units.
-- **Dynamic Component Roles & States:** Provided explicit accessibility roles (`Role.Tab`, `Role.Checkbox`, `Role.Button`) and state descriptions (e.g., *"Completed"* / *"Not completed"*, *"Selected"* / *"Not selected"*).
-
----
-
-## Installation & Setup
+## Installation & Building
 
 ### 📲 Directly Installing the Pre-built APK
-
-You can quickly install and run the app on your physical Android phone without needing to compile code:
-
-1. **Locate the APK:** Go to the [APK](APK/) folder in the root of the project and find `Muslim-Companion-1.6.0.apk`.
-2. **Transfer to Mobile:** Copy this file to your phone's storage via USB, cloud sharing, or messaging app.
-3. **Enable Unknown Sources:** On your Android phone, go to **Settings > Security** and enable **"Install unknown apps"** for your file manager or browser.
-4. **Install and Launch:** Open your phone's File Manager, tap on `Muslim-Companion-1.6.0.apk`, click **Install**, and once completed, open the app from your launcher!
+1. Download the pre-built APK from the [APK](APK/) folder: `Muslim-Companion-1.6.0.apk`.
+2. Transfer to your Android device and install.
 
 ---
 
@@ -140,10 +118,15 @@ You can quickly install and run the app on your physical Android phone without n
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/SHABO-EGYPT/Muslim-Companion.git
+   cd Muslim-Companion
    ```
-2. **Open in Android Studio:**
-   - Open Android Studio, select **Open**, and navigate to the cloned project folder.
-   - Allow Gradle to sync and download required dependencies.
-3. **Deploy:**
-   - Build and run the app directly on an emulator or connected physical Android device.
-   - You can compile your own APK by running `Build > Build Bundle(s) / APK(s) > Build APK(s)` in Android Studio.
+2. **Build Debug APK:**
+   ```bash
+   .\gradlew.bat assembleDebug
+   ```
+3. **Build Google Play Release Bundle (.aab):**
+   ```bash
+   .\gradlew.bat bundleRelease
+   ```
+   The generated production bundle will be located at:
+   `app/build/outputs/bundle/release/app-release.aab`
