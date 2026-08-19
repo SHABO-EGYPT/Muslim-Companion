@@ -22,6 +22,15 @@ android {
     multiDexKeepProguard = file("multidex-keep.pro")
   }
 
+  signingConfigs {
+    create("release") {
+      storeFile = file("release.keystore")
+      storePassword = "MuslimCompanion2026"
+      keyAlias = "muslim-companion"
+      keyPassword = "MuslimCompanion2026"
+    }
+  }
+
   buildTypes {
     debug {
       isMinifyEnabled = false
@@ -31,7 +40,7 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("debug")
+      signingConfig = signingConfigs.getByName("release")
     }
   }
 
