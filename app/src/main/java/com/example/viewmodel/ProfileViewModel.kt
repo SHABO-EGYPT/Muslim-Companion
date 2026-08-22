@@ -49,7 +49,14 @@ class ProfileViewModel @Inject constructor(private val repository: CompanionRepo
         }
     }
 
-    fun completeOnboarding(name: String, location: String) {
+    fun updateLanguage(lang: String) {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(language = lang))
+        }
+    }
+
+    fun completeOnboarding(name: String, location: String, language: String? = null) {
         viewModelScope.launch {
             val progress = repository.getUserProgressDirect() ?: UserProgressEntity()
             repository.saveUserProgress(
@@ -59,6 +66,10 @@ class ProfileViewModel @Inject constructor(private val repository: CompanionRepo
                     onboardingCompleted = true
                 )
             )
+            if (language != null) {
+                val s = repository.getSettingsDirect() ?: AppSettingEntity()
+                repository.saveSettings(s.copy(language = language))
+            }
         }
     }
 }

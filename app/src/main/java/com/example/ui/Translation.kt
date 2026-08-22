@@ -152,8 +152,21 @@ object Translator {
             "privacy_policy" to "Privacy Policy",
             "app_dedication_title" to "Sadaqah Jariyah & Dedication",
             "app_dedication_text" to "Muslim Companion is 100% free and completely ad-free. Dedicated as ongoing charity (Sadaqah Jariyah) for the sake of Allah, in loving memory of my mother and all deceased Muslims. Please remember them in your sincere prayers.",
-            "app_version" to "Version 1.6.0",
-            "privacy_policy_summary" to "Data Safety & Privacy: We respect your privacy completely. This app contains NO ads, NO trackers, and NEVER sells personal data. Location access is used strictly on-device to compute precise prayer timings and Qibla direction. All your bookmarks, reading progress, and preferences are stored securely on your local device."
+            "app_version" to "Version 1.6.1",
+            "privacy_policy_summary" to "Data Safety & Privacy: We respect your privacy completely. This app contains NO ads, NO trackers, and NEVER sells personal data. Location access is used strictly on-device to compute precise prayer timings and Qibla direction. All your bookmarks, reading progress, and preferences are stored securely on your local device.",
+            "welcome_to_app" to "Welcome to Muslim Companion",
+            "onboarding_subtitle" to "Please enter your name and choose your preferred language",
+            "your_name" to "Your Name",
+            "enter_your_name" to "Enter your name",
+            "your_location" to "Your Location",
+            "locating" to "Locating...",
+            "determining_location" to "Determining location...",
+            "location_not_available" to "Location not available",
+            "retry_location" to "Retry detection",
+            "edit_location_manually" to "Enter city manually",
+            "enter_city_name" to "Enter city or country",
+            "get_started" to "Get Started",
+            "choose_language" to "Choose Language"
         ),
         "Arabic" to mapOf(
             "home" to "الرئيسية",
@@ -305,8 +318,21 @@ object Translator {
             "privacy_policy" to "سياسة الخصوصية",
             "app_dedication_title" to "صدقة جارية وإهداء",
             "app_dedication_text" to "هذا التطبيق مجاني 100% بدون أي إعلانات، صُنع لوجه الله تعالى وصدقة جارية رحمةً على روح والدتي وعلى جميع أموات المسلمين. نسألكم الدعاء لهم بالرحمة والمغفرة.",
-            "app_version" to "الإصدار 1.6.0",
-            "privacy_policy_summary" to "أمان البيانات والخصوصية: نحن نحترم خصوصيتك تماماً. التطبيق خالٍ تماماً من الإعلانات ومن أدوات التتبع، ولا يشارك أي بيانات شخصية. يتم استخدام الموقع الجغرافي محلياً فقط لحساب مواقيت الصلاة والقبلة بدقة. تُحفظ جميع علاماتك وتقدمك وسجلاتك محلياً بأمان على جهازك."
+            "app_version" to "الإصدار 1.6.1",
+            "privacy_policy_summary" to "أمان البيانات والخصوصية: نحن نحترم خصوصيتك تماماً. التطبيق خالٍ تماماً من الإعلانات ومن أدوات التتبع، ولا يشارك أي بيانات شخصية. يتم استخدام الموقع الجغرافي محلياً فقط لحساب مواقيت الصلاة والقبلة بدقة. تُحفظ جميع علاماتك وتقدمك وسجلاتك محلياً بأمان على جهازك.",
+            "welcome_to_app" to "مرحباً بك في رفيق المسلم",
+            "onboarding_subtitle" to "يرجى إدخال اسمك واختيار لغتك المفضلة لتخصيص تجربتك",
+            "your_name" to "الاسم",
+            "enter_your_name" to "أدخل اسمك",
+            "your_location" to "موقعك الحالي",
+            "locating" to "جاري تحديد الموقع...",
+            "determining_location" to "جاري تحديد الموقع...",
+            "location_not_available" to "تعذر تحديد الموقع تلقائياً",
+            "retry_location" to "إعادة المحاولة",
+            "edit_location_manually" to "إدخال المدينة يدوياً",
+            "enter_city_name" to "أدخل اسم المدينة أو الدولة",
+            "get_started" to "ابدأ الآن",
+            "choose_language" to "اختر اللغة"
         )
     )
 

@@ -3,17 +3,27 @@ package com.example.audio
 import android.app.PendingIntent
 import android.content.Intent
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.example.MainActivity
+import com.example.data.local.CompanionDatabase
+import com.example.data.quran.QuranAudioManager
 import com.example.notifications.QuranPlayerWidgetProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class QuranAudioService : MediaSessionService() {
 
     private var mediaSession: MediaSession? = null
     private var player: ExoPlayer? = null
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     companion object {
         const val ACTION_PLAY_PAUSE = "com.example.audio.ACTION_PLAY_PAUSE"
@@ -80,10 +90,15 @@ class QuranAudioService : MediaSessionService() {
                     if (p.isPlaying) {
                         p.pause()
                     } else {
-                        if (p.playbackState == Player.STATE_IDLE) {
-                            p.prepare()
+                        if (p.mediaItemCount == 0) {
+                            // Cold start from widget or external intent
+                            startColdPlayback(p)
+                        } else {
+                            if (p.playbackState == Player.STATE_IDLE) {
+                                p.prepare()
+                            }
+                            p.play()
                         }
-                        p.play()
                     }
                 }
                 ACTION_NEXT -> {
@@ -101,7 +116,44 @@ class QuranAudioService : MediaSessionService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    private fun startColdPlayback(p: ExoPlayer) {
+        serviceScope.launch(Dispatchers.IO) {
+            try {
+                val db = CompanionDatabase.buildDatabase(applicationContext)
+                val progress = db.companionDao().getUserProgressDirect()
+                val settings = db.companionDao().getSettingsDirect()
+
+                val surahNumber = progress?.lastReadSurahNumber?.takeIf { it in 1..114 } ?: 1
+                val surahName = progress?.lastReadSurahName?.ifBlank { "Al-Fatiha" } ?: "Al-Fatiha"
+                val reciterId = settings?.quranReciter?.ifBlank { "ar.alafasy" } ?: "ar.alafasy"
+                val reciterName = settings?.reciter?.ifBlank { "Mishary Al-Afasy" } ?: "Mishary Al-Afasy"
+
+                val audioManager = QuranAudioManager(applicationContext)
+                val uri = audioManager.getPlaybackUri(reciterId, surahNumber)
+
+                val metadata = MediaMetadata.Builder()
+                    .setTitle(surahName)
+                    .setArtist(reciterName)
+                    .build()
+
+                val mediaItem = MediaItem.Builder()
+                    .setUri(uri)
+                    .setMediaMetadata(metadata)
+                    .build()
+
+                withContext(Dispatchers.Main) {
+                    p.setMediaItem(mediaItem)
+                    p.prepare()
+                    p.play()
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("QuranAudioService", "Failed cold start playback", e)
+            }
+        }
+    }
+
     override fun onDestroy() {
+        serviceScope.cancel()
         mediaSession?.run {
             player.release()
             release()

@@ -64,7 +64,8 @@
 
         <receiver
             android:name="com.example.notifications.QuranPlayerWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_quran_player_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -75,7 +76,8 @@
 
         <receiver
             android:name="com.example.notifications.PrayerWeatherWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_prayer_weather_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

@@ -49,7 +49,9 @@ class TranslatorTest {
     @Test
     fun `translate all Arabic keys are non-empty and different from English`() {
         val keys = listOf(
-            "home", "quran", "azkar", "prayer", "profile", "settings"
+            "home", "quran", "azkar", "prayer", "profile", "settings",
+            "welcome_to_app", "onboarding_subtitle", "your_name", "your_location",
+            "get_started", "choose_language"
         )
         keys.forEach { key ->
             val english = Translator.translate(key, "English")

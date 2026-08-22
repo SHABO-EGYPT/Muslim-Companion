@@ -8,5 +8,5 @@
     android:initialLayout="@layout/prayer_weather_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
-    android:description="@string/prayer_weather_widget_desc">
+    android:description="@string/widget_prayer_weather_desc">
 </appwidget-provider>

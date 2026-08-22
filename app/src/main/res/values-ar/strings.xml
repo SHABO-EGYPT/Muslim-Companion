@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">رفيق المسلم</string>
+    <string name="widget_quran_player_name">مشغل القرآن الكريم</string>
+    <string name="widget_quran_player_desc">التحكم في تلاوة القرآن الكريم مباشرة من الشاشة الرئيسية.</string>
+    <string name="widget_prayer_weather_name">مواقيت الصلاة والطقس</string>
+    <string name="widget_prayer_weather_desc">عرض العد التنازلي للصلاة القادمة وجدول مواقيت اليوم والطقس المباشر.</string>
+</resources>

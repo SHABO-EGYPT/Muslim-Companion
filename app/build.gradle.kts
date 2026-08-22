@@ -14,8 +14,8 @@ android {
     applicationId = "com.companion.muslim.app"
     minSdk = 26
     targetSdk = 37
-    versionCode = 5
-    versionName = "1.6.0"
+    versionCode = 6
+    versionName = "1.6.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     multiDexEnabled = true
