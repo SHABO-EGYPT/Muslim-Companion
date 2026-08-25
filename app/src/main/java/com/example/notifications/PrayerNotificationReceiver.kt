@@ -8,16 +8,13 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import android.util.Log
-import androidx.room.Room
 import com.example.data.local.AppSettingEntity
-import com.example.data.local.CompanionDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import android.media.AudioAttributes
 import android.net.Uri
-import android.provider.Settings
 import com.example.R
 
 import dagger.hilt.android.AndroidEntryPoint

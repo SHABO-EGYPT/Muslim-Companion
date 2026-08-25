@@ -96,3 +96,15 @@ data class AppSettingEntity(
     val eveningAzkarNotification: Boolean = true,
     val afterPrayerAzkarNotification: Boolean = true
 )
+
+@Entity(tableName = "custom_dhikr_chains")
+data class CustomDhikrChainEntity(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val title: String,
+    val description: String = "",
+    val itemsJson: String,
+    val totalCount: Int = 0,
+    val timesCompleted: Int = 0,
+    val colorHex: Long = 0xFF0D9488,
+    val createdAt: Long = System.currentTimeMillis()
+)

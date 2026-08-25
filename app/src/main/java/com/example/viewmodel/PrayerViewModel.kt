@@ -19,6 +19,7 @@ import kotlinx.coroutines.sync.withLock
 @HiltViewModel
 class PrayerViewModel @Inject constructor(
     private val repository: CompanionRepository,
+    private val locationRepository: com.example.data.location.LocationRepository,
     countdownManager: PrayerCountdownManager
 ) : ViewModel() {
 
@@ -54,6 +55,18 @@ class PrayerViewModel @Inject constructor(
 
     private val _prayerLoadError = MutableStateFlow<String?>(null)
     val prayerLoadError = _prayerLoadError.asStateFlow()
+
+    fun fetchCurrentLocationAndRefreshPrayerTimes() {
+        viewModelScope.launch {
+            val location = locationRepository.getCurrentLocation()
+            if (location != null) {
+                updateLocation(location.latitude, location.longitude, location.locationName)
+            } else {
+                // Fallback to default Cairo if no location acquired
+                updateLocation(30.0444, 31.2357, "Cairo, Egypt")
+            }
+        }
+    }
 
     fun updateLocation(latitude: Double, longitude: Double, name: String) {
         _locationName.value = name

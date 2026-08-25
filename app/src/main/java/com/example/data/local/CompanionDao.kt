@@ -1,9 +1,11 @@
 package com.example.data.local
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -99,4 +101,22 @@ interface CompanionDao {
 
     @Query("DELETE FROM notifications")
     suspend fun clearAllNotifications()
+
+    @Query("SELECT * FROM custom_dhikr_chains ORDER BY createdAt DESC")
+    fun getAllCustomChainsFlow(): Flow<List<CustomDhikrChainEntity>>
+
+    @Query("SELECT * FROM custom_dhikr_chains WHERE id = :id LIMIT 1")
+    suspend fun getCustomChainById(id: Int): CustomDhikrChainEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCustomChain(chain: CustomDhikrChainEntity): Long
+
+    @Update
+    suspend fun updateCustomChain(chain: CustomDhikrChainEntity)
+
+    @Delete
+    suspend fun deleteCustomChain(chain: CustomDhikrChainEntity)
+
+    @Query("DELETE FROM custom_dhikr_chains WHERE id = :id")
+    suspend fun deleteCustomChainById(id: Int)
 }

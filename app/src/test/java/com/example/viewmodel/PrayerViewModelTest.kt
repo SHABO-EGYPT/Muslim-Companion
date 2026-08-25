@@ -28,7 +28,8 @@ class PrayerViewModelTest {
         Dispatchers.setMain(testDispatcher)
         fakeRepo = FakeCompanionRepository()
         val countdownManager = PrayerCountdownManager(repository = fakeRepo)
-        viewModel = PrayerViewModel(repository = fakeRepo, countdownManager = countdownManager)
+        val fakeLocationRepo = com.example.fake.FakeLocationRepository()
+        viewModel = PrayerViewModel(repository = fakeRepo, locationRepository = fakeLocationRepo, countdownManager = countdownManager)
     }
 
     @After

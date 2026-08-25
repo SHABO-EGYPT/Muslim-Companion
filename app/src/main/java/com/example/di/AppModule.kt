@@ -168,6 +168,18 @@ object AppModule {
     ): CompanionRepository {
         return CompanionRepository(database.companionDao(), quranRepository, azkarRepository, prayerApi)
     }
+
+    @Provides
+    @Singleton
+    fun provideLocationRepository(@ApplicationContext context: Context): com.example.data.location.LocationRepository {
+        return com.example.data.location.RealLocationRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomDhikrRepository(database: CompanionDatabase): com.example.data.repository.CustomDhikrRepository {
+        return com.example.data.repository.RealCustomDhikrRepository(database.companionDao())
+    }
 }
 
 

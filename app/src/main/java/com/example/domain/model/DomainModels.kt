@@ -97,4 +97,21 @@ data class QuranicDua(
     val transliteration: String
 )
 
+data class ChainDhikrItem(
+    val id: Int = 0,
+    val arabicText: String,
+    val targetCount: Int = 33
+)
+
+data class CustomDhikrChain(
+    val id: Int = 0,
+    val title: String,
+    val description: String = "",
+    val items: List<ChainDhikrItem> = emptyList(),
+    val totalCount: Int = 0,
+    val timesCompleted: Int = 0,
+    val colorHex: Long = 0xFF0D9488,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
 

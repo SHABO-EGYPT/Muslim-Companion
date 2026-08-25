@@ -14,9 +14,10 @@ import androidx.room.RoomDatabase
         CachedSurahEntity::class,
         CachedPrayerTimeEntity::class,
         NotificationEntity::class,
-        QuranAyahEntity::class
+        QuranAyahEntity::class,
+        CustomDhikrChainEntity::class
     ],
-    version = 28,
+    version = 29,
     exportSchema = true
 )
 abstract class CompanionDatabase : RoomDatabase() {
@@ -97,13 +98,30 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_28_29 = object : androidx.room.migration.Migration(28, 29) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL(
+                    """CREATE TABLE IF NOT EXISTS `custom_dhikr_chains` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `title` TEXT NOT NULL,
+                        `description` TEXT NOT NULL DEFAULT '',
+                        `itemsJson` TEXT NOT NULL,
+                        `totalCount` INTEGER NOT NULL DEFAULT 0,
+                        `timesCompleted` INTEGER NOT NULL DEFAULT 0,
+                        `colorHex` INTEGER NOT NULL DEFAULT -15887208,
+                        `createdAt` INTEGER NOT NULL DEFAULT 0
+                    )"""
+                )
+            }
+        }
+
         fun buildDatabase(context: Context): CompanionDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 CompanionDatabase::class.java,
                 "companion-db"
             )
-            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28)
+            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28, MIGRATION_28_29)
             .build()
         }
     }

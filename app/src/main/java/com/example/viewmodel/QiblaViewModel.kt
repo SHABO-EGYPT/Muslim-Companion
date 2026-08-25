@@ -24,7 +24,8 @@ import kotlin.math.sin
 @HiltViewModel
 class QiblaViewModel @Inject constructor(
     application: Application,
-    private val repository: CompanionRepository
+    private val repository: CompanionRepository,
+    private val locationRepository: com.example.data.location.LocationRepository
 ) : AndroidViewModel(application), SensorEventListener {
 
     private val sensorManager = application.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -65,7 +66,16 @@ class QiblaViewModel @Inject constructor(
         sensorManager.unregisterListener(this)
     }
 
-    fun updateLocation(lat: Double, lng: Double) {
+    fun fetchCurrentLocation() {
+        viewModelScope.launch {
+            val location = locationRepository.getCurrentLocation()
+            if (location != null) {
+                updateLocation(location.latitude, location.longitude, location.locationName)
+            }
+        }
+    }
+
+    fun updateLocation(lat: Double, lng: Double, resolvedName: String? = null) {
         val userLoc = Location("user").apply {
             latitude = lat
             longitude = lng
@@ -76,6 +86,14 @@ class QiblaViewModel @Inject constructor(
         }
         val bearing = userLoc.bearingTo(kaabaLoc)
         _qiblaBearing.value = (bearing + 360f) % 360f
+
+        if (resolvedName != null) {
+            _locationName.value = resolvedName
+        } else {
+            viewModelScope.launch {
+                _locationName.value = locationRepository.reverseGeocode(lat, lng)
+            }
+        }
     }
 
     override fun onSensorChanged(event: SensorEvent?) {

@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -131,7 +132,12 @@ fun AzkarReadingFlowScreen(viewModel: AzkarViewModel, navController: NavHostCont
                 ) {
                     Text(
                         text = dhikrItem.arabicText,
-                        style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 28.sp, lineHeight = 44.sp),
+                        style = MaterialTheme.typography.displayLarge.copy(
+                            fontFamily = ArabicSerifFamily,
+                            fontSize = 28.sp,
+                            lineHeight = 44.sp,
+                            textDirection = TextDirection.Rtl
+                        ),
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )

@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -225,7 +226,8 @@ fun QuranicDuaCard(
                         fontFamily = ArabicSerifFamily,
                         fontWeight = FontWeight.Bold,
                         fontSize = 21.sp,
-                        lineHeight = 36.sp
+                        lineHeight = 36.sp,
+                        textDirection = TextDirection.Rtl
                     ),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Right,

@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -46,7 +47,25 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
     val progressFraction = (if (target > 0) count.toFloat() / target.toFloat() else 0f).coerceIn(0f, 1f)
 
     Column(modifier = Modifier.fillMaxSize().testTag("tasbih_screen")) {
-        AppHeader(title = Translator.translate("digital_tasbih", settings.language), onBack = { navController.popBackStack() })
+        AppHeader(
+            title = Translator.translate("digital_tasbih", settings.language),
+            onBack = { navController.popBackStack() },
+            rightContent = {
+                OutlinedButton(
+                    onClick = { navController.navigate(com.example.navigation.Routes.CUSTOM_CHAINS) },
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    border = BorderStroke(1.dp, MintTeal)
+                ) {
+                    Text(
+                        text = if (settings.language == "Arabic") "السلاسل" else "Chains",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MintTeal
+                    )
+                }
+            }
+        )
 
         // Phrase Selector List
         LazyRow(
@@ -89,7 +108,7 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
         }
 
         Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 20.dp, vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Text(text = dhikr, style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 34.sp), color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
+            Text(text = dhikr, style = MaterialTheme.typography.displayLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 34.sp, textDirection = TextDirection.Rtl), color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Center)
 
             Spacer(modifier = Modifier.height(40.dp))
 

@@ -11,8 +11,10 @@ import com.example.R
 // Sans-serif font family for clean UI typography
 val UiSansFamily = FontFamily.SansSerif
 
-// Serif font family for beautiful Arabic verses
-val ArabicSerifFamily = FontFamily.Serif
+// Font family for beautiful Arabic verses (Noto Naskh Arabic bundled)
+val ArabicSerifFamily = FontFamily(
+    Font(R.font.noto_naskh_arabic, FontWeight.Normal)
+)
 
 // Libre Caslon Text font family
 val LibreCaslonFontFamily = FontFamily(

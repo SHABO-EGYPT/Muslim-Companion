@@ -17,6 +17,9 @@ object Routes {
     const val QIBLA = "qibla"
     const val NAMES_OF_ALLAH = "names_of_allah"
     const val QURANIC_DUAS = "quranic_duas"
+    const val CUSTOM_CHAINS = "custom_chains"
+    const val CREATE_CUSTOM_CHAIN = "create_custom_chain"
+    const val RECITE_CUSTOM_CHAIN = "recite_custom_chain"
 }
 
 data class BottomNavItem(

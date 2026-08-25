@@ -42,7 +42,7 @@ fun QiblaCompassScreen(viewModel: QiblaViewModel, navController: NavHostControll
     val qiblaBearing by viewModel.qiblaBearing.collectAsStateWithLifecycle()
     
     val context = LocalContext.current
-    var locationName by remember { mutableStateOf("Unknown Location") }
+    val locationName by viewModel.locationName.collectAsStateWithLifecycle()
 
     val locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -53,66 +53,7 @@ fun QiblaCompassScreen(viewModel: QiblaViewModel, navController: NavHostControll
 
     LaunchedEffect(locationPermissionState.allPermissionsGranted) {
         if (locationPermissionState.allPermissionsGranted) {
-            try {
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                
-                val handleLocation = { location: android.location.Location ->
-                    viewModel.updateLocation(location.latitude, location.longitude)
-                    val geocoder = Geocoder(context, Locale.getDefault())
-                    try {
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                            geocoder.getFromLocation(location.latitude, location.longitude, 1, @Suppress("RedundantSamConstructor") object : Geocoder.GeocodeListener {
-                                override fun onGeocode(addresses: MutableList<android.location.Address>) {
-                                    if (addresses.isNotEmpty()) {
-                                        val address = addresses[0]
-                                        val city = address.locality ?: address.subAdminArea
-                                        val country = address.countryName
-                                        locationName = if (city != null && country != null) "$city, $country"
-                                        else city ?: country ?: "Current Location"
-                                    }
-                                }
-                            })
-                        } else {
-                            @Suppress("DEPRECATION")
-                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                            if (addresses != null && addresses.isNotEmpty()) {
-                                val address = addresses[0]
-                                val city = address.locality ?: address.subAdminArea
-                                val country = address.countryName
-                                locationName = if (city != null && country != null) "$city, $country"
-                                else city ?: country ?: "Current Location"
-                            }
-                        }
-                    } catch (e: Exception) {
-                        locationName = "Current Location"
-                    }
-                }
-
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        handleLocation(location)
-                    } else {
-                        try {
-                            fusedLocationClient.getCurrentLocation(
-                                com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
-                                null
-                            ).addOnSuccessListener { freshLocation ->
-                                if (freshLocation != null) {
-                                    handleLocation(freshLocation)
-                                } else {
-                                    locationName = "Location Signal Weak"
-                                }
-                            }.addOnFailureListener {
-                                locationName = "Location Signal Weak"
-                            }
-                        } catch (e: Exception) {
-                            locationName = "Location Signal Weak"
-                        }
-                    }
-                }
-            } catch (e: SecurityException) {
-                // Ignored
-            }
+            viewModel.fetchCurrentLocation()
         } else {
             locationPermissionState.launchMultiplePermissionRequest()
         }

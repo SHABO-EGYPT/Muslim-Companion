@@ -78,4 +78,39 @@ class FakeDao : CompanionDao {
     override suspend fun getQuranAyahCount(): Int {
         return _quranAyahs.value.size
     }
+
+    private val _customChains = MutableStateFlow<List<CustomDhikrChainEntity>>(emptyList())
+
+    override fun getAllCustomChainsFlow(): Flow<List<CustomDhikrChainEntity>> = _customChains
+
+    override suspend fun getCustomChainById(id: Int): CustomDhikrChainEntity? {
+        return _customChains.value.find { it.id == id }
+    }
+
+    override suspend fun insertCustomChain(chain: CustomDhikrChainEntity): Long {
+        val current = _customChains.value.toMutableList()
+        val assignedId = if (chain.id == 0) current.size + 1 else chain.id
+        val updated = chain.copy(id = assignedId)
+        val idx = current.indexOfFirst { it.id == assignedId }
+        if (idx >= 0) current[idx] = updated else current.add(updated)
+        _customChains.value = current
+        return assignedId.toLong()
+    }
+
+    override suspend fun updateCustomChain(chain: CustomDhikrChainEntity) {
+        val current = _customChains.value.toMutableList()
+        val idx = current.indexOfFirst { it.id == chain.id }
+        if (idx >= 0) {
+            current[idx] = chain
+            _customChains.value = current
+        }
+    }
+
+    override suspend fun deleteCustomChain(chain: CustomDhikrChainEntity) {
+        _customChains.value = _customChains.value.filterNot { it.id == chain.id }
+    }
+
+    override suspend fun deleteCustomChainById(id: Int) {
+        _customChains.value = _customChains.value.filterNot { it.id == id }
+    }
 }

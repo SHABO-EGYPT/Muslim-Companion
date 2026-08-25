@@ -35,27 +35,41 @@ open class CompanionRepository(
     }
 
     open suspend fun refreshPrayerTimesByLocation(latitude: Double, longitude: Double) {
+        val settings = dao.getSettingsDirect() ?: AppSettingEntity()
         try {
-            val settings = dao.getSettingsDirect() ?: AppSettingEntity()
             val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
             val formatter = SimpleDateFormat("dd-MM-yyyy", Locale.US)
             val response = prayerApi.getTimings(formatter.format(Date()), latitude, longitude, methodId)
             savePrayerTimes(response.data.timings)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to refresh prayer times by location ($latitude, $longitude)", e)
-            throw e
+            Log.w(TAG, "Online prayer fetch failed for ($latitude, $longitude). Using offline astronomical calculation fallback.", e)
+            val offlineTimes = com.example.data.prayer.OfflinePrayerCalculator.calculate(
+                date = LocalDate.now(),
+                latitude = latitude,
+                longitude = longitude,
+                methodName = settings.calculationMethod
+            )
+            savePrayerTimes(offlineTimes)
         }
     }
 
     open suspend fun refreshPrayerTimes(city: String = "Cairo", country: String = "Egypt") {
+        val settings = dao.getSettingsDirect() ?: AppSettingEntity()
         try {
-            val settings = dao.getSettingsDirect() ?: AppSettingEntity()
             val methodId = CalculationMethodMapper.getMethodId(settings.calculationMethod)
             val response = prayerApi.getTimingsByCity(city, country, methodId)
             savePrayerTimes(response.data.timings)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to refresh prayer times for $city, $country", e)
-            throw e
+            Log.w(TAG, "Failed to refresh online prayer times for $city, $country. Using offline calculation fallback.", e)
+            // Default Cairo coordinates: 30.0444, 31.2357
+            val (lat, lng) = if (city.equals("Cairo", ignoreCase = true)) 30.0444 to 31.2357 else 21.3891 to 39.8579
+            val offlineTimes = com.example.data.prayer.OfflinePrayerCalculator.calculate(
+                date = LocalDate.now(),
+                latitude = lat,
+                longitude = lng,
+                methodName = settings.calculationMethod
+            )
+            savePrayerTimes(offlineTimes)
         }
     }
 

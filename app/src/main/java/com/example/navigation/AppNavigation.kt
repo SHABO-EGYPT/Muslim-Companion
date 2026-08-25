@@ -27,6 +27,7 @@ import com.example.viewmodel.NotificationsViewModel
 import com.example.viewmodel.QiblaViewModel
 import com.example.viewmodel.NamesOfAllahViewModel
 import com.example.viewmodel.QuranicDuasViewModel
+import com.example.viewmodel.CustomDhikrViewModel
 
 import com.example.ui.screens.LoadingScreen
 import com.example.ui.screens.HomeScreen
@@ -43,6 +44,9 @@ import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.NotificationsScreen
 import com.example.ui.screens.NamesOfAllahScreen
 import com.example.ui.screens.QuranicDuasScreen
+import com.example.ui.screens.CustomDhikrChainsScreen
+import com.example.ui.screens.CreateCustomChainScreen
+import com.example.ui.screens.ReciteCustomChainScreen
 import com.example.ui.QiblaCompassScreen
 
 @Composable
@@ -50,6 +54,7 @@ fun AppNavHost(navController: NavHostController, mainViewModel: MainViewModel) {
     // Scoped to the Activity's ViewModelStoreOwner so it remains shared across HomeScreen and Quran screens.
     val azkarViewModel: AzkarViewModel = hiltViewModel()
     val surahReaderViewModel: SurahReaderViewModel = hiltViewModel()
+    val customDhikrViewModel: CustomDhikrViewModel = hiltViewModel()
 
     val userProgress by mainViewModel.userProgress.collectAsStateWithLifecycle()
     val startDestination = if (userProgress?.onboardingCompleted == true) Routes.HOME else Routes.ONBOARDING
@@ -169,6 +174,40 @@ fun AppNavHost(navController: NavHostController, mainViewModel: MainViewModel) {
             com.example.ui.screens.QuranicDuasScreen(
                 viewModel = quranicDuasViewModel,
                 onBack = { navController.popBackStack() }
+            )
+        }
+        composable(Routes.CUSTOM_CHAINS) {
+            CustomDhikrChainsScreen(
+                viewModel = customDhikrViewModel,
+                navController = navController
+            )
+        }
+        composable(Routes.CREATE_CUSTOM_CHAIN) {
+            CreateCustomChainScreen(
+                viewModel = customDhikrViewModel,
+                navController = navController
+            )
+        }
+        composable(
+            route = "${Routes.RECITE_CUSTOM_CHAIN}?chainId={chainId}",
+            arguments = listOf(
+                androidx.navigation.navArgument("chainId") {
+                    type = androidx.navigation.NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) { backStackEntry ->
+            val chainId = backStackEntry.arguments?.getInt("chainId")?.takeIf { it > 0 }
+            ReciteCustomChainScreen(
+                viewModel = customDhikrViewModel,
+                chainId = chainId,
+                navController = navController
+            )
+        }
+        composable(Routes.RECITE_CUSTOM_CHAIN) {
+            ReciteCustomChainScreen(
+                viewModel = customDhikrViewModel,
+                navController = navController
             )
         }
     }

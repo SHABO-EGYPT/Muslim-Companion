@@ -85,6 +85,37 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                 }
             }
 
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { navController.navigate(Routes.CUSTOM_CHAINS) }.testTag("promoted_custom_chains_card"),
+                    shape = MaterialTheme.shapes.medium,
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6))
+                ) {
+                    Row(modifier = Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(modifier = Modifier.size(48.dp).background(Color(0xFF673AB7).copy(alpha = 0.15f), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) {
+                                Icon(imageVector = Lucide.Sparkles, contentDescription = "Custom Chains", tint = Color(0xFF673AB7))
+                            }
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(
+                                    text = if (settings.language == "Arabic") "سلاسل الأذكار المخصصة" else "Custom Dhikr Chains",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = Color(0xFF673AB7)
+                                )
+                                Text(
+                                    text = if (settings.language == "Arabic") "بناء ومتابعة سلاسل وورد التسبيح اليومي" else "Create and recite custom Dhikr sequences",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF673AB7).copy(alpha = 0.8f)
+                                )
+                            }
+                        }
+                        val chainChevron = if (androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl) Lucide.ChevronLeft else Lucide.ChevronRight
+                        Icon(imageVector = chainChevron, contentDescription = "Open", tint = Color(0xFF673AB7))
+                    }
+                }
+            }
+
             items(categories) { cat ->
                 val isDark = settings.darkTheme || androidx.compose.foundation.isSystemInDarkTheme()
                 val (boxBg, iconTint) = when (cat.iconName) {
