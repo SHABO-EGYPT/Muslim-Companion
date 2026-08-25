@@ -33,7 +33,7 @@ class QuranAudioManager(private val context: Context) {
          */
         val RECITER_PATHS: Map<String, String> = mapOf(
             "ar.alafasy"           to "mishaari_raashid_al_3afaasee",
-            "ar.abdulbasitmurattal" to "abdul_baset/murattal",
+            "ar.abdulbasitmurattal" to "abdul_basit_murattal",
             "ar.husary"            to "mahmood_khaleel_al-husaree",
             "ar.minshawimujawwad"  to "muhammad_siddeeq_al-minshaawee"
         )

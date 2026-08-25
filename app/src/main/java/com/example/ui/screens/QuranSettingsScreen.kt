@@ -174,13 +174,13 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
 
             Column {
                 Text(
-                    text = Translator.translate("offline_recitation", settings.language),
+                    text = Translator.translate("reciter", settings.language),
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = Translator.translate("download_recitation_desc", settings.language),
+                    text = Translator.translate("reciter_desc", settings.language),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

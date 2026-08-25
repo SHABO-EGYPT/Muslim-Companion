@@ -33,6 +33,7 @@ class FakeDao : CompanionDao {
     override fun getCachedAyahsFlow(surahNumber: Int, reciter: String): Flow<List<CachedAyahEntity>> = MutableStateFlow(emptyList())
     override suspend fun getCachedAyahs(surahNumber: Int, reciter: String): List<CachedAyahEntity> = emptyList()
     override suspend fun insertCachedAyahs(ayahs: List<CachedAyahEntity>) {}
+    override suspend fun deleteCachedAyahsForReciter(reciter: String) {}
 
     override fun getCachedSurahsFlow(): Flow<List<CachedSurahEntity>> = _surahs
     override suspend fun getCachedSurahsDirect(): List<CachedSurahEntity> = _surahs.value

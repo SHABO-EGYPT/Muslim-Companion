@@ -179,6 +179,6 @@ fun getQuranFontFamily(fontName: String): FontFamily {
         "Amiri Quran" -> FontFamily(Font(com.example.R.font.amiri_quran))
         "Scheherazade New" -> FontFamily(Font(com.example.R.font.scheherazade_new))
         "Noto Naskh Arabic" -> FontFamily(Font(com.example.R.font.noto_naskh_arabic))
-        else -> FontFamily.Default
+        else -> FontFamily(Font(com.example.R.font.noto_naskh_arabic))
     }
 }

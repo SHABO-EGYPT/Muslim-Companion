@@ -119,9 +119,9 @@ class OfflineQuranRepository(
                 // Fetch verse audio URLs
                 val numericReciterId = when (reciter) {
                     "ar.alafasy" -> 7
-                    "ar.abdulbasitmurattal" -> 1
-                    "ar.husary" -> 5
-                    "ar.minshawimujawwad" -> 12
+                    "ar.abdulbasitmurattal" -> 2
+                    "ar.husary" -> 6
+                    "ar.minshawimujawwad" -> 8
                     else -> if (reciter.all { it.isDigit() }) reciter.toInt() else 7
                 }
                 val audioResponse = try {

@@ -87,10 +87,10 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
     private val categoryPriority = listOf(
         "أذكار الصباح",
         "أذكار المساء",
-        "أذكار بعد السلام من الصلاة المفروضة",
         "أذكار بعد الصلاة",
         "أذكار الاستيقاظ",
         "أذكار النوم",
+        "أدعية تفريج الكرب",
         "دعاء الاستخارة",
         "دعاء للمريض"
     )
@@ -136,6 +136,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     "أذكار النوم" -> "Sleep Azkar"
                     "أذكار بعد الصلاة", "أذكار بعد السلام من الصلاة المفروضة" -> "Post-Prayer Azkar"
                     "أذكار الاستيقاظ" -> "Wakeup Azkar"
+                    "أدعية تفريج الكرب" -> "Duas for Relieving Distress"
                     "دعاء الاستخارة" -> "Dua Al-Istikhara"
                     "دعاء للمريض" -> "Dua for the Sick"
                     else -> name

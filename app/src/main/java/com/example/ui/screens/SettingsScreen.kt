@@ -28,7 +28,6 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
     val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showSoundTypeDialog by remember { mutableStateOf(false) }
-    var showReciterDialog by remember { mutableStateOf(false) }
     var showCalculationDialog by remember { mutableStateOf(false) }
     var showTextSizeDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
@@ -94,35 +93,6 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
         )
     }
 
-    if (showReciterDialog) {
-        AlertDialog(
-            onDismissRequest = { showReciterDialog = false },
-            title = { Text(text = Translator.translate("reciter", settings.language), style = MaterialTheme.typography.titleLarge) },
-            text = {
-                Column {
-                    listOf("ar.alafasy", "ar.abdulbasitmurattal", "ar.husary", "ar.minshawimujawwad").forEach { reciterId ->
-                        val reciterKey = when(reciterId) {
-                            "ar.alafasy" -> "mishary_alafasy"
-                            "ar.abdulbasitmurattal" -> "abdul_basit"
-                            "ar.husary" -> "al_husary"
-                            "ar.minshawimujawwad" -> "minshawi"
-                            else -> reciterId
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth().clickable { viewModel.updateReciter(reciterId); showReciterDialog = false }.padding(vertical = 12.dp, horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(selected = settings.quranReciter == reciterId, onClick = { viewModel.updateReciter(reciterId); showReciterDialog = false })
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(text = Translator.translate(reciterKey, settings.language), style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-                }
-            },
-            confirmButton = {},
-            dismissButton = { TextButton(onClick = { showReciterDialog = false }) { Text(Translator.translate("cancel", settings.language)) } }
-        )
-    }
 
     if (showCalculationDialog) {
         AlertDialog(
@@ -324,24 +294,7 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
             }
 
-            item {
-                Row(modifier = Modifier.fillMaxWidth().clickable { showReciterDialog = true }.padding(vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = Translator.translate("reciter", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        val reciterKey = when(settings.quranReciter) {
-                            "ar.alafasy" -> "mishary_alafasy"
-                            "ar.abdulbasitmurattal" -> "abdul_basit"
-                            "ar.husary" -> "al_husary"
-                            "ar.minshawimujawwad" -> "minshawi"
-                            else -> settings.quranReciter
-                        }
-                        Text(text = Translator.translate(reciterKey, settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Icon(imageVector = chevron, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
-                    }
-                }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
-            }
+
 
             item {
                 Row(modifier = Modifier.fillMaxWidth().clickable { showCalculationDialog = true }.padding(vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {

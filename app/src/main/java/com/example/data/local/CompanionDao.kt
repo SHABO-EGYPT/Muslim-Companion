@@ -50,6 +50,9 @@ interface CompanionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCachedAyahs(ayahs: List<CachedAyahEntity>)
 
+    @Query("DELETE FROM cached_ayahs WHERE reciter = :reciter")
+    suspend fun deleteCachedAyahsForReciter(reciter: String)
+
     @Query("SELECT * FROM cached_surahs ORDER BY number ASC")
     fun getCachedSurahsFlow(): Flow<List<CachedSurahEntity>>
 
