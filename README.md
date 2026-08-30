@@ -28,10 +28,19 @@
 
 ## ✨ What's New in v1.7.0
 
+- 📖 **Quran Juz' (الأجزاء), Hizb (الأحزاب), & Rub' (أرباع القرآن) Indicators & Navigation:**
+  - **Surahs vs. Juz' Tabs:** Browse all 30 Juz' with starting and ending Surah/Ayah coordinates, opening directly to the start of any Juz.
+  - **In-Reader Decorative Banners (`QuranDivisionBanner`):** Elegant Islamic ornaments marking the start of each Juz (`۞ الجزء ۞`), Hizb (`۞ الحزب ۞`), and quarter (`ربع` / `نصف` / `ثلاثة أرباع`).
+  - **Dynamic Reader Header:** Real-time subtitle tracking the reader's current Surah, Juz, and Hizb.
+- ۩ **Authentic Sujud al-Tilawah (سجدات التلاوة) & Du'a Modal:**
+  - Distinctive gold badges (`۩ سجدة تلاوة`) displayed on all 15 Sajdah verses across the Quran.
+  - Interactive bottom sheet displaying authentic Prophetic supplications for Sajdah with one-tap clipboard copy.
+- 🔤 **Dynamic App-Wide Font Size Scaling:**
+  - Real-time typography scaling (**Small / Medium / Large**) applied instantly across all app screens, Azkar cards, and UI components via Compose `Density.fontScale`.
 - 📿 **Custom Dhikr Chains ("سلاسل الأذكار المخصصة"):** Build, customize, and save personal sequences of Dhikr (selecting from common phrases or adding custom entries, setting target counts with 1-by-1 steppers, and reciting them in an auto-advancing, full-screen Tasbih flow with haptic feedback).
 - ☀️ **100% Offline Astronomical Solar Geometry Calculation Engine:** High-precision astronomical algorithms calculate all 5 daily prayer times without requiring an internet connection across 14 recognized calculation authorities (Egyptian General Authority, Umm Al-Qura University Makkah, Muslim World League, ISNA, Karachi, Kuwait, Qatar, France, Turkey, Singapore, Russia, etc.).
 - 📍 **Centralized Location Architecture:** Lifecycle-safe `LocationRepository` uniting multi-tier GPS resolution (`lastLocation` $\to$ `getCurrentLocation(HIGH_ACCURACY)` $\to$ asynchronous `Geocoder` on `Dispatchers.IO`) across all screens.
-- 🎙️ **Authentic Recitation CDN Updates:** Fixed recitation mappings for Sheikh Mahmoud Khalil Al-Husary, Sheikh Mohamed Siddiq Al-Minshawi (Mujawwad), and Sheikh AbdulBaset AbdulSamad.
+- 🎙️ **Authentic Recitation CDN Updates:** Recitation audio mapping for Sheikh Mishary Rashid Alafasy, Sheikh Mahmoud Khalil Al-Husary, Sheikh Mohamed Siddiq Al-Minshawi (Mujawwad), and Sheikh AbdulBaset AbdulSamad.
 - 🖋️ **Arabic Typography & RTL Enhancements:** Bound `ArabicSerifFamily` to bundled Noto Naskh Arabic font with strict RTL text alignment across Android 14+.
 - 🗄️ **Room Database Migration v29:** Seamless, safe migration adding `custom_dhikr_chains` table with zero user data loss.
 
@@ -40,7 +49,10 @@
 ## Key Features
 
 ### 📖 Quran Surah Reader & Recitation
-- **Offline-First Storage:** Integrated Room SQLite database loaded with authentic Uthmani Arabic scripture.
+- **Offline-First Structure & Divisions:** Comprehensive offline data model for all 30 Juz', 60 Hizbs, 240 Quarters, and 15 Sujud al-Tilawah positions.
+- **Juz' & Surah Navigation:** Switch between Surahs and Juz' tabs with real-time search and instant jumping.
+- **Sajdah al-Tilawah Annotations:** Interactive Sajdah pill badges with authentic prophetic supplications.
+- **Offline-First Scripture Storage:** Integrated Room SQLite database pre-bundled with 6,236 Ayahs of authentic Uthmani Arabic scripture.
 - **Dual Script & Translations:** Parallel rendering of Arabic text and English translations from Quran.com.
 - **Offline & Gapless Audio Recitation:** Integrated with AndroidX **Media3 (ExoPlayer)** and `MediaSessionService` supporting major reciters:
   - Sheikh Mishary Rashid Alafasy (مشاري العفاسي)

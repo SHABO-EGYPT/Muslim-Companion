@@ -52,6 +52,7 @@ val CompanionShapes = Shapes(
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    textSize: String = "Medium",
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false, // Seed with primary color #0B6E5E by default, override with system dynamic color if desired
     content: @Composable () -> Unit,
@@ -65,6 +66,18 @@ fun MyApplicationTheme(
         else -> LightColorScheme
     }
 
+    val fontScaleMultiplier = when (textSize.trim().lowercase()) {
+        "small" -> 0.85f
+        "large" -> 1.20f
+        else -> 1.0f
+    }
+
+    val currentDensity = androidx.compose.ui.platform.LocalDensity.current
+    val customDensity = androidx.compose.ui.unit.Density(
+        density = currentDensity.density,
+        fontScale = currentDensity.fontScale * fontScaleMultiplier
+    )
+
     val view = androidx.compose.ui.platform.LocalView.current
     if (!view.isInEditMode) {
         androidx.compose.runtime.SideEffect {
@@ -76,11 +89,15 @@ fun MyApplicationTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        shapes = CompanionShapes,
-        content = content
-    )
+    androidx.compose.runtime.CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalDensity provides customDensity
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            shapes = CompanionShapes,
+            content = content
+        )
+    }
 }
 

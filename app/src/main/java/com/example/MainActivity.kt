@@ -69,10 +69,11 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            val settingsState = mainViewModel.settings.collectAsStateWithLifecycle()
-            val isDarkTheme = settingsState.value.darkTheme
+            val settingsState by mainViewModel.settings.collectAsStateWithLifecycle()
+            val isDarkTheme = settingsState.darkTheme
+            val textSize = settingsState.textSize
 
-            MyApplicationTheme(darkTheme = isDarkTheme) {
+            MyApplicationTheme(darkTheme = isDarkTheme, textSize = textSize) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     val backgroundImage = if (isDarkTheme) R.drawable.app_bg_dark else R.drawable.app_bg_light
                     Image(

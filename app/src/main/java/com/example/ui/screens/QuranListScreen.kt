@@ -47,6 +47,8 @@ import com.example.viewmodel.QuranViewModel
 import com.example.viewmodel.SurahReaderViewModel
 import com.example.viewmodel.SurahsLoadState
 
+import com.example.data.quran.QuranStructureData
+
 @Composable
 fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewModel, navController: NavHostController) {
     val query by viewModel.searchQuery.collectAsStateWithLifecycle()
@@ -56,6 +58,24 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
     val settings by readerViewModel.quranSettings.collectAsStateWithLifecycle() // Using quranSettings as settings
     val loadState by viewModel.surahsLoadState.collectAsStateWithLifecycle()
     var showQuranSettings by remember { mutableStateOf(false) }
+    var selectedTab by remember { mutableIntStateOf(0) } // 0 = Surahs, 1 = Juz'
+
+    val filteredJuz = remember(query) {
+        if (query.isBlank()) {
+            QuranStructureData.ALL_JUZ
+        } else {
+            val q = query.trim()
+            QuranStructureData.ALL_JUZ.filter {
+                it.nameArabic.contains(q, ignoreCase = true) ||
+                it.nameEnglish.contains(q, ignoreCase = true) ||
+                it.number.toString() == q ||
+                it.startSurahNameArabic.contains(q, ignoreCase = true) ||
+                it.startSurahNameEnglish.contains(q, ignoreCase = true) ||
+                it.endSurahNameArabic.contains(q, ignoreCase = true) ||
+                it.endSurahNameEnglish.contains(q, ignoreCase = true)
+            }
+        }
+    }
 
     val listState = rememberLazyListState()
     val density = LocalDensity.current
@@ -260,76 +280,202 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
                         }
                     }
                 }
+                Spacer(modifier = Modifier.height(6.dp))
+
+                // Tab Switcher: Surahs vs Juz'
+                PrimaryTabRow(
+                    selectedTabIndex = selectedTab,
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    divider = {
+                        HorizontalDivider(
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
+                            thickness = 1.dp
+                        )
+                    },
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
+                    Tab(
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        text = {
+                            Text(
+                                text = Translator.translate("surahs_tab", settings.language),
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Medium
+                                )
+                            )
+                        }
+                    )
+                    Tab(
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        text = {
+                            Text(
+                                text = Translator.translate("juz_tab", settings.language),
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Medium
+                                )
+                            )
+                        }
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(10.dp))
             }
         }
 
-        when (val state = loadState) {
-            is SurahsLoadState.Loading -> {
-                Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(modifier = Modifier.testTag("surahs_loading_indicator"))
+        if (selectedTab == 0) {
+            // ── Surahs Tab ──────────────────────────────────────────────────────────
+            when (val state = loadState) {
+                is SurahsLoadState.Loading -> {
+                    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(modifier = Modifier.testTag("surahs_loading_indicator"))
+                    }
                 }
-            }
-            is SurahsLoadState.Error -> {
-                Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                    Text(text = state.message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.testTag("surahs_error_message"))
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.fetchSurahs() }, modifier = Modifier.testTag("surahs_retry_button")) { Text(Translator.translate("retry", settings.language)) }
+                is SurahsLoadState.Error -> {
+                    Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        Text(text = state.message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.testTag("surahs_error_message"))
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = { viewModel.fetchSurahs() }, modifier = Modifier.testTag("surahs_retry_button")) { Text(Translator.translate("retry", settings.language)) }
+                    }
                 }
-            }
-            is SurahsLoadState.Success -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth().weight(1f).testTag("surah_list_container"),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
-                    state = listState
-                ) {
-                    items(surahs) { surah ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).clickable { readerViewModel.setSurah(surah); navController.navigate(Routes.SURAH_READER) }.testTag("surah_row_${surah.number}"),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                is SurahsLoadState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth().weight(1f).testTag("surah_list_container"),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
+                        state = listState
+                    ) {
+                        items(surahs) { surah ->
+                            Card(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).clickable { readerViewModel.setSurah(surah); navController.navigate(Routes.SURAH_READER) }.testTag("surah_row_${surah.number}"),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
+                                shape = RoundedCornerShape(16.dp)
                             ) {
-                                val isDark = settings.darkTheme
-                                RubElHizbIcon(
-                                    number = surah.number, 
-                                    color = if (isDark) MintTeal.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                                    textColor = if (isDark) Color.White else MaterialTheme.colorScheme.primary
-                                )
-                                
-                                Spacer(modifier = Modifier.width(14.dp))
-
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = surah.arabicName, 
-                                        style = MaterialTheme.typography.titleLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 24.sp), 
-                                        color = MaterialTheme.colorScheme.onSurface, 
-                                        textAlign = TextAlign.Center
+                                    val isDark = settings.darkTheme
+                                    RubElHizbIcon(
+                                        number = surah.number, 
+                                        color = if (isDark) MintTeal.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                        textColor = if (isDark) Color.White else MaterialTheme.colorScheme.primary
                                     )
-                                    Text(
-                                        text = surah.name, 
-                                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), 
-                                        color = MaterialTheme.colorScheme.onSurface, 
-                                        textAlign = TextAlign.Center
-                                    )
-                                    Text(
-                                        text = "${surah.meaning} · ${surah.ayahsCount} ${Translator.translate("ayahs", settings.language)}",
-                                        style = MaterialTheme.typography.bodySmall, 
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant, 
-                                        textAlign = TextAlign.Center
-                                    )
+                                    
+                                    Spacer(modifier = Modifier.width(14.dp))
+
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = surah.arabicName, 
+                                            style = MaterialTheme.typography.titleLarge.copy(fontFamily = ArabicSerifFamily, fontSize = 24.sp), 
+                                            color = MaterialTheme.colorScheme.onSurface, 
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = surah.name, 
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), 
+                                            color = MaterialTheme.colorScheme.onSurface, 
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = "${surah.meaning} · ${surah.ayahsCount} ${Translator.translate("ayahs", settings.language)}",
+                                            style = MaterialTheme.typography.bodySmall, 
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                    
+                                    Spacer(modifier = Modifier.width(54.dp))
                                 }
-                                
-                                Spacer(modifier = Modifier.width(54.dp))
                             }
+                        }
+                    }
+                }
+            }
+        } else {
+            // ── Juz' Tab ────────────────────────────────────────────────────────────
+            val isArabic = settings.language == "Arabic"
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f).testTag("juz_list_container"),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
+                state = listState
+            ) {
+                items(filteredJuz) { juz ->
+                    val isDark = settings.darkTheme
+                    val startSurahName = if (isArabic) "سورة ${juz.startSurahNameArabic}" else "Surah ${juz.startSurahNameEnglish}"
+                    val endSurahName = if (isArabic) "سورة ${juz.endSurahNameArabic}" else "Surah ${juz.endSurahNameEnglish}"
+                    val juzTitle = if (isArabic) "الجزء ${QuranStructureData.toArabicNumber(juz.number)}: ${juz.nameArabic}" else "Juz ${juz.number}: ${juz.nameEnglish}"
+                    val rangeText = if (isArabic) {
+                        "$startSurahName (${juz.startAyahNumber}) ← $endSurahName (${juz.endAyahNumber})"
+                    } else {
+                        "$startSurahName (Ayah ${juz.startAyahNumber}) → $endSurahName (Ayah ${juz.endAyahNumber})"
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp)
+                            .clickable {
+                                val targetSurah = surahs.find { it.number == juz.startSurahNumber }
+                                    ?: Surah(
+                                        number = juz.startSurahNumber,
+                                        name = juz.startSurahNameEnglish,
+                                        meaning = "",
+                                        ayahsCount = 0,
+                                        arabicName = juz.startSurahNameArabic,
+                                        isMakki = true
+                                    )
+                                readerViewModel.setSurah(targetSurah, startAyah = juz.startAyahNumber)
+                                navController.navigate(Routes.SURAH_READER)
+                            }
+                            .testTag("juz_row_${juz.number}"),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RubElHizbIcon(
+                                number = juz.number,
+                                color = if (isDark) MintTeal.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
+                                textColor = if (isDark) Color.White else MaterialTheme.colorScheme.primary
+                            )
+
+                            Spacer(modifier = Modifier.width(14.dp))
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = juzTitle,
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontFamily = if (isArabic) ArabicSerifFamily else null,
+                                        fontSize = if (isArabic) 22.sp else 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = rangeText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(54.dp))
                         }
                     }
                 }

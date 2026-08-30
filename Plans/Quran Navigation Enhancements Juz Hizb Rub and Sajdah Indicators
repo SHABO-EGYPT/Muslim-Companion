@@ -1,0 +1,87 @@
+# Quran Navigation Enhancements: Juz', Hizb, Rub', and Sajdah Indicators
+
+This plan details the implementation of comprehensive Quranic divisions and annotations:
+1. **Juz' (الجزء)** & **Hizb (الحزب)** & **Rub' (ربع الحزب)** in-reader decorative division banners.
+2. **Sajdah (سجدة التلاوة ۩)** visual badges and interactive Du'a bottom sheet.
+3. **Juz' Browser Tab** on the main Quran screen ([`QuranListScreen.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/QuranListScreen.kt)) allowing direct navigation by the 30 Juz'.
+4. **Reader Header Subtitle** indicating the current Juz' and Hizb dynamically.
+
+---
+
+## User Review Required
+
+> [!NOTE]
+> All underlying data calculations (240 quarters, 60 hizbs, 30 juz', and 15 sajdahs) run **100% offline** with $O(1)$ lookup time using the existing [`MadaniDataSource`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/quran/MadaniDataSource.kt). No network or database migration is required.
+
+---
+
+## Proposed Changes
+
+### Data & Logic Layer
+
+#### [NEW] [`QuranStructureData.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/quran/QuranStructureData.kt)
+- Create data models & helper functions:
+  - `data class JuzInfo(val number: Int, val nameArabic: String, val nameEnglish: String, val startSurah: Int, val startAyah: Int, val endSurah: Int, val endAyah: Int)`
+  - `data class SajdahInfo(val surahNumber: Int, val ayahNumber: Int, val number: Int, val isObligatory: Boolean = false)`
+  - `enum class RubType { JUZ_START, HIZB_START, RUB_FIRST, NISF_HIZB, THULUTH_HIZB }`
+  - `data class QuranDivisionMarker(val juzNumber: Int, val hizbNumber: Int, val rubType: RubType, val titleArabic: String, val titleEnglish: String)`
+  - Lookup functions:
+    - `getDivisionMarkerForAyah(surah: Int, ayah: Int): QuranDivisionMarker?`
+    - `getSajdahForAyah(surah: Int, ayah: Int): SajdahInfo?`
+    - `getJuzAndHizbForAyah(surah: Int, ayah: Int): Pair<Int, Int>`
+    - `ALL_30_JUZ: List<JuzInfo>` (Complete metadata for all 30 Juz').
+    - `ALL_15_SAJDAHS: List<SajdahInfo>` (Complete 15 Sajdah positions).
+
+---
+
+### UI Components
+
+#### [NEW] [`QuranDivisionBanner.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/components/QuranDivisionBanner.kt)
+- Decorative Islamic banner displayed in the reader before an Ayah that starts a new Juz, Hizb, or Rub:
+  - Gradient background with Islamic floral/corner accents.
+  - Distinct styling for **Juz' Start** (prominent gold/teal header), **Hizb Start**, and **Quarter (ربع الحزب)**.
+  - Bilingual support based on active language setting.
+
+#### [NEW] [`SajdahBottomSheet.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/components/SajdahBottomSheet.kt)
+- BottomSheet modal displayed when the user taps on a `۩ سجدة تلاوة` badge:
+  - Explains the Sunnah of Sujud al-Tilawah.
+  - Displays the authentic prophetic supplication in clear Arabic script with translation:
+    - *«سَجَدَ وَجْهِي لِلَّذِي خَلَقَهُ وَشَقَّ سَمْعَهُ وَبَصَرَهُ بِحَوْلِهِ وَقُوَّتِهِ...»*
+  - Includes a copy-to-clipboard button.
+
+---
+
+### Screen Enhancements
+
+#### [MODIFY] [`SurahReaderScreen.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/SurahReaderScreen.kt)
+- Dynamic Header Subtitle: Show active Juz' & Hizb alongside the Surah meaning (e.g. *سورة البقرة · الجزء ٢ · الحزب ٣*).
+- Check `getDivisionMarkerForAyah(surah, ayah)`: Insert [`QuranDivisionBanner`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/components/QuranDivisionBanner.kt) directly above the Ayah.
+- Check `getSajdahForAyah(surah, ayah)`: Render an interactive `۩ سجدة تلاوة` pill badge above/beside the verse text. Tapping opens [`SajdahBottomSheet`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/components/SajdahBottomSheet.kt).
+
+#### [MODIFY] [`QuranListScreen.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/QuranListScreen.kt)
+- Add top tab switcher: **السور (Surahs)** vs **الأجزاء (Juz')**.
+- In the **Juz' Tab**:
+  - List all 30 Juz' cards with their Arabic names, start/end references, and verse counts.
+  - Searchable by Juz' name or number.
+  - Tapping a Juz opens [`SurahReaderScreen`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/SurahReaderScreen.kt) directly at that Juz's starting Surah and Ayah.
+
+#### [MODIFY] [`Translator.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/Translator.kt)
+- Add translation keys for:
+  - `juz`, `hizb`, `rub_el_hizb`, `nisf_el_hizb`, `thuluth_el_hizb`, `sajdah`, `sajdah_desc`, `sajdah_dua`, `surahs_tab`, `juz_tab`, etc.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Create [`QuranStructureTest.kt`](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/test/java/com/example/data/quran/QuranStructureTest.kt):
+  - Verify all 30 Juz' starting coordinates match `MadaniDataSource`.
+  - Verify all 15 Sajdah positions resolve correctly.
+  - Verify division marker resolution for known milestones (e.g. Al-Baqarah 142 -> Juz 2 Start / Hizb 3 Start).
+- Run `./gradlew testDebugUnitTest` to verify all unit tests pass.
+- Run `./gradlew assembleDebug` to verify compilation.
+
+### Manual Verification
+- Open Quran reader in Surah Al-Baqarah -> scroll to Ayah 142 -> observe Juz 2 / Hizb 3 divider banner.
+- Open Surah Al-A'raf -> scroll to Ayah 206 -> verify `۩ سجدة تلاوة` badge appears and clicking it opens the Sajdah Du'a dialog.
+- Switch to Juz' tab on `QuranListScreen` -> tap Juz 30 (Amma) -> verify it opens Surah An-Naba at Ayah 1.

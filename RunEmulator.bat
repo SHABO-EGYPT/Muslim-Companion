@@ -10,6 +10,6 @@ echo Building and installing the app...
 call gradlew installDebug
 
 echo Launching the app...
-"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb" shell am start -n com.muslim.companion/com.example.MainActivity
+"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb" shell am start -n com.companion.muslim.app/com.example.MainActivity
 
 echo Done!

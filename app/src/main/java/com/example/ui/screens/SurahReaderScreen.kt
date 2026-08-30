@@ -47,6 +47,8 @@ import com.example.ui.components.*
 import com.example.ui.theme.*
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.distinctUntilChanged
+import com.example.data.quran.QuranStructureData
+import com.example.data.quran.SajdahInfo
 import com.example.viewmodel.ReaderLoadState
 import com.example.viewmodel.SurahReaderViewModel
 
@@ -86,12 +88,25 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
     val currentAyahNumber by viewModel.currentPlayingAyah.collectAsState()
     val reciters = viewModel.recitersList
 
-
     val isPlaying by viewModel.isPlaying.collectAsState()
 
     var showAyahMenu by remember { mutableStateOf(false) }
     var menuOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedAyahForMenu by remember { mutableStateOf<com.example.domain.model.Ayah?>(null) }
+    var selectedSajdahForModal by remember { mutableStateOf<SajdahInfo?>(null) }
+
+    val (currentJuz, currentHizb) = remember(activeSurah.number, currentAyahNumber, progress.lastReadAyahNumber) {
+        val activeAyah = currentAyahNumber ?: progress.lastReadAyahNumber.takeIf { it > 0 } ?: 1
+        QuranStructureData.getJuzAndHizbForAyah(activeSurah.number, activeAyah)
+    }
+
+    val juzText = if (settings.language == "Arabic") "الجزء ${QuranStructureData.toArabicNumber(currentJuz)}" else "Juz $currentJuz"
+    val hizbText = if (settings.language == "Arabic") "الحزب ${QuranStructureData.toArabicNumber(currentHizb)}" else "Hizb $currentHizb"
+    val headerSubtitle = if (activeSurah.meaning.isNotBlank()) {
+        "${activeSurah.meaning} · $juzText · $hizbText"
+    } else {
+        "$juzText · $hizbText"
+    }
 
     val context = LocalContext.current
     val activity = context as? Activity
@@ -112,7 +127,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
         Column(modifier = Modifier.fillMaxSize()) {
             AppHeader(
                 title = headerTitle,
-                subtitle = "${activeSurah.meaning} · ${activeSurah.ayahsCount} ${Translator.translate("ayahs", settings.language)}",
+                subtitle = headerSubtitle,
                 onBack = { navController.popBackStack() },
                 rightContent = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -228,6 +243,13 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                         itemsIndexed(ayahs) { index, ayah ->
                             val isPlayingThis = currentAyahNumber == ayah.number
                             val opacity = if (isPlaying && !isPlayingThis) 0.4f else 1.0f
+
+                            val divisionMarker = remember(activeSurah.number, ayah.number) {
+                                QuranStructureData.getDivisionMarkerForAyah(activeSurah.number, ayah.number)
+                            }
+                            val sajdahInfo = remember(activeSurah.number, ayah.number) {
+                                QuranStructureData.getSajdahForAyah(activeSurah.number, ayah.number)
+                            }
                             
                             val cleanedText = if (ayah.number == 1 && activeSurah.number != 1 && activeSurah.number != 9) {
                                 if (ayah.arabicText.contains("بِسْمِ")) {
@@ -258,7 +280,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 12.dp)
+                                    .padding(vertical = 8.dp)
                                     .alpha(opacity)
                                     .pointerInput(Unit) {
                                         detectTapGestures(
@@ -274,9 +296,17 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                     },
                                 horizontalAlignment = Alignment.Start
                             ) {
+                                // Division Banner (Juz / Hizb / Rub' Quarter)
+                                if (divisionMarker != null) {
+                                    QuranDivisionBanner(
+                                        marker = divisionMarker,
+                                        language = settings.language
+                                    )
+                                }
+
                                 if (isPlayingThis) {
                                     Row(
-                                        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                                         horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
@@ -285,6 +315,43 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                             style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                                             color = MaterialTheme.colorScheme.primary
                                         )
+                                    }
+                                }
+
+                                // Sajdah Badge
+                                if (sajdahInfo != null) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Surface(
+                                            onClick = { selectedSajdahForModal = sajdahInfo },
+                                            shape = RoundedCornerShape(100.dp),
+                                            color = Gold.copy(alpha = 0.15f),
+                                            border = BorderStroke(1.dp, Gold.copy(alpha = 0.6f)),
+                                            modifier = Modifier.padding(vertical = 2.dp)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = "۩",
+                                                    color = DarkGold,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 16.sp
+                                                )
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                                Text(
+                                                    text = Translator.translate("sajdah_badge", settings.language),
+                                                    style = MaterialTheme.typography.labelMedium.copy(
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = DarkGold,
+                                                        fontFamily = if (settings.language == "Arabic") ArabicSerifFamily else null
+                                                    )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                                 
@@ -384,5 +451,12 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
         }
     }
 
-
+    // Sajdah Modal
+    selectedSajdahForModal?.let { sajdah ->
+        SajdahBottomSheet(
+            sajdah = sajdah,
+            language = settings.language,
+            onDismiss = { selectedSajdahForModal = null }
+        )
+    }
 }
