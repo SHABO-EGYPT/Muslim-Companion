@@ -2,7 +2,7 @@
 
 # Muslim Companion (رفيق المسلم)
 
-[![Release](https://img.shields.io/badge/Release-v1.7.0-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
+[![Release](https://img.shields.io/badge/Release-v1.7.1-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
 [![License](https://img.shields.io/badge/License-100%25%20Free%20%26%20Ad--Free-blue.svg)](PRIVACY_POLICY.md)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-37%20(Android%2015+)-orange.svg)](https://developer.android.com)
 [![Package](https://img.shields.io/badge/Package-com.companion.muslim.app-teal.svg)](https://play.google.com/store)
@@ -26,7 +26,7 @@
 
 ---
 
-## ✨ What's New in v1.7.0
+## ✨ What's New in v1.7.1
 
 - 📖 **Quran Juz' (الأجزاء), Hizb (الأحزاب), & Rub' (أرباع القرآن) Indicators & Navigation:**
   - **Surahs vs. Juz' Tabs:** Browse all 30 Juz' with starting and ending Surah/Ayah coordinates, opening directly to the start of any Juz.
@@ -133,7 +133,7 @@
 ## Installation & Building
 
 ### 📲 Directly Installing the Pre-built APK
-1. Download the pre-built APK from the [APK](APK/) folder or GitHub Releases: `Muslim-Companion-1.7.0.apk`.
+1. Download the pre-built APK from the [APK](APK/) folder or GitHub Releases: `Muslim-Companion-1.7.1.apk`.
 2. Transfer to your Android device and install.
 
 ---
