@@ -411,6 +411,124 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                 }
                             }
                         }
+
+                        val nextSurahMetadata = if (activeSurah.number < 114) {
+                            com.example.data.quran.SurahMetadata.ALL.find { it.number == activeSurah.number + 1 }
+                        } else null
+
+                        item {
+                            Spacer(modifier = Modifier.height(28.dp))
+                            if (nextSurahMetadata != null) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .clickable {
+                                            viewModel.loadSurah(nextSurahMetadata.number, playImmediately = false, startAyah = 1)
+                                        }
+                                        .testTag("btn_next_surah"),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
+                                    ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp, vertical = 18.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(46.dp)
+                                                    .clip(CircleShape)
+                                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (settings.language == "Arabic") Lucide.ArrowLeft else Lucide.ArrowRight,
+                                                    contentDescription = "Next",
+                                                    tint = MaterialTheme.colorScheme.primary,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column {
+                                                Text(
+                                                    text = Translator.translate("next_surah", settings.language),
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = MaterialTheme.colorScheme.primary,
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                                Spacer(modifier = Modifier.height(2.dp))
+                                                Text(
+                                                    text = if (settings.language == "Arabic") "سورة ${nextSurahMetadata.nameArabic}" else "Surah ${nextSurahMetadata.nameTranslit}",
+                                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                                    color = MaterialTheme.colorScheme.onSurface
+                                                )
+                                                Text(
+                                                    text = "${nextSurahMetadata.meaning} · ${nextSurahMetadata.ayahCount} ${Translator.translate("ayahs", settings.language)}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+                                        Surface(
+                                            shape = RoundedCornerShape(12.dp),
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = "${nextSurahMetadata.number}",
+                                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                                color = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            } else {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .testTag("end_of_quran_card"),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MintTeal.copy(alpha = 0.2f)
+                                    ),
+                                    shape = RoundedCornerShape(20.dp),
+                                    border = BorderStroke(1.dp, PrimaryTeal.copy(alpha = 0.3f))
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp, vertical = 18.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Lucide.Check,
+                                            contentDescription = null,
+                                            tint = PrimaryTeal,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = Translator.translate("end_of_quran", settings.language),
+                                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                                            color = DarkTealText
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
                     }
                 }
                 else -> {}

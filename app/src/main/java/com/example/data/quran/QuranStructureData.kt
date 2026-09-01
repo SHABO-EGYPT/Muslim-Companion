@@ -120,6 +120,19 @@ object QuranStructureData {
 
     private val ARABIC_DIGITS = arrayOf("٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩")
 
+    private val ARABIC_ORDINALS = arrayOf(
+        "", "الأول", "الثاني", "الثالث", "الرابع", "الخامس",
+        "السادس", "السابع", "الثامن", "التاسع", "العاشر",
+        "الحادي عشر", "الثاني عشر", "الثالث عشر", "الرابع عشر", "الخامس عشر",
+        "السادس عشر", "السابع عشر", "الثامن عشر", "التاسع عشر", "العشرون",
+        "الحادي والعشرون", "الثاني والعشرون", "الثالث والعشرون", "الرابع والعشرون", "الخامس والعشرون",
+        "السادس والعشرون", "السابع والعشرون", "الثامن والعشرون", "التاسع والعشرون", "الثلاثون"
+    )
+
+    fun toArabicOrdinal(number: Int): String {
+        return if (number in 1..30) ARABIC_ORDINALS[number] else toArabicNumber(number)
+    }
+
     fun toArabicNumber(number: Int): String {
         return number.toString().map { c ->
             if (c in '0'..'9') ARABIC_DIGITS[c - '0'] else c.toString()

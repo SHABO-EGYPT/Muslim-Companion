@@ -51,7 +51,7 @@ class TranslatorTest {
         val keys = listOf(
             "home", "quran", "azkar", "prayer", "profile", "settings",
             "welcome_to_app", "onboarding_subtitle", "your_name", "your_location",
-            "get_started", "choose_language"
+            "get_started", "choose_language", "rate_app", "next_surah", "end_of_quran"
         )
         keys.forEach { key ->
             val english = Translator.translate(key, "English")
@@ -59,5 +59,19 @@ class TranslatorTest {
             assert(arabic.isNotBlank()) { "Arabic translation for '$key' should not be blank" }
             assert(arabic != english) { "Arabic translation for '$key' should differ from English" }
         }
+    }
+
+    @Test
+    fun `translate rate_app returns correct translations`() {
+        assertEquals("Rate App", Translator.translate("rate_app", "English"))
+        assertEquals("تقييم التطبيق", Translator.translate("rate_app", "Arabic"))
+    }
+
+    @Test
+    fun `translate next_surah returns correct translations`() {
+        assertEquals("Next Surah", Translator.translate("next_surah", "English"))
+        assertEquals("السورة التالية", Translator.translate("next_surah", "Arabic"))
+        assertEquals("End of the Holy Quran", Translator.translate("end_of_quran", "English"))
+        assertEquals("ختام القرآن الكريم", Translator.translate("end_of_quran", "Arabic"))
     }
 }

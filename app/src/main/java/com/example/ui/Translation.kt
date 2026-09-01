@@ -184,9 +184,15 @@ object Translator {
             "edit_location_manually" to "Enter city manually",
             "enter_city_name" to "Enter city or country",
             "get_started" to "Get Started",
-            "choose_language" to "Choose Language"
+            "choose_language" to "Choose Language",
+            "rate_app" to "Rate App",
+            "next_surah" to "Next Surah",
+            "end_of_quran" to "End of the Holy Quran"
         ),
         "Arabic" to mapOf(
+            "rate_app" to "تقييم التطبيق",
+            "next_surah" to "السورة التالية",
+            "end_of_quran" to "ختام القرآن الكريم",
             "home" to "الرئيسية",
             "quran" to "القرآن",
             "azkar" to "الأذكار",

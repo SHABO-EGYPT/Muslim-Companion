@@ -58,6 +58,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
     val settings by readerViewModel.quranSettings.collectAsStateWithLifecycle() // Using quranSettings as settings
     val loadState by viewModel.surahsLoadState.collectAsStateWithLifecycle()
     var showQuranSettings by remember { mutableStateOf(false) }
+    var isSearchActive by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableIntStateOf(0) } // 0 = Surahs, 1 = Juz'
 
     val filteredJuz = remember(query) {
@@ -108,18 +109,65 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
         AppHeader(
             title = Translator.translate("quran", settings.language),
             rightContent = {
-                IconButton(
-                    onClick = { showQuranSettings = !showQuranSettings },
-                    modifier = Modifier.testTag("quran_settings_toggle_button")
-                ) {
-                    Icon(
-                        imageVector = Lucide.Settings,
-                        contentDescription = Translator.translate("settings", settings.language),
-                        tint = if (showQuranSettings) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { 
+                            isSearchActive = !isSearchActive
+                            if (!isSearchActive) {
+                                viewModel.onSearchQueryChanged("")
+                            }
+                        },
+                        modifier = Modifier.testTag("quran_search_toggle_button")
+                    ) {
+                        Icon(
+                            imageVector = Lucide.Search,
+                            contentDescription = Translator.translate("search", settings.language),
+                            tint = if (isSearchActive || query.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(
+                        onClick = { showQuranSettings = !showQuranSettings },
+                        modifier = Modifier.testTag("quran_settings_toggle_button")
+                    ) {
+                        Icon(
+                            imageVector = Lucide.Settings,
+                            contentDescription = Translator.translate("settings", settings.language),
+                            tint = if (showQuranSettings) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         )
+
+        AnimatedVisibility(
+            visible = isSearchActive,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { viewModel.onSearchQueryChanged(it) },
+                placeholder = { Text(Translator.translate("search_surah", settings.language), style = MaterialTheme.typography.bodyMedium) },
+                leadingIcon = { Icon(imageVector = Lucide.Search, contentDescription = Translator.translate("search", settings.language)) },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(onClick = { viewModel.onSearchQueryChanged("") }) {
+                            Icon(imageVector = Lucide.X, contentDescription = "Clear search", modifier = Modifier.size(18.dp))
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 6.dp).testTag("quran_search_field"),
+                shape = RoundedCornerShape(100.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent
+                ),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
+            )
+        }
 
         AnimatedVisibility(
             visible = showQuranSettings,
@@ -210,26 +258,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
             exit = shrinkVertically() + fadeOut()
         ) {
             Column {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { viewModel.onSearchQueryChanged(it) },
-                    placeholder = { Text(Translator.translate("search_surah", settings.language), style = MaterialTheme.typography.bodyMedium) },
-                    leadingIcon = { Icon(imageVector = Lucide.Search, contentDescription = Translator.translate("search", settings.language)) },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("quran_search_field"),
-                    shape = RoundedCornerShape(100.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent
-                    ),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp).clickable {
@@ -410,7 +439,7 @@ fun QuranListScreen(viewModel: QuranViewModel, readerViewModel: SurahReaderViewM
                     val isDark = settings.darkTheme
                     val startSurahName = if (isArabic) "سورة ${juz.startSurahNameArabic}" else "Surah ${juz.startSurahNameEnglish}"
                     val endSurahName = if (isArabic) "سورة ${juz.endSurahNameArabic}" else "Surah ${juz.endSurahNameEnglish}"
-                    val juzTitle = if (isArabic) "الجزء ${QuranStructureData.toArabicNumber(juz.number)}: ${juz.nameArabic}" else "Juz ${juz.number}: ${juz.nameEnglish}"
+                    val juzTitle = if (isArabic) "الجزء ${QuranStructureData.toArabicOrdinal(juz.number)}" else "Juz ${juz.number}"
                     val rangeText = if (isArabic) {
                         "$startSurahName (${juz.startAyahNumber}) ← $endSurahName (${juz.endAyahNumber})"
                     } else {

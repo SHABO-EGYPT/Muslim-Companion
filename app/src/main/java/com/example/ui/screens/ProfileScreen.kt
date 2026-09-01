@@ -272,6 +272,19 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
                     }
 
                     Row(
+                        modifier = Modifier.fillMaxWidth().clickable { com.example.ui.util.RateAppHelper.launchInAppReviewOrStore(context) }.padding(vertical = 14.dp).testTag("profile_menu_rate_app"),
+                        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Lucide.Star, contentDescription = Translator.translate("rate_app", settings.language), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Text(text = Translator.translate("rate_app", settings.language), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                        Icon(imageVector = chevron, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(17.dp))
+                    }
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.15f))
+
+                    Row(
                         modifier = Modifier.fillMaxWidth().clickable { showAboutDialog = true }.padding(vertical = 14.dp).testTag("profile_menu_about"),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
                     ) {

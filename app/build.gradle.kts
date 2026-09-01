@@ -90,6 +90,7 @@ dependencies {
   implementation(libs.moshi.kotlin)
   implementation(libs.okhttp)
   implementation(libs.play.services.location)
+  implementation(libs.play.review.ktx)
   implementation(libs.retrofit)
   implementation(libs.androidx.media3.exoplayer)
   implementation(libs.androidx.media3.session)

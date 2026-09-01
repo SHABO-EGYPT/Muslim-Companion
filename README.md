@@ -28,6 +28,16 @@
 
 ## ✨ What's New in v1.7.1
 
+- 🌟 **Rate App in Profile:** One-tap rating shortcut in Profile menu directly launching the Google Play Store page (`com.companion.muslim.app`).
+- ⏭️ **End-of-Surah "Next Surah" Navigation Button:**
+  - Interactive card appended at the end of every Surah in the Quran Reader with next Surah details, metadata, and smooth transition.
+  - Celebratory "End of the Holy Quran" (*ختام القرآن الكريم*) completion card on Surah 114.
+- 🔍 **Top App Bar Search Action in Quran List:**
+  - Placed search icon (`Lucide.Search`) neatly in the top header beside settings, removing the permanent search bar for a cleaner, full-height reading interface.
+  - Smooth animated expand/collapse search bar with clear button.
+- 📖 **Juz' Tab Header Typography Improvements:**
+  - Formatted Arabic Juz' names into textual ordinals (**الجزء الأول**, **الجزء الثاني**, ..., **الجزء الثلاثون**).
+  - Streamlined and cleaned the header display.
 - 📖 **Quran Juz' (الأجزاء), Hizb (الأحزاب), & Rub' (أرباع القرآن) Indicators & Navigation:**
   - **Surahs vs. Juz' Tabs:** Browse all 30 Juz' with starting and ending Surah/Ayah coordinates, opening directly to the start of any Juz.
   - **In-Reader Decorative Banners (`QuranDivisionBanner`):** Elegant Islamic ornaments marking the start of each Juz (`۞ الجزء ۞`), Hizb (`۞ الحزب ۞`), and quarter (`ربع` / `نصف` / `ثلاثة أرباع`).
