@@ -5,137 +5,300 @@
     android:layout_height="match_parent"
     android:background="@drawable/widget_background"
     android:orientation="vertical"
-    android:padding="14dp">
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
 
-    <!-- Header Row: Date & Weather Status -->
+    <!-- Top Section: Date & Weather -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/widget_date"
+        <!-- Date Column: Hijri on top, Gregorian below -->
+        <LinearLayout
+            android:id="@+id/widget_date_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/widget_weather"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
-            android:text="الأربعاء ، 22 يوليو"
-            android:textColor="#E0F2F1"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:gravity="start|center_vertical"
-            android:textAlignment="viewStart"
-            android:singleLine="true"
-            android:ellipsize="end" />
+            android:layout_marginEnd="6dp"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/widget_date_hijri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15 شعبان 1445"
+                android:textColor="#E2E2E2"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/widget_date_gregorian"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="25 فبراير 2024"
+                android:textColor="#D0C5AF"
+                android:textSize="9sp"
+                android:singleLine="true"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <!-- Weather Info -->
         <TextView
             android:id="@+id/widget_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:text="مشمس · 26°C"
-            android:textColor="#FFD54F"
-            android:textSize="12sp"
+            android:text="☀️ 26°C"
+            android:textColor="#F2CA50"
+            android:textSize="11sp"
             android:textStyle="bold"
-            android:gravity="end|center_vertical"
-            android:textAlignment="viewEnd"
             android:singleLine="true" />
     </RelativeLayout>
 
-    <!-- Hero Card: Next Prayer Highlight -->
+    <!-- Main Hero Card: Next Prayer Highlight -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:background="@drawable/widget_hero_card_bg"
         android:orientation="vertical"
-        android:padding="10dp"
-        android:gravity="center_horizontal">
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center">
 
         <TextView
-            android:id="@+id/widget_next_prayer"
+            android:id="@+id/widget_next_prayer_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="الصلاة القادمة: الظهر (12:31 م)"
+            android:text="الصلاة القادمة"
+            android:textColor="#F2CA50"
+            android:textSize="9sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/widget_next_prayer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="الظهر"
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:gravity="center"
-            android:singleLine="true"
-            android:ellipsize="end" />
+            android:singleLine="true" />
 
         <TextView
             android:id="@+id/widget_countdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="متبقي 1 س و 38 د"
-            android:textColor="#B2DFDB"
-            android:textSize="12sp"
-            android:gravity="center"
+            android:layout_marginTop="1dp"
+            android:text="02:45 متبقي"
+            android:textColor="#F2CA50"
+            android:textSize="13sp"
+            android:textStyle="bold"
             android:singleLine="true" />
     </LinearLayout>
 
-    <!-- Bottom Row: Upcoming Prayer Timeline Chips -->
+    <!-- Bottom Section: Upcoming Prayers Row (5 prayers) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/widget_prayer_1"
+        <!-- Fajr -->
+        <LinearLayout
+            android:id="@+id/widget_chip_1_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/widget_pill_bg"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="الظهر 12:31"
-            android:textColor="#E0F2F1"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:singleLine="true" />
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/widget_chip_inactive"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/widget_prayer_2"
+            <TextView
+                android:id="@+id/widget_chip_1_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="الفجر"
+                android:textColor="#D0C5AF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/widget_chip_1_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="05:22"
+                android:textColor="#E2E2E2"
+                android:textSize="9sp"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Dhuhr -->
+        <LinearLayout
+            android:id="@+id/widget_chip_2_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:background="@drawable/widget_chip_active"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/widget_chip_2_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="الظهر"
+                android:textColor="#F2CA50"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/widget_chip_2_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="12:35"
+                android:textColor="#FFFFFF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Asr -->
+        <LinearLayout
+            android:id="@+id/widget_chip_3_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:background="@drawable/widget_chip_inactive"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/widget_chip_3_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="العصر"
+                android:textColor="#D0C5AF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/widget_chip_3_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="15:50"
+                android:textColor="#E2E2E2"
+                android:textSize="9sp"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Maghrib -->
+        <LinearLayout
+            android:id="@+id/widget_chip_4_container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="1dp"
+            android:layout_marginEnd="1dp"
+            android:background="@drawable/widget_chip_inactive"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/widget_chip_4_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="المغرب"
+                android:textColor="#D0C5AF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/widget_chip_4_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="18:14"
+                android:textColor="#E2E2E2"
+                android:textSize="9sp"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <!-- Isha -->
+        <LinearLayout
+            android:id="@+id/widget_chip_5_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
-            android:background="@drawable/widget_pill_bg"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="العصر 04:04"
-            android:textColor="#E0F2F1"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:singleLine="true" />
+            android:background="@drawable/widget_chip_inactive"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/widget_prayer_3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/widget_pill_bg"
-            android:paddingLeft="6dp"
-            android:paddingRight="6dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="المغرب 07:22"
-            android:textColor="#E0F2F1"
-            android:textSize="10sp"
-            android:gravity="center"
-            android:singleLine="true" />
+            <TextView
+                android:id="@+id/widget_chip_5_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="العشاء"
+                android:textColor="#D0C5AF"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/widget_chip_5_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="19:44"
+                android:textColor="#E2E2E2"
+                android:textSize="9sp"
+                android:singleLine="true" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -57,18 +57,43 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
         ) {
             val views = RemoteViews(context.packageName, R.layout.prayer_weather_widget)
 
-            // 1. Gregorian Date Format in Arabic
-            val arabicLocale = Locale.forLanguageTag("ar")
-            val dateStr = try {
-                val formatter = DateTimeFormatter.ofPattern("EEEE ، d MMMM", arabicLocale)
-                LocalDate.now().format(formatter)
+            // 1. Settings & Locales
+            val settings = try {
+                runBlocking(Dispatchers.IO) {
+                    try {
+                        CompanionDatabase.buildDatabase(context).companionDao().getSettingsDirect()
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
             } catch (e: Exception) {
-                "اليوم"
+                null
             }
-            views.setTextViewText(R.id.widget_date, dateStr)
+            val isArabic = settings?.language != "English"
+            val appLocale = if (isArabic) Locale.forLanguageTag("ar-u-nu-latn") else Locale.US
+            val today = LocalDate.now()
+
+            // Hijri Date
+            val hijriDateStr = try {
+                val hijrahDate = java.time.chrono.HijrahDate.from(today)
+                val suffix = if (isArabic) " هـ" else " AH"
+                hijrahDate.format(DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)) + suffix
+            } catch (e: Exception) {
+                if (isArabic) "١٤٤٦ هـ" else "1446 AH"
+            }
+            views.setTextViewText(R.id.widget_date_hijri, hijriDateStr)
+
+            // Gregorian Date
+            val gregorianDateStr = try {
+                val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)
+                today.format(formatter)
+            } catch (e: Exception) {
+                today.toString()
+            }
+            views.setTextViewText(R.id.widget_date_gregorian, gregorianDateStr)
 
             // 2. Weather Status
-            views.setTextViewText(R.id.widget_weather, "مشمس · 26°C")
+            views.setTextViewText(R.id.widget_weather, "☀️ 26°C")
 
             // 3. Prayer Times List (Load cached if available, fallback to defaults)
             val defaultPrayers = listOf(
@@ -88,7 +113,13 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
                     }
                 }
                 if (cached.isNotEmpty()) {
-                    cached.map { PrayerTime(it.name, it.arabicName, it.timeString, it.iconName) }
+                    // Standardize to 5 canonical prayers
+                    val nameMap = cached.associateBy { it.name.lowercase() }
+                    val canonicalNames = listOf("fajr", "dhuhr", "asr", "maghrib", "isha")
+                    val mapped = canonicalNames.mapNotNull { key ->
+                        nameMap[key]?.let { PrayerTime(it.name, it.arabicName, it.timeString, it.iconName) }
+                    }
+                    if (mapped.size == 5) mapped else cached.map { PrayerTime(it.name, it.arabicName, it.timeString, it.iconName) }
                 } else {
                     defaultPrayers
                 }
@@ -127,47 +158,71 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
 
             val hours = duration.toHours()
             val minutes = duration.toMinutes() % 60
-            val countdownStr = if (hours > 0) {
-                "متبقي $hours س و $minutes د"
+            val countdownStr = if (isArabic) {
+                String.format(Locale.US, "%02d:%02d متبقي", hours, minutes)
             } else {
-                "متبقي $minutes دقيقة"
+                String.format(Locale.US, "%02d:%02d left", hours, minutes)
             }
 
-            // 12-hour formatted time in Arabic to prevent BiDi glitches
-            fun format12Hour(timeStr: String, withSuffix: Boolean = true): String {
+            views.setTextViewText(R.id.widget_next_prayer_label, if (isArabic) "الصلاة القادمة" else "NEXT PRAYER")
+            views.setTextViewText(R.id.widget_next_prayer_name, if (isArabic) nextPrayer.arabicName else nextPrayer.name)
+            views.setTextViewText(R.id.widget_countdown, countdownStr)
+
+            // 4. Populate the 5 Prayer Chips with Active/Inactive Highlight
+            fun format12Hour(timeStr: String): String {
                 return try {
                     val parsed = TimeUtils.parsePrayerTime(timeStr) ?: return timeStr
                     val hour = parsed.hour
                     val minute = parsed.minute
-                    val isPm = hour >= 12
                     val h12 = if (hour % 12 == 0) 12 else hour % 12
-                    val suffix = if (isPm) "م" else "ص"
-                    if (withSuffix) {
-                        String.format(Locale.US, "%02d:%02d %s", h12, minute, suffix)
-                    } else {
-                        String.format(Locale.US, "%02d:%02d", h12, minute)
-                    }
+                    String.format(Locale.US, "%02d:%02d", h12, minute)
                 } catch (e: Exception) {
                     timeStr
                 }
             }
 
-            val formattedTime = format12Hour(nextPrayer.timeString, withSuffix = true)
-            views.setTextViewText(R.id.widget_next_prayer, "الصلاة القادمة: ${nextPrayer.arabicName} ($formattedTime)")
-            views.setTextViewText(R.id.widget_countdown, countdownStr)
-
-            // Timeline Chips: 3 upcoming prayers starting from next prayer
-            val upcomingChips = listOf(
-                prayers[nextIndex % prayers.size],
-                prayers[(nextIndex + 1) % prayers.size],
-                prayers[(nextIndex + 2) % prayers.size]
+            val chipContainerIds = listOf(
+                R.id.widget_chip_1_container,
+                R.id.widget_chip_2_container,
+                R.id.widget_chip_3_container,
+                R.id.widget_chip_4_container,
+                R.id.widget_chip_5_container
+            )
+            val chipNameIds = listOf(
+                R.id.widget_chip_1_name,
+                R.id.widget_chip_2_name,
+                R.id.widget_chip_3_name,
+                R.id.widget_chip_4_name,
+                R.id.widget_chip_5_name
+            )
+            val chipTimeIds = listOf(
+                R.id.widget_chip_1_time,
+                R.id.widget_chip_2_time,
+                R.id.widget_chip_3_time,
+                R.id.widget_chip_4_time,
+                R.id.widget_chip_5_time
             )
 
-            val chipIds = listOf(R.id.widget_prayer_1, R.id.widget_prayer_2, R.id.widget_prayer_3)
-            for (i in 0 until 3) {
-                val p = upcomingChips[i]
-                val chipTime = format12Hour(p.timeString, withSuffix = false)
-                views.setTextViewText(chipIds[i], "${p.arabicName} $chipTime")
+            for (i in 0 until 5) {
+                if (i < prayers.size) {
+                    val p = prayers[i]
+                    val isNext = (i == nextIndex)
+                    val pName = if (isArabic) p.arabicName else p.name
+                    val pTime = format12Hour(p.timeString)
+
+                    views.setTextViewText(chipNameIds[i], pName)
+                    views.setTextViewText(chipTimeIds[i], pTime)
+
+                    if (isNext) {
+                        views.setInt(chipContainerIds[i], "setBackgroundResource", R.drawable.widget_chip_active)
+                        views.setTextColor(chipNameIds[i], android.graphics.Color.parseColor("#F2CA50"))
+                        views.setTextColor(chipTimeIds[i], android.graphics.Color.parseColor("#FFFFFF"))
+                    } else {
+                        views.setInt(chipContainerIds[i], "setBackgroundResource", R.drawable.widget_chip_inactive)
+                        views.setTextColor(chipNameIds[i], android.graphics.Color.parseColor("#D0C5AF"))
+                        views.setTextColor(chipTimeIds[i], android.graphics.Color.parseColor("#E2E2E2"))
+                    }
+                }
             }
 
             // Click Intent to open MainActivity
