@@ -18,9 +18,13 @@
 
 ---
 
-## 🔒 Privacy & Google Play Compliance
+## 🔒 Privacy, Licensing & Legal Transparency
 - **Zero Ads & Zero Trackers:** Contains no third-party advertisements, analytics trackers, or user data selling.
 - **Offline First:** All reading bookmarks, Khatmah progress, and Azkar counters are stored securely on the local device.
+- **Audio Recitations & Licensing:** 
+  - All Quranic recitation audio files streamed and downloaded within the app are sourced directly from open-access public domain Islamic content delivery networks ([QuranicAudio.com](https://quranicaudio.com/) by the non-profit Quran.com foundation).
+  - Recitations by renowned reciters (Sheikh Mishary Rashid Alafasy, Sheikh Abdul Basit, Sheikh Al-Husary, Sheikh Al-Minshawi) are provided free for the worldwide Muslim community and strictly for non-commercial educational and spiritual use.
+  - The application is 100% free with no paywalls, subscriptions, or monetization.
 - **Official Privacy Policy:** [PRIVACY_POLICY.md](PRIVACY_POLICY.md)
 - **Publishing & Release Guide:** [PLAY_STORE_PUBLISHING_GUIDE.md](PLAY_STORE_PUBLISHING_GUIDE.md)
 
