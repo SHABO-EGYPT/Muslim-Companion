@@ -28,6 +28,11 @@
 
 ## ✨ What's New in v1.7.1
 
+- 📱 **"Noor Divine" Home Screen Widget Redesign:**
+  - **Prayer Times & Weather Hub:** Premium deep navy (`#1A2634`) and metallic gold (`#F2CA50`) aesthetic with dual Hijri/Gregorian date headers, live weather, next prayer hero card, large countdown, and 5-prayer timeline chips with active highlight.
+  - **Quran Audio Player Widget:** Reimagined media player widget with tactile gold play/pause button and styled previous/next ayah controls.
+- 🤲 **Comprehensive Authentic Azkar & Duas Update:**
+  - Fully verified and enriched Hisn Al-Muslim database including Distress Duas (أدعية تفريج الكرب), After-Prayer Azkar (أذكار بعد الصلاة), Sleep Azkar (أذكار النوم), Wakeup Azkar (أذكار الاستيقاظ), and Sick Duas (دعاء للمريض) with authentic references (Sahih Bukhari, Sahih Muslim, Sunan Abi Dawud, At-Tirmidhi).
 - 🌟 **Rate App in Profile:** One-tap rating shortcut in Profile menu directly launching the Google Play Store page (`com.companion.muslim.app`).
 - ⏭️ **End-of-Surah "Next Surah" Navigation Button:**
   - Interactive card appended at the end of every Surah in the Quran Reader with next Surah details, metadata, and smooth transition.

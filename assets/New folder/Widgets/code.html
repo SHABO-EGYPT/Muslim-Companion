@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Noor Divine - Prayer Widget</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#e2e2e2",
+                    "on-secondary-fixed": "#101c2a",
+                    "surface-container-low": "#1a1c1c",
+                    "on-secondary-fixed-variant": "#3c4857",
+                    "surface": "#121414",
+                    "tertiary": "#c7cedd",
+                    "surface-container-highest": "#333535",
+                    "tertiary-container": "#abb3c1",
+                    "surface-variant": "#333535",
+                    "surface-container-high": "#282a2b",
+                    "on-tertiary-fixed-variant": "#3f4753",
+                    "inverse-on-surface": "#2f3131",
+                    "surface-container": "#1e2020",
+                    "secondary-container": "#3e4a59",
+                    "on-primary-fixed": "#241a00",
+                    "primary-fixed-dim": "#e9c349",
+                    "surface-container-lowest": "#0c0f0f",
+                    "tertiary-fixed": "#dbe3f1",
+                    "on-tertiary-container": "#3d4551",
+                    "inverse-primary": "#735c00",
+                    "surface-bright": "#38393a",
+                    "error": "#ffb4ab",
+                    "on-surface-variant": "#d0c5af",
+                    "primary": "#f2ca50",
+                    "error-container": "#93000a",
+                    "on-tertiary": "#29313c",
+                    "on-primary-fixed-variant": "#574500",
+                    "primary-container": "#d4af37",
+                    "primary-fixed": "#ffe088",
+                    "secondary-fixed-dim": "#bbc7da",
+                    "background": "#121414",
+                    "tertiary-fixed-dim": "#bfc7d5",
+                    "outline-variant": "#4d4635",
+                    "inverse-surface": "#e2e2e2",
+                    "on-primary-container": "#554300",
+                    "on-error-container": "#ffdad6",
+                    "on-background": "#e2e2e2",
+                    "on-error": "#690005",
+                    "on-secondary": "#253140",
+                    "on-tertiary-fixed": "#141c26",
+                    "surface-dim": "#121414",
+                    "outline": "#99907c",
+                    "on-secondary-container": "#adb9cc",
+                    "secondary-fixed": "#d7e3f7",
+                    "surface-tint": "#e9c349",
+                    "on-primary": "#3c2f00",
+                    "secondary": "#bbc7da"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "stack-sm": "8px",
+                    "margin-page": "20px",
+                    "gutter": "12px",
+                    "stack-md": "16px",
+                    "stack-lg": "24px",
+                    "card-padding": "16px"
+            },
+            "fontFamily": {
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Noto Serif"
+                    ],
+                    "headline-lg-mobile": [
+                            "Noto Serif"
+                    ],
+                    "headline-lg": [
+                            "Noto Serif"
+                    ],
+                    "display-lg": [
+                            "Noto Serif"
+                    ],
+                    "label-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-lg": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "10px",
+                            {
+                                    "lineHeight": "14px",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-lg": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .geometric-bg {
+            background-color: #1A2634;
+            background-image: radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.05) 0%, transparent 50%), 
+                              linear-gradient(45deg, #0F1721 25%, transparent 25%, transparent 75%, #0F1721 75%, #0F1721), 
+                              linear-gradient(45deg, #0F1721 25%, transparent 25%, transparent 75%, #0F1721 75%, #0F1721);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 10px 10px;
+        }
+        
+        .gold-border-glow {
+            box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.15), 0px 4px 20px rgba(212, 175, 55, 0.15);
+        }
+        
+        .sub-card-glow {
+             box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center p-4">
+<!-- Standalone Widget Container -->
+<div class="relative w-full max-w-sm rounded-xl overflow-hidden geometric-bg border border-outline-variant/30 gold-border-glow p-card-padding">
+<!-- Top Section: Date & Weather -->
+<div class="flex justify-between items-center mb-stack-lg">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">15 Sha'ban 1445</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">25 Feb 2024</span>
+</div>
+<div class="flex items-center gap-unit text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'wght' 300;">light_mode</span>
+<span class="font-body-md text-body-md">Sunny 26°</span>
+</div>
+</div>
+<!-- Main Section: Next Prayer -->
+<div class="relative rounded-lg p-stack-md flex flex-col items-center justify-center mb-stack-lg border border-primary/20 bg-[#121414]/40 overflow-hidden">
+<!-- Background Image Reference as requested -->
+<div class="absolute inset-0 opacity-10 mix-blend-overlay" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBf9XzgjHylB-d-4yeEGFmuHEqfUvrCR_CaEJK7GqdxlknYbkVTlYXmlxwNZDKW_4YPLTrJoJNkR7JFboVvg6689PusuQL-xEhsPhLUYF4FRuA_6EiwlMho2f_XsKwA4KzDB5coWfJv8YnKs2U8m-OSLdf1uAa_kx2Oun6HvT8Eq20_UDD6mAwe5SuRkeMhr-FL7H642qL7dCs-iLpRyrOtQ8FxNfH5Hh_aZNAhUI7lW50U_LZqQUEmSQzSxKrO6RPqxC8'); background-size: cover; background-position: center;"></div>
+<span class="font-label-lg text-label-lg text-primary uppercase tracking-[0.2em] mb-unit z-10">Next Prayer</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10">Dhuhr</h2>
+<div class="flex items-baseline gap-unit mt-stack-sm z-10">
+<span class="font-display-lg text-display-lg text-primary">02:45</span>
+<span class="font-label-md text-label-md text-primary uppercase">left</span>
+</div>
+</div>
+<!-- Bottom Section: Upcoming Prayers Row -->
+<div class="flex justify-between gap-gutter">
+<!-- Previous Prayer (Faded) -->
+<div class="flex-1 rounded bg-[#121414]/30 p-stack-sm flex flex-col items-center border border-transparent">
+<span class="font-label-md text-label-md text-on-surface-variant/50 uppercase">Fajr</span>
+<span class="font-body-md text-body-md text-on-surface/50 mt-unit">05:22</span>
+</div>
+<!-- Next Prayer (Active Highlight) -->
+<div class="flex-1 rounded bg-surface-container-high p-stack-sm flex flex-col items-center sub-card-glow relative overflow-hidden">
+<div class="absolute bottom-0 left-0 w-full h-[2px] bg-primary"></div>
+<span class="font-label-md text-label-md text-primary uppercase font-bold">Dhuhr</span>
+<span class="font-body-md text-body-md text-on-surface mt-unit">12:35</span>
+</div>
+<!-- Future Prayer -->
+<div class="flex-1 rounded bg-[#121414]/50 p-stack-sm flex flex-col items-center sub-card-glow">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Asr</span>
+<span class="font-body-md text-body-md text-on-surface mt-unit">15:50</span>
+</div>
+<!-- Future Prayer -->
+<div class="flex-1 rounded bg-[#121414]/50 p-stack-sm flex flex-col items-center sub-card-glow">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Maghrib</span>
+<span class="font-body-md text-body-md text-on-surface mt-unit">18:14</span>
+</div>
+</div>
+</div>
+</body></html>

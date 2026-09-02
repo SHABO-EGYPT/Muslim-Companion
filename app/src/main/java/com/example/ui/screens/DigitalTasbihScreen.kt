@@ -53,15 +53,18 @@ fun DigitalTasbihScreen(viewModel: TasbihViewModel, navController: NavHostContro
             rightContent = {
                 OutlinedButton(
                     onClick = { navController.navigate(com.example.navigation.Routes.CUSTOM_CHAINS) },
-                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     shape = RoundedCornerShape(20.dp),
-                    border = BorderStroke(1.dp, MintTeal)
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
                 ) {
                     Text(
                         text = if (settings.language == "Arabic") "السلاسل" else "Chains",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MintTeal
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
