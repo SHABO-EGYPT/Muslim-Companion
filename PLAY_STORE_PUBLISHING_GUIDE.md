@@ -33,23 +33,25 @@
   • Countdown timer to the next prayer.
 
   🤲 FORTRESS OF THE MUSLIM (HISN AL-MUSLIM) & AZKAR:
-  • Complete morning, evening, post-prayer, wakeup, and sleep Azkar.
-  • Quranic supplications and authentic Duas.
+  • Complete morning, evening, post-prayer, wakeup, and sleep Azkar with authentic hadith references.
+  • Quranic supplications and distress Duas.
   • Interactive dhikr counter with real-time progress tracking.
-  • AI-powered Azkar assistant to find authentic supplications for any moment.
 
   🧭 QIBLA COMPASS:
   • Accurate, high-precision GPS compass pointing directly toward the Kaaba in Makkah.
 
-  📿 DIGITAL TASBIH COUNTER:
-  • Smooth digital tasbih counter with customizable dhikr phrases and haptic feedback.
+  📿 DIGITAL TASBIH & CUSTOM CHAINS:
+  • Smooth digital tasbih counter and customizable Dhikr sequences with haptic feedback.
 
   🌟 99 NAMES OF ALLAH (ASMA UL-HUSNA):
   • Explore all 99 names of Allah with English and Arabic meanings and benefits.
 
-  📱 MODERN ANDROID HOME SCREEN WIDGETS:
+  📱 NOOR DIVINE HOME SCREEN WIDGETS:
   • Next Prayer & live countdown widget with daily weather status.
   • Audio Quran quick-player widget.
+
+  📜 OPEN-ACCESS ISLAMIC RESOURCES & LICENSING:
+  • All Quranic recitation audio and hadith texts in this app are sourced from open-access public domain Islamic content delivery networks (including QuranicAudio.com by Quran.com and authentic Hisn Al-Muslim compilations) provided free for non-commercial educational and spiritual use by the worldwide Muslim community.
 
   🔒 PRIVACY & OFFLINE-FIRST:
   • No registration required, no ads, no trackers, and no data sharing.
@@ -84,23 +86,25 @@
   • عداد تنازلي للوقت المتبقي حتى موعد الصلاة القادمة.
 
   🤲 أذكار حصن المسلم والأدعية:
-  • أذكار الصباح والمساء، أذكار الاستيقاظ والنوم، وأذكار بعد الصلاة المفروضة.
-  • باقة من الأدعية القرآنية المباركة مع شرح معانيها.
+  • أذكار الصباح والمساء، أذكار الاستيقاظ والنوم، وأذكار بعد الصلاة المفروضة موثقة بالأحاديث والمراجع الصحيحة.
+  • باقة من الأدعية القرآنية وأدعية تفريج الكرب المباركة.
   • عداد تسبيح تفاعلي ومتابعة نسبة الإنجاز اليومي لكل فئة.
-  • مساعد ذكي للبحث عن الأدعية النبوية المناسبة لمختلف المواقف.
 
   🧭 بوصلة اتجاه القبلة:
   • تحديد دقيق لاتجاه الكعبة المشرفة في مكة المكرمة بالاعتماد على مستشعرات جهازك ونظام GPS.
 
-  📿 السبحة الإلكترونية الذكية:
-  • عداد تسبيح رقمي مع إمكانية اختيار الأذكار والتسبيحات واهتزاز تفاعلي.
+  📿 السبحة الإلكترونية وسلاسل الأذكار:
+  • عداد تسبيح رقمي مع إمكانية إنشاء سلاسل أذكار مخصصة وتحديد التكرار مع اهتزاز تفاعلي.
 
   🌟 أسماء الله الحسنى:
   • استعراض أسماء الله الحسنى الـ 99 مع شرح مبسط وواضح لمعانيها وفضلها.
 
-  📱 ودجات شاشة القفل والشاشة الرئيسية:
-  • ودجت لمواقيت الصلاة والعد التنازلي مع حالة الطقس.
+  📱 ودجات شاشة القفل والشاشة الرئيسية (Noor Divine):
+  • ودجت لمواقيت الصلاة والعد التنازلي مع حالة الطقس بتصميم إسلامي فاخر.
   • ودجت مشغل تلاوة القرآن الكريم.
+
+  📜 المصادر الإسلامية المفتوحة والترخيص:
+  • يعتمد التطبيق على مصادر وشبكات إسلامية مفتوحة المصدر ومتاحة للاستخدام الديني والتعليمي غير التجاري (بما في ذلك التلاوات الصوتية المفتوحة عبر شبكة QuranicAudio.com التابعة لمؤسسة Quran.com ومتون حصن المسلم الموثقة)، والتطبيق غير ربحي ومجاني بالكامل لوجه الله تعالى.
 
   🔒 الخصوصية والأمان:
   • يعمل بدون الحاجة لإنشاء حساب أو تسجيل دخول.

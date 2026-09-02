@@ -2,7 +2,7 @@
 
 # Muslim Companion (رفيق المسلم)
 
-[![Release](https://img.shields.io/badge/Release-v1.7.1-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
+[![Release](https://img.shields.io/badge/Release-v1.7.2-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
 [![License](https://img.shields.io/badge/License-100%25%20Free%20%26%20Ad--Free-blue.svg)](PRIVACY_POLICY.md)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-37%20(Android%2015+)-orange.svg)](https://developer.android.com)
 [![Package](https://img.shields.io/badge/Package-com.companion.muslim.app-teal.svg)](https://play.google.com/store)
@@ -21,7 +21,7 @@
 ## 🔒 Privacy, Licensing & Legal Transparency
 - **Zero Ads & Zero Trackers:** Contains no third-party advertisements, analytics trackers, or user data selling.
 - **Offline First:** All reading bookmarks, Khatmah progress, and Azkar counters are stored securely on the local device.
-- **Audio Recitations & Licensing:** 
+- **Audio Recitations & Open-Access Licensing:** 
   - All Quranic recitation audio files streamed and downloaded within the app are sourced directly from open-access public domain Islamic content delivery networks ([QuranicAudio.com](https://quranicaudio.com/) by the non-profit Quran.com foundation).
   - Recitations by renowned reciters (Sheikh Mishary Rashid Alafasy, Sheikh Abdul Basit, Sheikh Al-Husary, Sheikh Al-Minshawi) are provided free for the worldwide Muslim community and strictly for non-commercial educational and spiritual use.
   - The application is 100% free with no paywalls, subscriptions, or monetization.
@@ -30,7 +30,7 @@
 
 ---
 
-## ✨ What's New in v1.7.1
+## ✨ What's New in v1.7.2
 
 - 📱 **"Noor Divine" Home Screen Widget Redesign:**
   - **Prayer Times & Weather Hub:** Premium deep navy (`#1A2634`) and metallic gold (`#F2CA50`) aesthetic with dual Hijri/Gregorian date headers, live weather, next prayer hero card, large countdown, and 5-prayer timeline chips with active highlight.
