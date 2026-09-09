@@ -41,8 +41,24 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                     val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     
                     val soundType = settings.notificationSoundType
-                    val channelId = "prayer_channel_${soundType.lowercase().replace(" ", "_")}"
-                    val channelName = "Prayer Notifications ($soundType)"
+                    val azanVoice = settings.azanVoice
+                    val channelId = if (soundType == "Full Adhan") {
+                        "prayer_channel_full_adhan_${azanVoice.lowercase()}"
+                    } else {
+                        "prayer_channel_${soundType.lowercase().replace(" ", "_")}"
+                    }
+                    val channelName = if (soundType == "Full Adhan") {
+                        "Prayer Notifications (Full Adhan - $azanVoice)"
+                    } else {
+                        "Prayer Notifications ($soundType)"
+                    }
+
+                    val fullAdhanRes = when (azanVoice) {
+                        "makkah" -> "adhan_makkah"
+                        "madinah" -> "adhan_madinah"
+                        "abdulbasit" -> "adhan_abdulbasit"
+                        else -> "full_adhan"
+                    }
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         val importance = if (soundType == "Silent") {
@@ -64,7 +80,7 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                                     // Default system sound
                                 }
                                 "Full Adhan" -> {
-                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/full_adhan")
+                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/$fullAdhanRes")
                                     setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
                                 }
                                 "First Adhan" -> {
@@ -98,7 +114,7 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                             builder.setVibrate(longArrayOf(0, 500, 200, 500))
                         }
                         "Full Adhan" -> {
-                            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/full_adhan")
+                            val soundUri = Uri.parse("android.resource://${context.packageName}/raw/$fullAdhanRes")
                             builder.setSound(soundUri)
                         }
                         "First Adhan" -> {
