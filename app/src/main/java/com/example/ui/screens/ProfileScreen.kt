@@ -161,7 +161,7 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
     val stats = listOf(
         Triple(Translator.translate("streak", settings.language), "${progress.streak} ${Translator.translate("days", settings.language)}", Lucide.Flame),
         Triple(Translator.translate("prayer_score", settings.language), "${progress.prayerScore}", Lucide.Star),
-        Triple(Translator.translate("your_badges", settings.language), "$earnedBadgesCount ${Translator.translate("completed", settings.language)}", Lucide.Award)
+        Triple(Translator.translate("your_badges", settings.language), "$earnedBadgesCount", Lucide.Award)
     )
 
     val menuItems = listOf(
@@ -215,14 +215,46 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
             }
 
             item {
-                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                        .height(IntrinsicSize.Min),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     stats.forEach { (label, value, icon) ->
-                        Card(modifier = Modifier.weight(1f).testTag("profile_stat_${label.lowercase().replace(" ", "_")}"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant), shape = MaterialTheme.shapes.small) {
-                            Column(modifier = Modifier.fillMaxWidth().padding(14.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Card(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .testTag("profile_stat_${label.lowercase().replace(" ", "_")}"),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
+                                    .padding(vertical = 14.dp, horizontal = 8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
                                 Icon(imageVector = icon, contentDescription = label, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
                                 Spacer(modifier = Modifier.height(6.dp))
-                                Text(text = value, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 15.sp), color = MaterialTheme.colorScheme.onBackground)
-                                Text(text = label, style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    text = value,
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 15.sp),
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
                             }
                         }
                     }
