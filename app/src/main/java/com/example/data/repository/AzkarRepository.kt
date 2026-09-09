@@ -142,7 +142,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     "أدعية تفريج الكرب" -> "Duas for Relieving Distress"
                     "دعاء الاستخارة" -> "Dua Al-Istikhara"
                     "دعاء للمريض" -> "Dua for the Sick"
-                    "دعاء التحصين ضد الحسد" -> "Dua for Protection from Evil Eye & Envy"
+                    "دعاء التحصين ضد الحسد" -> "Dua For Protection"
                     else -> name
                 }
                 AzkarCategory(
