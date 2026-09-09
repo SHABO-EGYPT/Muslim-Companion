@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.composables.icons.lucide.*
+import android.media.MediaPlayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.navigation.Routes
 import com.example.ui.Translator
@@ -28,10 +30,134 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
     val chevron = if (settings.language == "Arabic") Lucide.ChevronLeft else Lucide.ChevronRight
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showSoundTypeDialog by remember { mutableStateOf(false) }
+    var showAzanVoiceDialog by remember { mutableStateOf(false) }
     var showCalculationDialog by remember { mutableStateOf(false) }
     var showTextSizeDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var showPrivacyDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    var previewMediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+    var currentlyPlayingVoice by remember { mutableStateOf<String?>(null) }
+
+    val stopPreview: () -> Unit = {
+        try {
+            previewMediaPlayer?.stop()
+            previewMediaPlayer?.release()
+        } catch (_: Exception) {}
+        previewMediaPlayer = null
+        currentlyPlayingVoice = null
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            stopPreview()
+        }
+    }
+
+    if (showAzanVoiceDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                stopPreview()
+                showAzanVoiceDialog = false
+            },
+            title = {
+                Text(
+                    text = Translator.translate("azan_voice", settings.language),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            text = {
+                Column {
+                    val voices = listOf("mishary", "makkah", "madinah", "abdulbasit")
+                    voices.forEach { voice ->
+                        val translationKey = when (voice) {
+                            "makkah" -> "azan_makkah"
+                            "madinah" -> "azan_madinah"
+                            "abdulbasit" -> "azan_abdulbasit"
+                            else -> "azan_mishary"
+                        }
+                        val isPlaying = currentlyPlayingVoice == voice
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    stopPreview()
+                                    viewModel.updateAzanVoice(voice)
+                                    showAzanVoiceDialog = false
+                                }
+                                .padding(vertical = 6.dp, horizontal = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                RadioButton(
+                                    selected = settings.azanVoice == voice,
+                                    onClick = {
+                                        stopPreview()
+                                        viewModel.updateAzanVoice(voice)
+                                        showAzanVoiceDialog = false
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = Translator.translate(translationKey, settings.language),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            IconButton(
+                                onClick = {
+                                    if (isPlaying) {
+                                        stopPreview()
+                                    } else {
+                                        stopPreview()
+                                        val resId = when (voice) {
+                                            "makkah" -> com.example.R.raw.adhan_makkah
+                                            "madinah" -> com.example.R.raw.adhan_madinah
+                                            "abdulbasit" -> com.example.R.raw.adhan_abdulbasit
+                                            else -> com.example.R.raw.full_adhan
+                                        }
+                                        try {
+                                            val player = MediaPlayer.create(context, resId)
+                                            if (player != null) {
+                                                player.setOnCompletionListener {
+                                                    stopPreview()
+                                                }
+                                                player.start()
+                                                previewMediaPlayer = player
+                                                currentlyPlayingVoice = voice
+                                            }
+                                        } catch (_: Exception) {
+                                            stopPreview()
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (isPlaying) Lucide.Pause else Lucide.Play,
+                                    contentDescription = Translator.translate("preview_sound", settings.language),
+                                    tint = if (isPlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = {
+                    stopPreview()
+                    showAzanVoiceDialog = false
+                }) {
+                    Text(Translator.translate("cancel", settings.language))
+                }
+            }
+        )
+    }
 
 
     if (showSoundTypeDialog) {
@@ -250,6 +376,26 @@ fun SettingsScreen(viewModel: SettingsViewModel, navController: NavHostControlle
                             Text(text = Translator.translate(soundTypeKey, settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                             Spacer(modifier = Modifier.width(6.dp))
                             Icon(imageVector = chevron, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                        }
+                    }
+
+                    if (settings.notificationSoundType == "Full Adhan") {
+                        val azanVoiceKey = when(settings.azanVoice) {
+                            "makkah" -> "azan_makkah"
+                            "madinah" -> "azan_madinah"
+                            "abdulbasit" -> "azan_abdulbasit"
+                            else -> "azan_mishary"
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable { showAzanVoiceDialog = true }.padding(vertical = 12.dp, horizontal = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = Translator.translate("azan_voice", settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(text = Translator.translate(azanVoiceKey, settings.language), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(imageVector = chevron, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                            }
                         }
                     }
                 }
