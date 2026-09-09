@@ -30,8 +30,26 @@
 
 ---
 
-## ✨ What's New in v1.7.2
+## ✨ What's New in v1.7.3 / Recent Updates
 
+- 📢 **Multiple Authentic Adhan Voices (أصوات الأذان المتعددة):**
+  - Choose between 4 world-renowned authentic Adhan recitations:
+    - **Sheikh Mishary Rashid Alafasy** (مشاري العفاسي)
+    - **Makkah Al-Mukarramah** - Sheikh Ali Mulla (أذان مكة المكرمة - الشيخ علي ملا)
+    - **Al-Madinah Al-Munawwarah** (أذان المدينة المنورة - الحرم النبوي)
+    - **Egypt / Sheikh Abdul Basit** (أذان مصر - الشيخ عبد الباسط عبد الصمد)
+  - **Interactive Audio Preview:** Audition and test each Adhan voice sample with play/pause controls directly within the selection dialog before saving.
+  - **Room Database Migration v30:** Smooth schema migration preserving all user preferences with zero data loss.
+- 🛡️ **Authentic Protection Duas ("Dua For Protection" / دعاء التحصين من العين والحسد):**
+  - Added dedicated protection category (`hasad_protection_dua.json`) with authentic Prophetic supplications against harm, envy, and the evil eye with targeted counts and references.
+- 🎨 **Refined Dark Mode Contrast & UI Legibility:**
+  - **Prayer Times Header:** Rich emerald teal gradient background with crisp, high-contrast white text for live countdown and Hijri/Gregorian dates.
+  - **Active Prayer Card:** Highlighted upcoming prayer with deep teal card and glowing mint border at full opacity for effortless reading.
+  - **Quran Settings Reciter Downloads:** Upgraded download cloud icons to luminous theme-aware accents, ensuring crystal-clear visibility in dark mode.
+- 👤 **Profile Statistics Card Alignment:**
+  - Standardized badge stat card value and label, ensuring uniform card heights and preventing text wrapping across all device sizes.
+- ⚡ **Performance & Bitmap Downsampling:**
+  - Implemented `BitmapFactory.Options.inSampleSize` calculation for profile images, reducing avatar memory footprint by >95% and resolving Google Play pre-launch memory optimization advisories.
 - 📱 **"Noor Divine" Home Screen Widget Redesign:**
   - **Prayer Times & Weather Hub:** Premium deep navy (`#1A2634`) and metallic gold (`#F2CA50`) aesthetic with dual Hijri/Gregorian date headers, live weather, next prayer hero card, large countdown, and 5-prayer timeline chips with active highlight.
   - **Quran Audio Player Widget:** Reimagined media player widget with tactile gold play/pause button and styled previous/next ayah controls.
@@ -44,9 +62,6 @@
 - 🔍 **Top App Bar Search Action in Quran List:**
   - Placed search icon (`Lucide.Search`) neatly in the top header beside settings, removing the permanent search bar for a cleaner, full-height reading interface.
   - Smooth animated expand/collapse search bar with clear button.
-- 📖 **Juz' Tab Header Typography Improvements:**
-  - Formatted Arabic Juz' names into textual ordinals (**الجزء الأول**, **الجزء الثاني**, ..., **الجزء الثلاثون**).
-  - Streamlined and cleaned the header display.
 - 📖 **Quran Juz' (الأجزاء), Hizb (الأحزاب), & Rub' (أرباع القرآن) Indicators & Navigation:**
   - **Surahs vs. Juz' Tabs:** Browse all 30 Juz' with starting and ending Surah/Ayah coordinates, opening directly to the start of any Juz.
   - **In-Reader Decorative Banners (`QuranDivisionBanner`):** Elegant Islamic ornaments marking the start of each Juz (`۞ الجزء ۞`), Hizb (`۞ الحزب ۞`), and quarter (`ربع` / `نصف` / `ثلاثة أرباع`).
@@ -56,12 +71,8 @@
   - Interactive bottom sheet displaying authentic Prophetic supplications for Sajdah with one-tap clipboard copy.
 - 🔤 **Dynamic App-Wide Font Size Scaling:**
   - Real-time typography scaling (**Small / Medium / Large**) applied instantly across all app screens, Azkar cards, and UI components via Compose `Density.fontScale`.
-- 📿 **Custom Dhikr Chains ("سلاسل الأذكار المخصصة"):** Build, customize, and save personal sequences of Dhikr (selecting from common phrases or adding custom entries, setting target counts with 1-by-1 steppers, and reciting them in an auto-advancing, full-screen Tasbih flow with haptic feedback).
-- ☀️ **100% Offline Astronomical Solar Geometry Calculation Engine:** High-precision astronomical algorithms calculate all 5 daily prayer times without requiring an internet connection across 14 recognized calculation authorities (Egyptian General Authority, Umm Al-Qura University Makkah, Muslim World League, ISNA, Karachi, Kuwait, Qatar, France, Turkey, Singapore, Russia, etc.).
-- 📍 **Centralized Location Architecture:** Lifecycle-safe `LocationRepository` uniting multi-tier GPS resolution (`lastLocation` $\to$ `getCurrentLocation(HIGH_ACCURACY)` $\to$ asynchronous `Geocoder` on `Dispatchers.IO`) across all screens.
-- 🎙️ **Authentic Recitation CDN Updates:** Recitation audio mapping for Sheikh Mishary Rashid Alafasy, Sheikh Mahmoud Khalil Al-Husary, Sheikh Mohamed Siddiq Al-Minshawi (Mujawwad), and Sheikh AbdulBaset AbdulSamad.
-- 🖋️ **Arabic Typography & RTL Enhancements:** Bound `ArabicSerifFamily` to bundled Noto Naskh Arabic font with strict RTL text alignment across Android 14+.
-- 🗄️ **Room Database Migration v29:** Seamless, safe migration adding `custom_dhikr_chains` table with zero user data loss.
+- 📿 **Custom Dhikr Chains ("سلاسل الأذكار المخصصة"):** Build, customize, and save personal sequences of Dhikr with target counts and full-screen Tasbih flow.
+- ☀️ **100% Offline Astronomical Solar Geometry Calculation Engine:** High-precision astronomical algorithms calculate all 5 daily prayer times without requiring an internet connection across 14 recognized calculation authorities.
 
 ---
 

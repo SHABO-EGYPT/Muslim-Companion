@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -119,27 +120,39 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
 
         LazyColumn(modifier = Modifier.fillMaxWidth().weight(1f), contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp)) {
             item {
-                Card(modifier = Modifier.fillMaxWidth().testTag("prayer_times_header_card"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary), shape = MaterialTheme.shapes.medium) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        val today = LocalDate.now()
-                        val hijri = HijrahDate.from(today)
-                        val appLocale = remember(settings.language) {
-                            if (settings.language == "Arabic") java.util.Locale.forLanguageTag("ar-u-nu-latn") else java.util.Locale.US
+                Card(
+                    modifier = Modifier.fillMaxWidth().testTag("prayer_times_header_card"),
+                    colors = CardDefaults.cardColors(containerColor = PrimaryTeal),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Brush.linearGradient(colors = listOf(Color(0xFF00695C), Color(0xFF004D40))))
+                            .padding(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            val today = LocalDate.now()
+                            val hijri = HijrahDate.from(today)
+                            val appLocale = remember(settings.language) {
+                                if (settings.language == "Arabic") java.util.Locale.forLanguageTag("ar-u-nu-latn") else java.util.Locale.US
+                            }
+                            val formatter = remember(today, appLocale) {
+                                DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", appLocale)
+                            }
+                            val hijriFormatter = remember(today, appLocale) {
+                                DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)
+                            }
+                            val dateSuffix = if (settings.language == "Arabic") " هـ" else " AH"
+                            
+                            Text(text = "${today.format(formatter)} · ${hijri.format(hijriFormatter)}$dateSuffix", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.9f))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(text = nextPrayerInfo.second, style = MaterialTheme.typography.displayLarge.copy(fontSize = 36.sp, fontWeight = FontWeight.Bold), color = Color.White)
+                            Spacer(modifier = Modifier.height(4.dp))
+                            val translatedPrayerName = Translator.translate(nextPrayerInfo.first.name.lowercase(), settings.language)
+                            Text(text = "${Translator.translate("until_adhan", settings.language)} $translatedPrayerName", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.9f))
                         }
-                        val formatter = remember(today, appLocale) {
-                            DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", appLocale)
-                        }
-                        val hijriFormatter = remember(today, appLocale) {
-                            DateTimeFormatter.ofPattern("d MMMM yyyy", appLocale)
-                        }
-                        val dateSuffix = if (settings.language == "Arabic") " هـ" else " AH"
-                        
-                        Text(text = "${today.format(formatter)} · ${hijri.format(hijriFormatter)}$dateSuffix", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = nextPrayerInfo.second, style = MaterialTheme.typography.displayLarge.copy(fontSize = 36.sp, fontWeight = FontWeight.Bold), color = Color.White)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        val translatedPrayerName = Translator.translate(nextPrayerInfo.first.name.lowercase(), settings.language)
-                        Text(text = "${Translator.translate("until_adhan", settings.language)} $translatedPrayerName", style = MaterialTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.85f))
                     }
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -161,27 +174,27 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                         }
                         .clickable(enabled = isCheckable) { viewModel.togglePrayerCompletion(item.name) }
                         .testTag("prayer_row_${item.name.lowercase()}"),
-                    colors = CardDefaults.cardColors(containerColor = if (isNext) MintTeal else Color.Transparent),
+                    colors = CardDefaults.cardColors(containerColor = if (isNext) PrimaryTeal else Color.Transparent),
                     shape = RoundedCornerShape(16.dp),
-                    border = if (isNext) BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)) else null
+                    border = if (isNext) BorderStroke(1.5.dp, MintTeal.copy(alpha = 0.8f)) else null
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp).alpha(if (isCheckable) 1f else 0.5f), 
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp).alpha(if (isCheckable || isNext) 1f else 0.7f), 
                         verticalAlignment = Alignment.CenterVertically, 
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
-                                modifier = Modifier.size(40.dp).background(if (isNext) Color.White.copy(alpha = 0.4f) else MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
+                                modifier = Modifier.size(40.dp).background(if (isNext) Color.White.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp)),
                                 contentAlignment = Alignment.Center
                             ) {
                                 val icon = when (item.iconName) { "sunrise" -> Lucide.Sunrise; "sunset" -> Lucide.Sunset; "moon" -> Lucide.CloudMoon; else -> Lucide.Sun }
-                                Icon(imageVector = icon, contentDescription = null, tint = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(imageVector = icon, contentDescription = null, tint = if (isNext) MintTeal else MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {
-                                Text(text = Translator.translate(item.name.lowercase(), settings.language), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                Text(text = item.arabicName, style = MaterialTheme.typography.bodySmall.copy(fontFamily = ArabicSerifFamily), color = if (isNext) DarkTealText.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(text = Translator.translate(item.name.lowercase(), settings.language), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = if (isNext) Color.White else MaterialTheme.colorScheme.onSurface)
+                                Text(text = item.arabicName, style = MaterialTheme.typography.bodySmall.copy(fontFamily = ArabicSerifFamily), color = if (isNext) MintTeal.copy(alpha = 0.9f) else MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -199,16 +212,17 @@ fun PrayerTimesScreen(viewModel: PrayerViewModel, navController: NavHostControll
                                 String.format(java.util.Locale.US, "%02d:%s %s", h12, m, suffix)
                             } catch (_: Exception) { item.timeString }
 
-                            Text(text = time12, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = if (isNext) DarkTealText else MaterialTheme.colorScheme.onSurface)
+                            Text(text = time12, style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), color = if (isNext) Color.White else MaterialTheme.colorScheme.onSurface)
                             Spacer(modifier = Modifier.width(12.dp))
                             Checkbox(
                                 checked = isCompleted,
                                 onCheckedChange = { viewModel.togglePrayerCompletion(item.name) },
                                 enabled = isCheckable,
                                 colors = CheckboxDefaults.colors(
-                                    checkedColor = if (isNext) DarkTealText else MaterialTheme.colorScheme.primary, 
-                                    uncheckedColor = if (isNext) DarkTealText.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                    disabledCheckedColor = if (isNext) DarkTealText.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                                    checkedColor = if (isNext) MintTeal else MaterialTheme.colorScheme.primary, 
+                                    checkmarkColor = if (isNext) DarkTealText else Color.White,
+                                    uncheckedColor = if (isNext) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    disabledCheckedColor = if (isNext) MintTeal.copy(alpha = 0.5f) else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                                     disabledUncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
                                 ),
                                 modifier = Modifier.testTag("prayer_checkbox_${item.name.lowercase()}")
