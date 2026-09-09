@@ -91,6 +91,7 @@ data class AppSettingEntity(
     val quranFont: String = "Noto Naskh Arabic",
     val quranKeepScreenOn: Boolean = true,
     val notificationSoundType: String = "Full Adhan",
+    val azanVoice: String = "mishary",
     val quranShowTranslation: Boolean = true,
     val morningAzkarNotification: Boolean = true,
     val eveningAzkarNotification: Boolean = true,

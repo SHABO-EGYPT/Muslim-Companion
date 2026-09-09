@@ -17,7 +17,7 @@ import androidx.room.RoomDatabase
         QuranAyahEntity::class,
         CustomDhikrChainEntity::class
     ],
-    version = 29,
+    version = 30,
     exportSchema = true
 )
 abstract class CompanionDatabase : RoomDatabase() {
@@ -115,13 +115,19 @@ abstract class CompanionDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_29_30 = object : androidx.room.migration.Migration(29, 30) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE app_settings ADD COLUMN azanVoice TEXT NOT NULL DEFAULT 'mishary'")
+            }
+        }
+
         fun buildDatabase(context: Context): CompanionDatabase {
             return Room.databaseBuilder(
                 context.applicationContext,
                 CompanionDatabase::class.java,
                 "companion-db"
             )
-            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28, MIGRATION_28_29)
+            .addMigrations(MIGRATION_18_19, MIGRATION_19_20, MIGRATION_20_21, MIGRATION_21_22, MIGRATION_22_23, MIGRATION_23_24, MIGRATION_24_25, MIGRATION_25_26, MIGRATION_26_27, MIGRATION_27_28, MIGRATION_28_29, MIGRATION_29_30)
             .build()
         }
     }
