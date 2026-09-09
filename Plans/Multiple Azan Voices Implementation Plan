@@ -1,0 +1,64 @@
+# Multiple Azan Voices Implementation Plan
+
+Enable users to select and preview their favorite Azan recitation (Mishary Alafasy, Makkah Ali Mulla, Madinah Haram, or Egypt Abdul Basit) for prayer notifications.
+
+## User Review Required
+> [!NOTE]
+> All 4 Azan voices will be bundled locally as speech-optimized MP3 files in `app/src/main/res/raw`, ensuring 100% offline functionality. Existing user preferences are seamlessly preserved via a safe Room database migration (v29 → v30).
+
+## Proposed Changes
+
+### Audio Assets & Packaging
+#### [NEW] `app/src/main/res/raw/adhan_makkah.mp3`
+- High-fidelity recording of Sheikh Ali Ahmad Mulla (Masjid al-Haram, Makkah).
+
+#### [NEW] `app/src/main/res/raw/adhan_madinah.mp3`
+- High-fidelity recording of the Madinah Haram recitation.
+
+#### [NEW] `app/src/main/res/raw/adhan_abdulbasit.mp3`
+- High-fidelity historical recitation of Sheikh Abdul Basit Abdus Samad (Egypt).
+
+#### [MODIFY] [keep.xml](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/res/raw/keep.xml)
+- Add new audio resources to ProGuard/R8 resource keep rules.
+
+---
+
+### Database & Persistence
+#### [MODIFY] [Entities.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/local/Entities.kt)
+- Add `azanVoice: String = "mishary"` to `AppSettingEntity`.
+
+#### [MODIFY] [CompanionDatabase.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/data/local/CompanionDatabase.kt)
+- Increment database version from 29 to 30 and register `MIGRATION_29_30`.
+
+---
+
+### Localization & ViewModel
+#### [MODIFY] [Translation.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/Translation.kt)
+- Add English & Arabic translations for Azan voice options and preview labels.
+
+#### [MODIFY] [SettingsViewModel.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/viewmodel/SettingsViewModel.kt)
+- Add `updateAzanVoice(voice: String)`.
+
+---
+
+### Notifications & UI
+#### [MODIFY] [PrayerNotificationReceiver.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/notifications/PrayerNotificationReceiver.kt)
+- Dynamically bind channel ID and audio resource URI based on `settings.azanVoice`.
+
+#### [MODIFY] [SettingsScreen.kt](file:///d:/AI/Projects%20With%20AI/Islamic%20App/Muslim%20Companion%20V1/muslim-companion/app/src/main/java/com/example/ui/screens/SettingsScreen.kt)
+- Add "Azan Voice" row under "Notification Sound Type".
+- Implement `AzanVoiceSelectionDialog` with play/stop audio preview.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- `./gradlew testDebugUnitTest`: Run complete test suite, including database migration and translation tests.
+- `./gradlew assembleDebug`: Verify clean build of the application APK.
+
+### Manual Verification
+1. Open Settings -> Ensure "Notification Sound Type" is set to "Full Adhan".
+2. Confirm the "Azan Voice" row appears displaying the current voice.
+3. Open the "Azan Voice" dialog and tap Play/Stop next to each voice to preview.
+4. Select each voice and verify that preferences are saved and retained across app restarts.
