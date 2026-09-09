@@ -2,7 +2,7 @@
 
 # Muslim Companion (رفيق المسلم)
 
-[![Release](https://img.shields.io/badge/Release-v1.7.2-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
+[![Release](https://img.shields.io/badge/Release-v1.7.3-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
 [![License](https://img.shields.io/badge/License-100%25%20Free%20%26%20Ad--Free-blue.svg)](PRIVACY_POLICY.md)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-37%20(Android%2015+)-orange.svg)](https://developer.android.com)
 [![Package](https://img.shields.io/badge/Package-com.companion.muslim.app-teal.svg)](https://play.google.com/store)
