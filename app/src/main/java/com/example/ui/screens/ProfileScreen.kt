@@ -78,27 +78,13 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
 
     val profileBitmap = remember(progress.profileImageUri) {
         progress.profileImageUri?.let { uriStr ->
-            try {
-                val uri = android.net.Uri.parse(uriStr)
-                context.contentResolver.openInputStream(uri)?.use { stream ->
-                    android.graphics.BitmapFactory.decodeStream(stream)?.asImageBitmap()
-                }
-            } catch (e: Exception) {
-                null
-            }
+            decodeSampledBitmap(context, android.net.Uri.parse(uriStr), 256, 256)
         }
     }
 
     val editProfileBitmap = remember(editImageUri) {
         editImageUri?.let { uriStr ->
-            try {
-                val uri = android.net.Uri.parse(uriStr)
-                context.contentResolver.openInputStream(uri)?.use { stream ->
-                    android.graphics.BitmapFactory.decodeStream(stream)?.asImageBitmap()
-                }
-            } catch (e: Exception) {
-                null
-            }
+            decodeSampledBitmap(context, android.net.Uri.parse(uriStr), 256, 256)
         }
     }
     val locationPermissionState = rememberMultiplePermissionsState(
@@ -493,5 +479,40 @@ fun ProfileScreen(viewModel: ProfileViewModel, navController: NavHostController)
                 }) { Text("Cancel") } 
             }
         )
+    }
+}
+
+private fun decodeSampledBitmap(
+    context: android.content.Context,
+    uri: android.net.Uri,
+    reqWidth: Int = 256,
+    reqHeight: Int = 256
+): androidx.compose.ui.graphics.ImageBitmap? {
+    return try {
+        val options = android.graphics.BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        context.contentResolver.openInputStream(uri)?.use { stream ->
+            android.graphics.BitmapFactory.decodeStream(stream, null, options)
+        }
+
+        var inSampleSize = 1
+        val height = options.outHeight
+        val width = options.outWidth
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+
+        options.inJustDecodeBounds = false
+        options.inSampleSize = inSampleSize
+        context.contentResolver.openInputStream(uri)?.use { stream ->
+            android.graphics.BitmapFactory.decodeStream(stream, null, options)?.asImageBitmap()
+        }
+    } catch (e: Exception) {
+        null
     }
 }
