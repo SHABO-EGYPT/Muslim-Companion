@@ -38,7 +38,8 @@ class TranslatorTest {
             "notifications", "prayer_notifications", "dark_theme", "language",
             "reciter", "prayer_calculation", "text_size", "next_prayer",
             "until_adhan", "digital_tasbih", "morning_azkar", "evening_azkar",
-            "sound_type", "silent", "subtle", "full_adhan"
+            "sound_type", "silent", "subtle", "full_adhan",
+            "azan_voice", "azan_mishary", "azan_makkah", "azan_madinah", "azan_abdulbasit", "preview_sound"
         )
         englishKeys.forEach { key ->
             val result = Translator.translate(key, "English")
@@ -51,7 +52,8 @@ class TranslatorTest {
         val keys = listOf(
             "home", "quran", "azkar", "prayer", "profile", "settings",
             "welcome_to_app", "onboarding_subtitle", "your_name", "your_location",
-            "get_started", "choose_language", "rate_app", "next_surah", "end_of_quran"
+            "get_started", "choose_language", "rate_app", "next_surah", "end_of_quran",
+            "azan_voice", "azan_mishary", "azan_makkah", "azan_madinah", "azan_abdulbasit", "preview_sound"
         )
         keys.forEach { key ->
             val english = Translator.translate(key, "English")

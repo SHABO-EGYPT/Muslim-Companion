@@ -82,6 +82,13 @@ class SettingsViewModel @Inject constructor(private val repository: CompanionRep
         }
     }
 
+    fun updateAzanVoice(voice: String) {
+        viewModelScope.launch {
+            val s = repository.getSettingsDirect() ?: AppSettingEntity()
+            repository.saveSettings(s.copy(azanVoice = voice))
+        }
+    }
+
     fun updateCalculationMethod(method: String) {
         viewModelScope.launch {
             val s = repository.getSettingsDirect() ?: AppSettingEntity()
