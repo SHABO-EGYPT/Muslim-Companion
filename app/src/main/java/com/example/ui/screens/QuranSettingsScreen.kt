@@ -113,14 +113,14 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                         Text(text = Translator.translate("arabic_text_size", settings.language), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), color = MaterialTheme.colorScheme.onSurface)
                         Text(text = Translator.translate("adjust_script_size_desc", settings.language), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    Text(text = "${quranSettings.quranTextSize.toInt()} sp", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = DarkTealText)
+                    Text(text = "${quranSettings.quranTextSize.toInt()} sp", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.primary)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Slider(
                     value = quranSettings.quranTextSize.coerceIn(18f, 44f),
                     onValueChange = { viewModel.updateQuranTextSize(it) },
                     valueRange = 18f..44f,
-                    colors = SliderDefaults.colors(thumbColor = DarkTealText, activeTrackColor = MintTeal, inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant),
+                    colors = SliderDefaults.colors(thumbColor = MaterialTheme.colorScheme.primary, activeTrackColor = MaterialTheme.colorScheme.primary, inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant),
                     modifier = Modifier.testTag("quran_text_size_slider")
                 )
             }
@@ -158,8 +158,8 @@ fun QuranSettingsScreen(viewModel: SurahReaderViewModel, navController: NavHostC
                             DropdownMenuItem(
                                 text = {
                                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (quranSettings.quranFont == fontName) FontWeight.Bold else FontWeight.Normal), color = if (quranSettings.quranFont == fontName) DarkTealText else MaterialTheme.colorScheme.onSurface)
-                                        Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName] ?: androidx.compose.ui.text.font.FontFamily.Default, fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (quranSettings.quranFont == fontName) DarkTealText else MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(text = fontName, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = if (quranSettings.quranFont == fontName) FontWeight.Bold else FontWeight.Normal), color = if (quranSettings.quranFont == fontName) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                                        Text(text = "القرآن", style = TextStyle(fontFamily = fontFamilies[fontName] ?: androidx.compose.ui.text.font.FontFamily.Default, fontSize = 16.sp, textDirection = TextDirection.Rtl), color = if (quranSettings.quranFont == fontName) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 },
                                 onClick = { viewModel.updateQuranFont(fontName); expanded = false },
@@ -276,7 +276,7 @@ fun ReciterDownloadItem(
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
             width = 1.dp,
-            color = if (isActive) DarkTealText else MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+            color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -297,13 +297,13 @@ fun ReciterDownloadItem(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(4.dp))
-                                    .background(DarkTealText)
+                                    .background(MaterialTheme.colorScheme.primary)
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     text = Translator.translate("active", settings.language),
                                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                                    color = Color.White
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -312,7 +312,7 @@ fun ReciterDownloadItem(
                     Text(
                         text = statusText,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (downloadedCount == 114) MintTeal else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (downloadedCount == 114) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -336,7 +336,7 @@ fun ReciterDownloadItem(
                             Icon(
                                 imageVector = Lucide.CloudDownload,
                                 contentDescription = "Download",
-                                tint = DarkTealText,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
