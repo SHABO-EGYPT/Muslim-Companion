@@ -145,6 +145,7 @@ fun AzkarListScreen(viewModel: AzkarViewModel, navController: NavHostController)
                     "sunset" -> Lucide.Sunset
                     "moon" -> Lucide.Moon
                     "star" -> Lucide.Star
+                    "shield" -> Lucide.Shield
                     else -> Lucide.Sparkles
                 }
                 Card(

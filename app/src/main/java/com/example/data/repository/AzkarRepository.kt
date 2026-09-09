@@ -92,7 +92,8 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
         "أذكار النوم",
         "أدعية تفريج الكرب",
         "دعاء الاستخارة",
-        "دعاء للمريض"
+        "دعاء للمريض",
+        "دعاء التحصين ضد الحسد"
     )
 
     override fun getAzkarCategoriesFlow(progress: UserProgressEntity): Flow<List<AzkarCategory>> = flow {
@@ -108,12 +109,14 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     name.contains("المساء") -> "sunset"
                     name.contains("النوم") -> "moon"
                     name.contains("الصلاة") -> "star"
+                    name.contains("الحسد") || name.contains("التحصين") -> "shield"
                     else -> "sparkles"
                 }
                 val color = when {
                     name.contains("الصباح") -> 0xFFFFDEA0L
                     name.contains("المساء") -> 0xFFA8F2DCL
                     name.contains("النوم") -> 0xFFCCE8DAL
+                    name.contains("الحسد") || name.contains("التحصين") -> 0xFFE8EAF6L
                     else -> 0xFFD8E2FFL
                 }
                 val progressCount = when {
@@ -139,6 +142,7 @@ class RealAzkarRepository(private val context: Context) : AzkarRepository {
                     "أدعية تفريج الكرب" -> "Duas for Relieving Distress"
                     "دعاء الاستخارة" -> "Dua Al-Istikhara"
                     "دعاء للمريض" -> "Dua for the Sick"
+                    "دعاء التحصين ضد الحسد" -> "Dua for Protection from Evil Eye & Envy"
                     else -> name
                 }
                 AzkarCategory(
