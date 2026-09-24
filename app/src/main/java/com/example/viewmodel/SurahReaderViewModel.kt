@@ -138,33 +138,46 @@ class SurahReaderViewModel @Inject constructor(
         
         viewModelScope.launch {
             try {
-                val reciterName = recitersList.find { it.id == quranSettings.value.quranReciter }?.name ?: "Reciter"
+                val reciterId = quranSettings.value.quranReciter.ifBlank { "ar.alafasy" }
+                val reciterName = recitersList.find { it.id == reciterId }?.name ?: "Reciter"
                 val surahName = _currentSurah.value?.name ?: "Quran Recitation"
+                val surahNumber = _currentSurah.value?.number ?: 1
                 
                 val mediaItems = _ayahs.value.map { a ->
                     val uri = if (a.audioUrl.isNotBlank()) a.audioUrl else {
-                        val reciterId = quranSettings.value.quranReciter
-                        val surahNumber = _currentSurah.value?.number ?: 1
-                        audioManager.getPlaybackUri(reciterId, surahNumber)
+                        QuranAudioManager.getVerseAudioUrl(reciterId, surahNumber, a.number)
                     }
                     val metadata = MediaMetadata.Builder()
                         .setTitle(surahName)
                         .setArtist(reciterName)
+                        .setDisplayTitle("$surahName - ${a.number}")
                         .build()
                     MediaItem.Builder()
                         .setUri(uri)
+                        .setMediaId("${surahNumber}:${a.number}")
                         .setMediaMetadata(metadata)
                         .build()
                 }
                 
-                player?.let { p ->
-                    p.setMediaItems(mediaItems)
-                    p.seekTo(activeIndex, 0L)
-                    p.prepare()
-                    p.play()
+                var p = player
+                if (p == null) {
+                    for (i in 0..12) {
+                        kotlinx.coroutines.delay(100)
+                        p = player
+                        if (p != null) break
+                    }
+                }
+
+                p?.let { playerInstance ->
+                    playerInstance.setMediaItems(mediaItems)
+                    playerInstance.seekTo(activeIndex, 0L)
+                    playerInstance.prepare()
+                    playerInstance.play()
+                } ?: run {
+                    android.util.Log.e("QuranAudio", "Player controller is null; could not start playback")
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                android.util.Log.e("QuranAudio", "Failed to start ayah playback", e)
             }
         }
     }
@@ -180,6 +193,9 @@ class SurahReaderViewModel @Inject constructor(
                 val activeAyah = ayahsList.find { it.number == activeAyahNum } ?: ayahsList.first()
                 playAyah(activeAyah)
             } else {
+                if (p.playbackState == Player.STATE_IDLE) {
+                    p.prepare()
+                }
                 p.play()
             }
         }

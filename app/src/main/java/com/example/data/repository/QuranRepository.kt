@@ -83,11 +83,16 @@ class OfflineQuranRepository(
 
             emit(entities.map { entity ->
                 val cached = cachedTranslations[entity.ayah]
+                val audioUrl = if (cached?.audioUrl?.isNotBlank() == true) {
+                    cached.audioUrl
+                } else {
+                    com.example.data.quran.QuranAudioManager.getVerseAudioUrl(cacheKey, surahNumber, entity.ayah)
+                }
                 Ayah(
                     number = entity.ayah,
                     arabicText = entity.arabicText,
                     translation = cached?.translation ?: "",
-                    audioUrl = cached?.audioUrl ?: ""
+                    audioUrl = audioUrl
                 )
             })
         }
@@ -144,15 +149,14 @@ class OfflineQuranRepository(
 
                     val vKey = "$surahNumber:$vNum"
                     val rawUrl = audioByKey[vKey]?.url ?: audioByNum[vNum]?.url ?: ""
+                    val cacheKey = if (isLegacyReciterId) "ar.alafasy" else reciter
                     val audioUrl = when {
-                        rawUrl.isBlank() -> ""
-                        rawUrl.startsWith("//") -> "https:$rawUrl"
-                        !rawUrl.startsWith("http") -> "https://verses.quran.foundation/${rawUrl.trimStart('/')}"
-                        else -> rawUrl
+                        rawUrl.isNotBlank() && rawUrl.startsWith("//") -> "https:$rawUrl"
+                        rawUrl.isNotBlank() && !rawUrl.startsWith("http") -> "https://verses.quran.foundation/${rawUrl.trimStart('/')}"
+                        rawUrl.isNotBlank() -> rawUrl
+                        else -> com.example.data.quran.QuranAudioManager.getVerseAudioUrl(cacheKey, surahNumber, vNum)
                     }
 
-                    // Always store with the new-format reciter ID
-                    val cacheKey = if (isLegacyReciterId) "ar.alafasy" else reciter
                     CachedAyahEntity(
                         id = "${surahNumber}_${vNum}_${cacheKey}",
                         surahNumber = surahNumber,

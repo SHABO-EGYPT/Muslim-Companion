@@ -39,6 +39,21 @@ class QuranAudioManager(private val context: Context) {
         )
 
         private const val BASE_CDN = "https://download.quranicaudio.com/quran"
+
+        /**
+         * Computes the high-speed CDN URL for an individual Ayah.
+         * Guaranteed to be available and deterministic for each of the 4 supported reciters.
+         */
+        fun getVerseAudioUrl(reciterId: String, surahNumber: Int, ayahNumber: Int): String {
+            val key = "%03d%03d.mp3".format(java.util.Locale.US, surahNumber, ayahNumber)
+            return when (reciterId) {
+                "ar.alafasy" -> "https://verses.quran.foundation/Alafasy/mp3/$key"
+                "ar.abdulbasitmurattal" -> "https://verses.quran.foundation/AbdulBaset/Murattal/mp3/$key"
+                "ar.husary" -> "https://mirrors.quranicaudio.com/everyayah/Husary_64kbps/$key"
+                "ar.minshawimujawwad" -> "https://verses.quran.foundation/Minshawi/Mujawwad/mp3/$key"
+                else -> "https://verses.quran.foundation/Alafasy/mp3/$key"
+            }
+        }
     }
 
     // ── File resolution ──────────────────────────────────────────────────────

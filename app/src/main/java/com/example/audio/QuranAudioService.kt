@@ -34,7 +34,25 @@ class QuranAudioService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         
-        val playerInstance = ExoPlayer.Builder(this).build()
+        val audioAttributes = androidx.media3.common.AudioAttributes.Builder()
+            .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MUSIC)
+            .setUsage(androidx.media3.common.C.USAGE_MEDIA)
+            .build()
+
+        val httpDataSourceFactory = androidx.media3.datasource.DefaultHttpDataSource.Factory()
+            .setAllowCrossProtocolRedirects(true)
+            .setConnectTimeoutMs(25_000)
+            .setReadTimeoutMs(30_000)
+            .setUserAgent("MuslimCompanion/1.7.4 (Android; ExoPlayer)")
+
+        val mediaSourceFactory = androidx.media3.exoplayer.source.DefaultMediaSourceFactory(this)
+            .setDataSourceFactory(httpDataSourceFactory)
+
+        val playerInstance = ExoPlayer.Builder(this)
+            .setAudioAttributes(audioAttributes, true)
+            .setWakeMode(androidx.media3.common.C.WAKE_MODE_NETWORK)
+            .setMediaSourceFactory(mediaSourceFactory)
+            .build()
         player = playerInstance
 
         // Create a PendingIntent to open the MainActivity when notification is clicked
@@ -61,6 +79,10 @@ class QuranAudioService : MediaSessionService() {
 
             override fun onPlaybackStateChanged(playbackState: Int) {
                 updatePlaybackState()
+            }
+
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                android.util.Log.e("QuranAudioService", "ExoPlayer error: ${error.errorCodeName} - ${error.message}", error)
             }
         })
     }

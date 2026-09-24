@@ -277,7 +277,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp)
                                     .alpha(opacity)
-                                    .pointerInput(Unit) {
+                                    .pointerInput(ayah.number) {
                                         detectTapGestures(
                                             onTap = {
                                                 viewModel.updateProgress(activeSurah.number, activeSurah.name, activeSurah.arabicName, ayah.number, ayah.number.toFloat() / activeSurah.ayahsCount)
