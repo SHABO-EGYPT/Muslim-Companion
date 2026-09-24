@@ -1,7 +1,7 @@
 # Muslim Companion (رفيق المسلم) — Project Memory & Architecture Blueprint
 **Date:** September 24, 2026  
 **Project:** Muslim Companion (`com.companion.muslim.app`)  
-**Current Release Version:** v1.7.3 (`versionCode = 10`)  
+**Current Release Version:** v1.7.4 (`versionCode = 11`)  
 **Dedication:** 100% Free & Ad-Free Sadaqah Jariyah (صدقة جارية)
 
 ---
@@ -134,7 +134,18 @@ muslim-companion/
 
 ## 5. Major Milestone & Update History
 
-### v1.7.3 (Current Milestone)
+### v1.7.4 (Google Play Store Production Release)
+- **Google Play Store Release Artifacts:**
+  - Production Android App Bundle (`APK/Muslim-Companion-1.7.4.aab`) with Target SDK 37, signed using release keystore and optimized with R8.
+  - Standalone production release APK (`APK/Muslim-Companion-1.7.4.apk`).
+- **Comprehensive Quality Audit & Zero-Lint Milestone:**
+  - Passed Android Lint with 0 errors (`lintDebug`, `lintVitalRelease`).
+  - Extracted splash screen compatibility styling to `values-v31/themes.xml`.
+  - Declared `VIBRATE` permission in manifest for custom Dhikr sequences.
+  - Conformed Room SQLite migration supertype parameter signatures.
+  - Verified 100% unit test suite passing (`testDebugUnitTest`).
+
+### v1.7.3
 - **Accurate Live Weather Synchronization & Overhaul:**
   - **Dynamic Location Awareness:** Integrated `LocationRepository` into `HomeViewModel` and `WeatherRepository`, replacing the hardcoded Makkah coordinates with the user's actual GPS or saved location.
   - **Open-Meteo Integration Upgrades:** Added `timezone=auto` and modern parameters (`current=temperature_2m,weather_code,is_day`) to `WeatherApi`.
