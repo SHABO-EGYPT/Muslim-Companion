@@ -2,7 +2,7 @@
 
 # Muslim Companion (رفيق المسلم)
 
-[![Release](https://img.shields.io/badge/Release-v1.7.3-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
+[![Release](https://img.shields.io/badge/Release-v1.7.4-green.svg)](https://github.com/SHABO-EGYPT/Muslim-Companion)
 [![License](https://img.shields.io/badge/License-100%25%20Free%20%26%20Ad--Free-blue.svg)](PRIVACY_POLICY.md)
 [![Target SDK](https://img.shields.io/badge/Target%20SDK-37%20(Android%2015+)-orange.svg)](https://developer.android.com)
 [![Package](https://img.shields.io/badge/Package-com.companion.muslim.app-teal.svg)](https://play.google.com/store)
@@ -30,7 +30,19 @@
 
 ---
 
-## ✨ What's New in v1.7.3 / Recent Updates
+## ✨ What's New in v1.7.4 (Google Play Production Release)
+
+- 🎧 **High-Speed Quran Recitation Engine (تحسين محرك التلاوة القرآنية):**
+  - Guaranteed verse-level audio CDN routing for 4 world-renowned reciters (Mishary Alafasy, Abdul Basit, Al-Husary, Al-Minshawi).
+  - Added cross-protocol redirect support and audio focus handling to AndroidX Media3 ExoPlayer.
+  - Responsive tap playback and automatic verse advancement with progress tracking.
+- 🛠️ **Quality Audit & Zero-Lint Architecture:**
+  - Complete Android Lint pass with 0 errors.
+  - Extracted splash screen compatibility styling to `values-v31/themes.xml`.
+  - Added `android.permission.VIBRATE` to manifest for custom Dhikr sequences.
+  - Fully tested on Android 15 (Target SDK 37) and verified on Pixel emulator.
+
+## ✨ What's New in v1.7.3
 
 - 📢 **Multiple Authentic Adhan Voices (أصوات الأذان المتعددة):**
   - Choose between 4 world-renowned authentic Adhan recitations:
