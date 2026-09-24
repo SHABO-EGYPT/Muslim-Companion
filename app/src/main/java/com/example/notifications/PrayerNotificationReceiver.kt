@@ -101,8 +101,33 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                         "It is time for $translatedPrayer ($arabicName) prayer."
                     }
 
+                    val appIconBitmap = try {
+                        val drawable = androidx.core.content.ContextCompat.getDrawable(context, com.example.R.mipmap.ic_launcher)
+                        if (drawable is android.graphics.drawable.BitmapDrawable) {
+                            drawable.bitmap
+                        } else if (drawable != null) {
+                            val bitmap = android.graphics.Bitmap.createBitmap(
+                                drawable.intrinsicWidth.coerceAtLeast(1),
+                                drawable.intrinsicHeight.coerceAtLeast(1),
+                                android.graphics.Bitmap.Config.ARGB_8888
+                            )
+                            val canvas = android.graphics.Canvas(bitmap)
+                            drawable.setBounds(0, 0, canvas.width, canvas.height)
+                            drawable.draw(canvas)
+                            bitmap
+                        } else null
+                    } catch (e: Exception) {
+                        null
+                    }
+
                     val builder = NotificationCompat.Builder(context, channelId)
-                        .setSmallIcon(android.R.drawable.ic_dialog_info) 
+                        .setSmallIcon(com.example.R.drawable.ic_notification_app_icon)
+                        .setColor(androidx.core.content.ContextCompat.getColor(context, com.example.R.color.notification_accent))
+                        .apply {
+                            if (appIconBitmap != null) {
+                                setLargeIcon(appIconBitmap)
+                            }
+                        }
                         .setContentTitle(title)
                         .setContentText(contentText)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)

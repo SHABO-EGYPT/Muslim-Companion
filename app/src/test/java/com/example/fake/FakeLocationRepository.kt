@@ -9,4 +9,7 @@ class FakeLocationRepository(
     override suspend fun getCurrentLocation(): AppLocation? = currentLocation
     override suspend fun reverseGeocode(latitude: Double, longitude: Double): String =
         currentLocation?.locationName ?: "Coordinates: %.2f, %.2f".format(java.util.Locale.US, latitude, longitude)
+
+    override suspend fun getCoordinatesForLocation(locationName: String): Pair<Double, Double>? =
+        currentLocation?.let { it.latitude to it.longitude }
 }

@@ -93,7 +93,18 @@ class PrayerWeatherWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_date_gregorian, gregorianDateStr)
 
             // 2. Weather Status
-            views.setTextViewText(R.id.widget_weather, "☀️ 26°C")
+            val weatherPrefs = context.getSharedPreferences("weather_prefs", Context.MODE_PRIVATE)
+            val tempC = if (weatherPrefs.contains("cached_temp_c")) weatherPrefs.getInt("cached_temp_c", 26) else 26
+            val conditionStr = weatherPrefs.getString("cached_condition", "SUNNY") ?: "SUNNY"
+            val weatherIcon = when(conditionStr) {
+                "CLEAR_NIGHT" -> "🌙"
+                "CLOUDY" -> "☁️"
+                "RAINY" -> "🌧️"
+                "SNOWY" -> "❄️"
+                "HOT" -> "☀️"
+                else -> "☀️"
+            }
+            views.setTextViewText(R.id.widget_weather, "$weatherIcon $tempC°C")
 
             // 3. Prayer Times List (Load cached if available, fallback to defaults)
             val defaultPrayers = listOf(

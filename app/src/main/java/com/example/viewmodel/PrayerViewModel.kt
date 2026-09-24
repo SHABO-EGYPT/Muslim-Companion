@@ -20,7 +20,8 @@ import kotlinx.coroutines.sync.withLock
 class PrayerViewModel @Inject constructor(
     private val repository: CompanionRepository,
     private val locationRepository: com.example.data.location.LocationRepository,
-    countdownManager: PrayerCountdownManager
+    countdownManager: PrayerCountdownManager,
+    private val weatherRepository: com.example.data.repository.WeatherRepository? = null
 ) : ViewModel() {
 
     private val mutex = Mutex()
@@ -73,6 +74,11 @@ class PrayerViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.refreshPrayerTimesByLocation(latitude, longitude)
+                val currentProgress = repository.getUserProgressDirect() ?: UserProgressEntity()
+                if (currentProgress.location != name) {
+                    repository.saveUserProgress(currentProgress.copy(location = name))
+                }
+                weatherRepository?.fetchWeather(latitude, longitude)
                 _prayerLoadError.value = null
             } catch (e: Exception) {
                 _prayerLoadError.value = e.message ?: "Failed to fetch prayer times. You might be offline."

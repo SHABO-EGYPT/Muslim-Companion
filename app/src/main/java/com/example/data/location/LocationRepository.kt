@@ -29,6 +29,7 @@ data class AppLocation(
 interface LocationRepository {
     suspend fun getCurrentLocation(): AppLocation?
     suspend fun reverseGeocode(latitude: Double, longitude: Double): String
+    suspend fun getCoordinatesForLocation(locationName: String): Pair<Double, Double>?
 }
 
 @Singleton
@@ -141,6 +142,65 @@ class RealLocationRepository @Inject constructor(
         } catch (e: Exception) {
             Log.w(TAG, "Geocoding failed for ($latitude, $longitude)", e)
             "Coordinates: %.2f, %.2f".format(Locale.US, latitude, longitude)
+        }
+    }
+
+    override suspend fun getCoordinatesForLocation(locationName: String): Pair<Double, Double>? = withContext(Dispatchers.IO) {
+        if (locationName.isBlank()) return@withContext null
+
+        // 1. Check if string is formatted coordinates "Coordinates: lat, lng" or "lat, lng"
+        val coordRegex = Regex("""(?:Coordinates:\s*)?([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)""")
+        val match = coordRegex.find(locationName)
+        if (match != null) {
+            val lat = match.groupValues[1].toDoubleOrNull()
+            val lng = match.groupValues[2].toDoubleOrNull()
+            if (lat != null && lng != null) {
+                return@withContext Pair(lat, lng)
+            }
+        }
+
+        // 2. Try Android Geocoder
+        try {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            @Suppress("DEPRECATION")
+            val list = geocoder.getFromLocationName(locationName, 1)
+            if (!list.isNullOrEmpty()) {
+                val address = list[0]
+                return@withContext Pair(address.latitude, address.longitude)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Geocoding location name failed for '$locationName'", e)
+        }
+
+        // 3. Fallback map for common cities (English & Arabic)
+        val normalized = locationName.trim().lowercase()
+        return@withContext when {
+            normalized.contains("cairo") || normalized.contains("قاهرة") || normalized.contains("مصر") || normalized.contains("egypt") -> Pair(30.0444, 31.2357)
+            normalized.contains("alexandria") || normalized.contains("إسكندرية") || normalized.contains("اسكندرية") -> Pair(31.2001, 29.9187)
+            normalized.contains("giza") || normalized.contains("جيزة") -> Pair(30.0131, 31.2089)
+            normalized.contains("makkah") || normalized.contains("mecca") || normalized.contains("مكة") -> Pair(21.4225, 39.8262)
+            normalized.contains("madinah") || normalized.contains("medina") || normalized.contains("مدينة") -> Pair(24.5247, 39.5692)
+            normalized.contains("riyadh") || normalized.contains("رياض") -> Pair(24.7136, 46.6753)
+            normalized.contains("jeddah") || normalized.contains("جدة") -> Pair(21.5433, 39.1728)
+            normalized.contains("dubai") || normalized.contains("دبي") -> Pair(25.2048, 55.2708)
+            normalized.contains("abu dhabi") || normalized.contains("أبوظبي") -> Pair(24.4539, 54.3773)
+            normalized.contains("amman") || normalized.contains("عمان") -> Pair(31.9454, 35.9284)
+            normalized.contains("damascus") || normalized.contains("دمشق") -> Pair(33.5138, 36.2765)
+            normalized.contains("beirut") || normalized.contains("بيروت") -> Pair(33.8938, 35.5018)
+            normalized.contains("baghdad") || normalized.contains("بغداد") -> Pair(33.3152, 44.3661)
+            normalized.contains("kuwait") || normalized.contains("كويت") -> Pair(29.3759, 47.9774)
+            normalized.contains("doha") || normalized.contains("دوحة") -> Pair(25.2854, 51.5310)
+            normalized.contains("muscat") || normalized.contains("مسقط") -> Pair(23.5880, 58.3829)
+            normalized.contains("manama") || normalized.contains("منامة") -> Pair(26.2285, 50.5860)
+            normalized.contains("jerusalem") || normalized.contains("quds") || normalized.contains("قدس") -> Pair(31.7683, 35.2137)
+            normalized.contains("istanbul") || normalized.contains("إسطنبول") -> Pair(41.0082, 28.9784)
+            normalized.contains("london") || normalized.contains("لندن") -> Pair(51.5074, -0.1278)
+            normalized.contains("new york") || normalized.contains("نيويورك") -> Pair(40.7128, -74.0060)
+            normalized.contains("paris") || normalized.contains("باريس") -> Pair(48.8566, 2.3522)
+            normalized.contains("berlin") || normalized.contains("برلين") -> Pair(52.5200, 13.4050)
+            normalized.contains("jakarta") || normalized.contains("جاكرتا") -> Pair(-6.2088, 106.8456)
+            normalized.contains("kuala lumpur") || normalized.contains("كوالالمبور") -> Pair(3.1390, 101.6869)
+            else -> null
         }
     }
 
