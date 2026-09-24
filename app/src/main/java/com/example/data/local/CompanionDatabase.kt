@@ -18,42 +18,42 @@ import androidx.room.RoomDatabase
         CustomDhikrChainEntity::class
     ],
     version = 30,
-    exportSchema = true
+    exportSchema = false
 )
 abstract class CompanionDatabase : RoomDatabase() {
     abstract fun companionDao(): CompanionDao
 
     companion object {
         private val MIGRATION_18_19 = object : androidx.room.migration.Migration(18, 19) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN fajrOnTimeCount INTEGER NOT NULL DEFAULT 0")
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN ishaOnTimeCount INTEGER NOT NULL DEFAULT 0")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN fajrOnTimeCount INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN ishaOnTimeCount INTEGER NOT NULL DEFAULT 0")
             }
         }
 
         private val MIGRATION_19_20 = object : androidx.room.migration.Migration(19, 20) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE cached_ayahs ADD COLUMN translation TEXT NOT NULL DEFAULT ''")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE cached_ayahs ADD COLUMN translation TEXT NOT NULL DEFAULT ''")
             }
         }
 
         private val MIGRATION_20_21 = object : androidx.room.migration.Migration(20, 21) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL(
                     "CREATE TABLE IF NOT EXISTS `notifications` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `time` TEXT NOT NULL, `iconId` INTEGER NOT NULL, `isRead` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL)"
                 )
             }
         }
 
         private val MIGRATION_21_22 = object : androidx.room.migration.Migration(21, 22) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE app_settings ADD COLUMN quranShowTranslation INTEGER NOT NULL DEFAULT 1")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE app_settings ADD COLUMN quranShowTranslation INTEGER NOT NULL DEFAULT 1")
             }
         }
 
         private val MIGRATION_22_23 = object : androidx.room.migration.Migration(22, 23) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL(
                     """CREATE TABLE IF NOT EXISTS `quran_ayahs` (
                         `id` TEXT NOT NULL PRIMARY KEY,
                         `sura` INTEGER NOT NULL,
@@ -65,42 +65,42 @@ abstract class CompanionDatabase : RoomDatabase() {
         }
 
         private val MIGRATION_23_24 = object : androidx.room.migration.Migration(23, 24) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                 // Migrate old quran.com numeric reciter IDs to new ar.* format
-                database.execSQL("UPDATE app_settings SET quranReciter = 'ar.alafasy'         WHERE quranReciter IN ('7', '1', '2', '3', '4', '5', '6', '8', '9', '10')")
+                db.execSQL("UPDATE app_settings SET quranReciter = 'ar.alafasy'         WHERE quranReciter IN ('7', '1', '2', '3', '4', '5', '6', '8', '9', '10')")
             }
         }
 
         private val MIGRATION_24_25 = object : androidx.room.migration.Migration(24, 25) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN profileImageUri TEXT")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN profileImageUri TEXT")
             }
         }
 
         private val MIGRATION_25_26 = object : androidx.room.migration.Migration(25, 26) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE app_settings ADD COLUMN morningAzkarNotification INTEGER NOT NULL DEFAULT 1")
-                database.execSQL("ALTER TABLE app_settings ADD COLUMN eveningAzkarNotification INTEGER NOT NULL DEFAULT 1")
-                database.execSQL("ALTER TABLE app_settings ADD COLUMN afterPrayerAzkarNotification INTEGER NOT NULL DEFAULT 1")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE app_settings ADD COLUMN morningAzkarNotification INTEGER NOT NULL DEFAULT 1")
+                db.execSQL("ALTER TABLE app_settings ADD COLUMN eveningAzkarNotification INTEGER NOT NULL DEFAULT 1")
+                db.execSQL("ALTER TABLE app_settings ADD COLUMN afterPrayerAzkarNotification INTEGER NOT NULL DEFAULT 1")
             }
         }
 
         private val MIGRATION_26_27 = object : androidx.room.migration.Migration(26, 27) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN lastAzkarDate TEXT NOT NULL DEFAULT ''")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN lastAzkarDate TEXT NOT NULL DEFAULT ''")
             }
         }
 
         private val MIGRATION_27_28 = object : androidx.room.migration.Migration(27, 28) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN wakeupDone INTEGER NOT NULL DEFAULT 0")
-                database.execSQL("ALTER TABLE user_progress ADD COLUMN customAzkarProgress TEXT NOT NULL DEFAULT ''")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN wakeupDone INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE user_progress ADD COLUMN customAzkarProgress TEXT NOT NULL DEFAULT ''")
             }
         }
 
         private val MIGRATION_28_29 = object : androidx.room.migration.Migration(28, 29) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL(
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL(
                     """CREATE TABLE IF NOT EXISTS `custom_dhikr_chains` (
                         `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                         `title` TEXT NOT NULL,
@@ -116,8 +116,8 @@ abstract class CompanionDatabase : RoomDatabase() {
         }
 
         private val MIGRATION_29_30 = object : androidx.room.migration.Migration(29, 30) {
-            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE app_settings ADD COLUMN azanVoice TEXT NOT NULL DEFAULT 'mishary'")
+            override fun migrate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE app_settings ADD COLUMN azanVoice TEXT NOT NULL DEFAULT 'mishary'")
             }
         }
 

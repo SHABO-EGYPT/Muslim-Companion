@@ -60,37 +60,35 @@ class PrayerNotificationReceiver : BroadcastReceiver() {
                         else -> "full_adhan"
                     }
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val importance = if (soundType == "Silent") {
-                            NotificationManager.IMPORTANCE_DEFAULT
-                        } else {
-                            NotificationManager.IMPORTANCE_HIGH
-                        }
+                    val importance = if (soundType == "Silent") {
+                        NotificationManager.IMPORTANCE_DEFAULT
+                    } else {
+                        NotificationManager.IMPORTANCE_HIGH
+                    }
+                    
+                    val channel = NotificationChannel(channelId, channelName, importance).apply {
+                        description = "Notifications for upcoming prayer times"
                         
-                        val channel = NotificationChannel(channelId, channelName, importance).apply {
-                            description = "Notifications for upcoming prayer times"
-                            
-                            when (soundType) {
-                                "Silent" -> {
-                                    setSound(null, null)
-                                    enableVibration(true)
-                                    vibrationPattern = longArrayOf(0, 500, 200, 500)
-                                }
-                                "Subtle" -> {
-                                    // Default system sound
-                                }
-                                "Full Adhan" -> {
-                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/$fullAdhanRes")
-                                    setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
-                                }
-                                "First Adhan" -> {
-                                    val soundUri = Uri.parse("android.resource://${context.packageName}/raw/first_adhan")
-                                    setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
-                                }
+                        when (soundType) {
+                            "Silent" -> {
+                                setSound(null, null)
+                                enableVibration(true)
+                                vibrationPattern = longArrayOf(0, 500, 200, 500)
+                            }
+                            "Subtle" -> {
+                                // Default system sound
+                            }
+                            "Full Adhan" -> {
+                                val soundUri = Uri.parse("android.resource://${context.packageName}/raw/$fullAdhanRes")
+                                setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
+                            }
+                            "First Adhan" -> {
+                                val soundUri = Uri.parse("android.resource://${context.packageName}/raw/first_adhan")
+                                setSound(soundUri, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_NOTIFICATION).setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION).build())
                             }
                         }
-                        notificationManager.createNotificationChannel(channel)
                     }
+                    notificationManager.createNotificationChannel(channel)
 
                     val lang = settings.language
                     val translatedPrayer = com.example.ui.Translator.translate(prayerName.lowercase(), lang)

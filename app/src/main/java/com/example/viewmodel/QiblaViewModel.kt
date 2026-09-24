@@ -120,7 +120,6 @@ class QiblaViewModel @Inject constructor(
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
     override fun onCleared() {
-        super.onCleared()
         stopSensors()
     }
 }

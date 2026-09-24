@@ -112,16 +112,14 @@ class NotificationsViewModel @Inject constructor(private val repository: Compani
             )
 
             try {
+                val channelId = "azkar_channel"
                 val notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-                val channelId = "azkar_notification_channel"
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    val channel = android.app.NotificationChannel(
-                        channelId,
-                        "Azkar Reminders",
-                        android.app.NotificationManager.IMPORTANCE_HIGH
-                    )
-                    notificationManager.createNotificationChannel(channel)
-                }
+                val channel = android.app.NotificationChannel(
+                    channelId,
+                    "Azkar Reminders",
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+                )
+                notificationManager.createNotificationChannel(channel)
 
                 val contentIntent = android.content.Intent(context, com.example.MainActivity::class.java).apply {
                     flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -202,16 +200,14 @@ class NotificationsViewModel @Inject constructor(private val repository: Compani
             )
 
             try {
+                val channelId = "prayer_channel"
                 val notificationManager = context.getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-                val channelId = "prayer_test_channel"
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    val channel = android.app.NotificationChannel(
-                        channelId,
-                        "Test Notifications",
-                        android.app.NotificationManager.IMPORTANCE_HIGH
-                    )
-                    notificationManager.createNotificationChannel(channel)
-                }
+                val channel = android.app.NotificationChannel(
+                    channelId,
+                    "Test Notifications",
+                    android.app.NotificationManager.IMPORTANCE_HIGH
+                )
+                notificationManager.createNotificationChannel(channel)
 
                 val appIconBitmap = try {
                     val drawable = androidx.core.content.ContextCompat.getDrawable(context, com.example.R.mipmap.ic_launcher)

@@ -153,6 +153,13 @@ muslim-companion/
 - **Protection Duas Category:** Added authentic supplications for protection against harm, envy, and evil eye (`hasad_protection_dua.json`).
 - **Dark Mode Legibility Enhancements:** High contrast emerald teal gradients, glowing mint active prayer card, and luminescent Quran download icons.
 - **Profile Avatar Memory Optimization:** Added `BitmapFactory.Options.inSampleSize` calculation reducing avatar memory usage by >95% to satisfy Google Play pre-launch advisories.
+- **Code Audit & Architecture Refactoring (Zero-Error Lint Pass):**
+  - Resolved `MissingPermission` by declaring `android.permission.VIBRATE` for custom dhikr chains.
+  - Refactored Android 12+ splash screen attributes into `res/values-v31/themes.xml` preventing API compatibility parse failures on API 26-30.
+  - Removed redundant `minSdk >= 26` condition checks across receivers, schedulers, and ViewModels.
+  - Conformed all Room `Migration.migrate(db)` parameter signatures, eliminating supertype call warnings.
+  - Resolved `EmptySuperCall` in ViewModels and added missing widget TargetApi attributes.
+  - Migrated hardcoded dependency coordinates (`icons-lucide`) to `libs.versions.toml`.
 
 ### v1.7.0 – v1.7.2
 - **"Noor Divine" Home Screen Widget Overhaul:** Deep navy (`#1A2634`) & metallic gold (`#F2CA50`) aesthetic with live weather, next prayer countdown, and active timeline chips.

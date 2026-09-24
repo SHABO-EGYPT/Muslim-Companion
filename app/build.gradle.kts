@@ -98,7 +98,7 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.androidx.hilt.navigation.compose)
   implementation(libs.androidx.hilt.work)
-  implementation("com.composables:icons-lucide:1.1.0")
+  implementation(libs.icons.lucide)
 
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)

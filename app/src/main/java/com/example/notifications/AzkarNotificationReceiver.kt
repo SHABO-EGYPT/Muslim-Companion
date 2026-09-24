@@ -59,16 +59,14 @@ class AzkarNotificationReceiver : BroadcastReceiver() {
                     val channelId = "azkar_notification_channel"
                     val channelName = "Azkar Reminders (أذكار)"
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        val channel = NotificationChannel(
-                            channelId,
-                            channelName,
-                            NotificationManager.IMPORTANCE_HIGH
-                        ).apply {
-                            description = "Reminders for Morning, Evening, and After Prayer Azkar"
-                        }
-                        notificationManager.createNotificationChannel(channel)
+                    val channel = NotificationChannel(
+                        channelId,
+                        channelName,
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        description = "Reminders for Morning, Evening, and After Prayer Azkar"
                     }
+                    notificationManager.createNotificationChannel(channel)
 
                     val lang = settings.language
                     val isArabic = lang == "Arabic"

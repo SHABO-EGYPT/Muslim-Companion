@@ -139,12 +139,7 @@ class OfflineQuranRepository(
 
                     val rawTranslation = verse.translations?.firstOrNull()?.text ?: ""
                     val cleanTranslation = if (rawTranslation.isNotBlank()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            Html.fromHtml(rawTranslation, Html.FROM_HTML_MODE_LEGACY).toString().trim()
-                        } else {
-                            @Suppress("DEPRECATION")
-                            Html.fromHtml(rawTranslation).toString().trim()
-                        }
+                        Html.fromHtml(rawTranslation, Html.FROM_HTML_MODE_LEGACY).toString().trim()
                     } else ""
 
                     val vKey = "$surahNumber:$vNum"

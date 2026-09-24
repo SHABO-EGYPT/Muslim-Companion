@@ -333,7 +333,6 @@ class SurahReaderViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
         isCleared = true
         (player as? MediaController)?.release()
         player = null

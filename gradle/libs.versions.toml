@@ -44,7 +44,9 @@ work = "2.11.2"
 hilt = "2.60.1"
 androidxHilt = "1.2.0"
 playReview = "2.0.2"
+iconsLucide = "1.1.0"
 [libraries]
+icons-lucide = { group = "com.composables", name = "icons-lucide", version.ref = "iconsLucide" }
 play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "playReview" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

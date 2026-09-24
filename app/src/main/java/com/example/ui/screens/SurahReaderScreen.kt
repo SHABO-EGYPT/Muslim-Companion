@@ -268,12 +268,7 @@ fun SurahReaderScreen(viewModel: SurahReaderViewModel, navController: NavHostCon
 
                             val cleanedTranslation = remember(ayah.translation) {
                                 if (ayah.translation.isBlank()) "" else {
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                                        android.text.Html.fromHtml(ayah.translation, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim()
-                                    } else {
-                                        @Suppress("DEPRECATION")
-                                        android.text.Html.fromHtml(ayah.translation).toString().trim()
-                                    }
+                                    android.text.Html.fromHtml(ayah.translation, android.text.Html.FROM_HTML_MODE_LEGACY).toString().trim()
                                 }
                             }
 
