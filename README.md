@@ -162,7 +162,7 @@
 - **UI Framework:** 100% **Jetpack Compose** with Material Design 3 guidelines.
 - **Language:** **Kotlin** utilizing Coroutines and Kotlin Flow for thread-safe asynchronous operations.
 - **Architecture:** Clean Architecture pattern:
-  - **Data Layer:** Room SQLite database (v29), Retrofit API endpoints, centralized `LocationRepository`, pure Kotlin `OfflinePrayerCalculator`, and repository implementations.
+  - **Data Layer:** Room SQLite database (v30), Retrofit API endpoints, centralized `LocationRepository`, pure Kotlin `OfflinePrayerCalculator`, and repository implementations.
   - **Domain Layer:** Business models, use cases, and repository abstractions.
   - **Presentation Layer:** Unidirectional Data Flow (UDF) with Compose and ViewModels.
 - **Dependency Injection:** **Hilt** (Dagger) with `@HiltWorker` for WorkManager background syncing.
@@ -175,7 +175,7 @@
 ## Installation & Building
 
 ### 📲 Directly Installing the Pre-built APK
-1. Download the pre-built APK from the [APK](APK/) folder or GitHub Releases: `Muslim-Companion-1.7.1.apk`.
+1. Download the pre-built APK from the [APK](APK/) folder or GitHub Releases: `Muslim-Companion-1.7.4.apk`.
 2. Transfer to your Android device and install.
 
 ---

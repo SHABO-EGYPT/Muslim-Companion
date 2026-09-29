@@ -1,5 +1,5 @@
 # Muslim Companion (رفيق المسلم) — Project Memory & Architecture Blueprint
-**Date:** September 24, 2026  
+**Date:** September 29, 2026  
 **Project:** Muslim Companion (`com.companion.muslim.app`)  
 **Current Release Version:** v1.7.4 (`versionCode = 11`)  
 **Dedication:** 100% Free & Ad-Free Sadaqah Jariyah (صدقة جارية)
@@ -134,7 +134,13 @@ muslim-companion/
 
 ## 5. Major Milestone & Update History
 
-### v1.7.4 (Google Play Store Production Release)
+### v1.7.4 (Google Play Store Production Release & Post-Launch Polish)
+- **High-Speed Quran Recitation Engine & CDN Routing:**
+  - Guaranteed verse-level audio CDN routing for 4 world-renowned reciters (Mishary Alafasy, Abdul Basit, Al-Husary, Al-Minshawi).
+  - Added cross-protocol redirect support and audio focus handling to AndroidX Media3 ExoPlayer.
+  - Enabled responsive tap playback, automatic verse advancement, and progress tracking.
+- **Developer Workflow & Emulator Runner Enhancements:**
+  - Fixed `RunEmulator.bat` by removing headless `/B` flag to guarantee visible window initialization on Windows desktop.
 - **Google Play Store Release Artifacts:**
   - Production Android App Bundle (`APK/Muslim-Companion-1.7.4.aab`) with Target SDK 37, signed using release keystore and optimized with R8.
   - Standalone production release APK (`APK/Muslim-Companion-1.7.4.apk`).
